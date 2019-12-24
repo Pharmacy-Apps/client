@@ -4,6 +4,7 @@ import { IonApp, IonRouterOutlet } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
 
 import { Signup1, Signup2, Login, Home } from './pages'
+import { Progress } from './components'
 import { sessionAvailable } from './session'
 
 /* Core CSS required for Ionic components to work properly */
@@ -38,6 +39,7 @@ const App: React.FC = () => (
         <Route path="/home" render={() => <Home />} />
       </IonRouterOutlet>
     </IonReactRouter>
+    <Progress />
   </IonApp>
 )
 
