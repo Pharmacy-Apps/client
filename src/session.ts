@@ -5,3 +5,11 @@ export const getSessionToken = () => {
 }
 
 export const sessionAvailable = () => Boolean(getSessionToken())
+
+export const setSessionToken = (token: string) => {
+  localStorage.setItem(tokenKey, token)
+}
+
+export const clearSession = () => {
+  localStorage.removeItem(tokenKey)
+}

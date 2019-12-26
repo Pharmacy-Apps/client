@@ -2,11 +2,23 @@ import React from 'react'
 import Routes from 'routes'
 import { History } from 'history'
 
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
+import * as constants from 'reducers/constants'
+
 import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton} from '@ionic/react'
 import { Header } from 'components'
 
+import Requests, { endPoints } from 'requests'
+import { setSessionToken } from 'session'
+
 export type Props = {
-  history: History
+  history: History,
+  showLoading: Function,
+  hideLoading: Function,
+  showToast: Function,
+  hideToast: Function
 }
 
 class Component extends React.Component<Props> {
@@ -20,9 +32,19 @@ class Component extends React.Component<Props> {
 
   onSubmit = (e: any) => {
     e.preventDefault()
+    const { showLoading, hideLoading, showToast, hideToast, history } = this.props
     const { phone, password } = this.state
     if (phone && password) {
-      this.props.history.push(Routes.home.path)
+      hideToast()
+      showLoading()
+      Requests.post(endPoints.login, { phone, secret: password }).then((response: any) => {
+        console.info(response)
+        setSessionToken(response.token)
+        history.replace(Routes.home.path)
+      }).catch(err => {
+        console.error(err)
+        showToast(err.error || err.toString())
+      }).finally(() => hideLoading())
     }
   }
 
@@ -61,4 +83,20 @@ class Component extends React.Component<Props> {
 
 }
 
-export default Component
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+  showLoading: () => ({
+    type: constants.SHOW_LOADING
+  }),
+  hideLoading: () => ({
+    type: constants.HIDE_LOADING
+  }),
+  showToast: (payload: string) => ({
+    type: constants.SHOW_TOAST,
+    payload
+  }),
+  hideToast: () => ({
+    type: constants.HIDE_TOAST
+  })
+}, dispatch)
+
+export default connect(null, mapDispatchToProps)(Component)

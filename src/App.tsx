@@ -3,8 +3,10 @@ import { Redirect, Route } from 'react-router-dom'
 import { IonApp, IonRouterOutlet } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
 
+import Routes from './routes'
+
 import { Signup1, Signup2, Login, Home } from './pages'
-import { Progress } from './components'
+import { Progress, Toast } from './components'
 import { sessionAvailable } from './session'
 
 /* Core CSS required for Ionic components to work properly */
@@ -31,15 +33,16 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonRouterOutlet>
         <Route exact path="/*" render={
-          () => <Redirect to={sessionAvailable() ? '/home' : '/login'} />
+          () => <Redirect to={sessionAvailable() ? Routes.home.path : Routes.login.path} />
         } />
-        <Route path="/signup1" render={props => <Signup1 {...props} />} />
-        <Route path="/signup2" render={props => <Signup2 {...props} />} />
-        <Route path="/login" render={props => <Login {...props} />} />
-        <Route path="/home" render={() => <Home />} />
+        <Route path={Routes.signup1.path} render={props => <Signup1 {...props} />} />
+        <Route path={Routes.signup2.path} render={props => <Signup2 {...props} />} />
+        <Route path={Routes.login.path} render={props => <Login {...props} />} />
+        <Route path={Routes.home.path} render={() => <Home />} />
       </IonRouterOutlet>
     </IonReactRouter>
     <Progress />
+    <Toast />
   </IonApp>
 )
 
