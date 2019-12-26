@@ -10,7 +10,6 @@ import { IState } from 'reducers'
 export type Props = {
   open: boolean,
   message?: string,
-  showLoading: Function,
   hideLoading: Function
 }
 
@@ -29,9 +28,6 @@ const mapStateToProps = (state: IState) => ({
 })
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
-  showLoading: () => ({
-    type: constants.SHOW_LOADING
-  }),
   hideLoading: () => ({
     type: constants.HIDE_LOADING
   })

@@ -4,11 +4,13 @@ import { Action } from 'types'
 import * as constants from './constants'
 
 export interface IState {
-  loading: boolean
+  loading: boolean,
+  toast: string | null
 }
 
 const initialState: IState = {
-  loading: false
+  loading: false,
+  toast: null
 }
 
 export default (state = initialState, action: Action) => produce(state, (draft: IState) => {
@@ -19,6 +21,14 @@ export default (state = initialState, action: Action) => produce(state, (draft: 
     }
     case constants.HIDE_LOADING: {
       draft.loading = false
+      break
+    }
+    case constants.SHOW_TOAST: {
+      draft.toast = action.payload
+      break
+    }
+    case constants.HIDE_TOAST: {
+      draft.toast = null
       break
     }
     default: break
