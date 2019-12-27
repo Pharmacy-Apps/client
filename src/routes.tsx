@@ -2,6 +2,9 @@ const routes = {
   home: {
     path: '/home'
   },
+  account: {
+    path: '/account'
+  },
   signup1: {
     path: '/signup1',
     isPublic: true

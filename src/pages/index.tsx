@@ -2,5 +2,6 @@ import Signup1 from './Signup1'
 import Signup2 from './Signup2'
 import Login from './Login'
 import Home from './Home'
+import Account from './Account'
 
-export { Signup1, Signup2, Login, Home }
+export { Signup1, Signup2, Login, Home, Account }

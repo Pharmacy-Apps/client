@@ -5,7 +5,7 @@ import { IonReactRouter } from '@ionic/react-router'
 
 import Routes from './routes'
 
-import { Signup1, Signup2, Login, Home } from './pages'
+import { Signup1, Signup2, Login, Home, Account } from './pages'
 import { Progress, Toast } from './components'
 import { sessionAvailable } from './session'
 
@@ -38,7 +38,8 @@ const App: React.FC = () => (
         <Route path={Routes.signup1.path} render={props => <Signup1 {...props} />} />
         <Route path={Routes.signup2.path} render={props => <Signup2 {...props} />} />
         <Route path={Routes.login.path} render={props => <Login {...props} />} />
-        <Route path={Routes.home.path} render={() => <Home />} />
+        <Route path={Routes.home.path} render={props => <Home {...props} />} />
+        <Route path={Routes.account.path} render={props => <Account {...props} />} />
       </IonRouterOutlet>
     </IonReactRouter>
     <Progress />
