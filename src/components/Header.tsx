@@ -1,21 +1,29 @@
 import React from 'react'
-import { IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton } from '@ionic/react'
+import { IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton } from '@ionic/react'
+
+import { ToolbarAction } from 'types'
 
 const appName = 'App'
 
 export type Props = {
   omitsBack?: boolean
   title?: string
+  actions?: ToolbarAction []
 }
 
-const Component: React.FC<Props> = props => {
+const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
   return (
     <IonHeader>
       <IonToolbar>
-        {props.omitsBack ? null : <IonButtons slot="start">
+        {omitsBack ? null : <IonButtons slot="start">
           <IonBackButton defaultHref="/" />
         </IonButtons>}
-        <IonTitle>{props.title}</IonTitle>
+        <IonTitle>{title}</IonTitle>
+        <IonButtons slot="secondary">{
+          actions.map(action => <IonButton onClick={e => action.handler(e)}>
+            {action.component}
+          </IonButton>)
+        }</IonButtons>
       </IonToolbar>
     </IonHeader>
   )
