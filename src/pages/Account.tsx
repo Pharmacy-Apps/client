@@ -32,7 +32,7 @@ const Component: React.FC<Props> = () => {
       <IonContent className="ion-padding">
         <IonList lines="full" className="ion-no-margin ion-no-padding">{
           items.map((item, i, a) => {
-            return <IonItem { ...i + 1 === a.length ?  { lines: "none" } : {} }>
+            return <IonItem key={i} { ...i + 1 === a.length ?  { lines: "none" } : {} }>
             <IonLabel>
               <p>{item.name}</p>
               <IonText { ...item.starred ?  { color: "primary" } : {} }>

@@ -20,7 +20,7 @@ const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
         </IonButtons>}
         <IonTitle>{title}</IonTitle>
         <IonButtons slot="secondary">{
-          actions.map(action => <IonButton onClick={e => action.handler(e)}>
+          actions.map((action, i) => <IonButton key={i} onClick={e => action.handler(e)}>
             {action.component}
           </IonButton>)
         }</IonButtons>
