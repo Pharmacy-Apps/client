@@ -5,6 +5,9 @@ const routes = {
   account: {
     path: '/account'
   },
+  search: {
+    path: '/search'
+  },
   signup1: {
     path: '/signup1',
     isPublic: true

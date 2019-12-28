@@ -7,7 +7,7 @@ const appName = 'App'
 
 export type Props = {
   omitsBack?: boolean
-  title?: string
+  title?: string | any
   actions?: ToolbarAction []
 }
 
