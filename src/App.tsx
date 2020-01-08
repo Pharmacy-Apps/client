@@ -9,6 +9,8 @@ import { Signup1, Signup2, Login, Home1, Home2, Account } from './pages'
 import { Progress, Toast } from './components'
 import { sessionAvailable } from './session'
 
+import { watchPosition as watchUserLocation } from 'location'
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css'
 
@@ -28,24 +30,34 @@ import '@ionic/react/css/display.css'
 /* Theme variables */
 import './theme/variables.css'
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route path="/*" render={
-          () => <Redirect to={sessionAvailable() ? Routes.home.path : Routes.login.path} />
-        } />
-        <Route path={Routes.signup1.path} render={props => <Signup1 {...props} />} />
-        <Route path={Routes.signup2.path} render={props => <Signup2 {...props} />} />
-        <Route path={Routes.login.path} render={props => <Login {...props} />} />
-        <Route path={Routes.home.path} render={props => <Home1 {...props} />} />
-        <Route path={Routes.search.path} render={props => <Home2 {...props} />} />
-        <Route path={Routes.account.path} render={props => <Account {...props} />} />
-      </IonRouterOutlet>
-    </IonReactRouter>
-    <Progress />
-    <Toast />
-  </IonApp>
-)
+export default class App extends React.Component {
 
-export default App
+  componentWillMount() {
+    watchUserLocation()
+  }
+
+  componentWillUnmount() { /* clear location watch */ }
+
+  render() {
+    return (
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route path="/*" render={
+              () => <Redirect to={sessionAvailable() ? Routes.home.path : Routes.login.path} />
+            } />
+            <Route path={Routes.signup1.path} render={props => <Signup1 {...props} />} />
+            <Route path={Routes.signup2.path} render={props => <Signup2 {...props} />} />
+            <Route path={Routes.login.path} render={props => <Login {...props} />} />
+            <Route path={Routes.home.path} render={props => <Home1 {...props} />} />
+            <Route path={Routes.search.path} render={props => <Home2 {...props} />} />
+            <Route path={Routes.account.path} render={props => <Account {...props} />} />
+          </IonRouterOutlet>
+        </IonReactRouter>
+        <Progress />
+        <Toast />
+      </IonApp>
+    )
+  }
+
+}
