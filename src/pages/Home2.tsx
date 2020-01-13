@@ -4,17 +4,18 @@ import { History } from 'history'
 import { IonContent, IonPage, IonInput, IonList, IonItem } from '@ionic/react'
 import { Header, MedSearchResult } from 'components'
 
+import Requests, { endPoints } from 'requests'
+import { getSessionLocation as getUserLocation } from 'session'
+
 export type Props = {
   history: History
 }
 
-const searchPlaceholder = 'Type a Med' // Try ... panadol
-
-const meds: Object[] = [{}, {}]
+const searchPlaceholder = 'Search meds' // Try ... panadol
 
 class Component extends React.Component<Props> {
 
-  state = { searchStr: null }
+  state = { searchStr: null, meds: [] }
 
   title = () => {
     const { searchStr } = this.state
@@ -22,15 +23,31 @@ class Component extends React.Component<Props> {
     return input
   }
 
-  onSearch = (e: any) => { this.setState({ searchStr: e.target.value }) }
+  fetchMeds() {
+    const { searchStr: search } = this.state
+    if (search === '') return
+
+    const { lat, lon } = getUserLocation()
+    Requests.get(
+      endPoints['med-search'],
+      { params: { search, lat, lon } }
+    ).then((response: any) => {
+      this.setState({ meds: response })
+    }).catch(console.error)
+  }
+
+  onSearch = (e: any) => {
+    this.setState({ searchStr: e.target.value }, this.fetchMeds)
+  }
 
   render() {
+    const { meds } = this.state
     return (
       <IonPage>
         <Header title={this.title()} />
         <IonContent className="ion-padding">
           <IonList lines="full" className="ion-no-margin ion-no-padding">{
-            meds.map((med, i, a) => <IonItem key={i} { ...i + 1 === a.length ?  { lines: "none" } : {} }>
+            meds.map((med, i, a) => <IonItem key={i} {...i + 1 === a.length ? { lines: "none" } : {}}>
               <MedSearchResult index={i} />
             </IonItem>)
           }</IonList>

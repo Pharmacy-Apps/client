@@ -15,7 +15,8 @@ instance.interceptors.response.use(function (response) {
 export default instance
 
 export const endPoints = {
-  login: '/user/login',
-  signup1: '/user/new',
-  signup2: '/user/register'
+  'login': '/user/login',
+  'signup1': '/user/new',
+  'signup2': '/user/register',
+  'med-search': '/meds/search'
 }
