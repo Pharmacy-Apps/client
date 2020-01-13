@@ -10,7 +10,9 @@ export const updateCurrentPosition = () => {
 
 export const watchPosition = () => {
   Geolocation.watchPosition().subscribe((res: any) => {
-    const { latitude: lat, longitude: lon, accuracy: acc } = res.coords
-    setSessionLocation({ lat, lon, acc })
+    try {
+      const { latitude: lat, longitude: lon, accuracy: acc } = res.coords
+      setSessionLocation({ lat, lon, acc })
+    } catch (e) { }
   }, console.error)
 }

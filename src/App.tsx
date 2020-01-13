@@ -15,7 +15,7 @@ import 'styles'
 
 export default class App extends React.Component {
 
-  componentWillMount() {
+  componentDidMount() {
     watchUserLocation()
   }
 
