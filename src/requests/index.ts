@@ -3,13 +3,14 @@ import Axios from 'axios'
 const baseURL = process.env.REACT_APP_BACKEND_URL
 const instance = Axios.create({ baseURL })
 
+const NETWORK_ERROR = 'Please check that you have an active internet connection'
+
 instance.interceptors.response.use(function (response) {
   // Runs for status codes within 2**
   return response.data
 }, function (error) {
   // Runs for status codes outside 2**
-  // console.info('Response error', error)
-  return Promise.reject(error.response.data)
+  return Promise.reject(error.response ? error.response.data : NETWORK_ERROR)
 })
 
 export default instance
