@@ -5,7 +5,7 @@ import { IonReactRouter } from '@ionic/react-router'
 
 import Routes from './routes'
 
-import { Signup1, Signup2, Login, Home1, Home2, Account } from './pages'
+import { Signup1, Signup2, Login, Home, Order, Credit, Account } from './pages'
 import { Progress, Toast } from './components'
 import { sessionAvailable } from './session'
 
@@ -32,8 +32,9 @@ export default class App extends React.Component {
             <Route path={Routes.signup1.path} render={props => <Signup1 {...props} />} />
             <Route path={Routes.signup2.path} render={props => <Signup2 {...props} />} />
             <Route path={Routes.login.path} render={props => <Login {...props} />} />
-            <Route path={Routes.home.path} render={props => <Home1 {...props} />} />
-            <Route path={Routes.search.path} render={props => <Home2 {...props} />} />
+            <Route path={Routes.home.path} render={props => <Home {...props} />} />
+            <Route path={Routes.order.path} render={props => <Order {...props} />} />
+            <Route path={Routes.credit.path} render={props => <Credit {...props} />} />
             <Route path={Routes.account.path} render={props => <Account {...props} />} />
           </IonRouterOutlet>
         </IonReactRouter>

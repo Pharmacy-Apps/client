@@ -8,8 +8,14 @@ export interface ToolbarAction {
   handler: Function
 }
 
+export interface Med {
+  _id: string,
+  name: string,
+}
+
 export interface MedSearchResult {
-  med: { _id: string, name: string },
+  _id: string,
+  med: Med,
   pharmacy: {
     _id: string, name: string, distance: string | undefined
   },

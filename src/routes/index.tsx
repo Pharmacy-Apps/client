@@ -8,6 +8,12 @@ const routes = {
   search: {
     path: '/search'
   },
+  order: {
+    path: '/order'
+  },
+  credit: {
+    path: '/credit'
+  },
   signup1: {
     path: '/signup1',
     isPublic: true
