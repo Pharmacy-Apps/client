@@ -4,7 +4,7 @@ let event = null
 
 const url = location.port == '3000'
   ? 'http://localhost:3015'
-  : 'https://pharmacy-remote-api.herokuapp.com'
+  : 'https://pharmacy-demo-server.herokuapp.com'
 
 onmessage = function ({ data }) {
   
