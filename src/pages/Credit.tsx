@@ -8,14 +8,23 @@ import { bindActionCreators } from 'redux'
 import * as constants from 'reducers/constants'
 
 import { IonContent, IonPage, IonList, IonItem, IonLabel, IonIcon, IonItemDivider, IonAlert } from '@ionic/react'
-import { star, rocket } from 'ionicons/icons';
+import { starOutline as numb, star as active } from 'ionicons/icons';
 
 import { Header } from 'components'
 
-export type Props = {
+import Requests, { endPoints } from 'requests'
+
+type Props = {
   history: History,
-  showLoading: Function,
-  hideLoading: Function,
+  showLoading: () => {},
+  hideLoading: () => {},
+  showToast: (e: string) => {},
+}
+
+type State = {
+  offers: Array<Offer>,
+  selectedOffer: string | null,
+  alert: { shown: boolean, errored: number }
 }
 
 const message = {
@@ -25,17 +34,29 @@ const message = {
 
 class Component extends React.Component<Props> {
 
-  state = {
-    selectedOffer: offers[0]._id,
+  state: State = {
+    offers: [],
+    selectedOffer: null,
     alert: { shown: false, errored: 0 }
   }
 
-  onPaymentChannelSelect = (channel: Channel) => {
-    console.info(channel)
-    this.fakeRequest((hideLoading: Function) => {
-      hideLoading()
-      const errored = false
+  componentDidMount() {
+    const { showLoading, hideLoading, showToast } = this.props
+    showLoading()
+    Requests.get(endPoints['credit-offers']).then((response: any) => {
+      this.setState({ offers: response, selectedOffer: response[0]._id })
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    }).finally(hideLoading)
+  }
 
+  onPaymentChannelSelect = (channel: Channel) => {
+    const { selectedOffer: offer } = this.state
+    const { showLoading, hideLoading, showToast } = this.props
+    showLoading()
+    Requests.post(endPoints['credits'], { offer }).then((response: any) => {
+      const errored = false // Payment succeeded
       if (errored) {
         this.showAlert({ errored: 1 })
       } else if (this.redirectedFromOrder()) {
@@ -43,15 +64,12 @@ class Component extends React.Component<Props> {
       } else {
         this.showAlert({ errored: 0 })
       }
-    })
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    }).finally(hideLoading)
   }
 
-  fakeRequest(cb: Function) {
-    const { showLoading, hideLoading } = this.props
-    showLoading()
-    setTimeout(() => cb(hideLoading), 1500)
-  }
-  
   onOfferSelect = ({ _id }: Offer) => {
     this.setState({ selectedOffer: _id })
   }
@@ -79,8 +97,8 @@ class Component extends React.Component<Props> {
   }
 
   render() {
-    const { alert, selectedOffer } = this.state
-    return (
+    const { offers, alert, selectedOffer } = this.state
+    return offers.length ? (
       <IonPage>
         <Header title="Purchase credits" />
         <IonContent className="ion-padding">
@@ -96,9 +114,11 @@ class Component extends React.Component<Props> {
                 key={offer._id}
                 onClick={() => this.onOfferSelect(offer)}
                 button
-                lines={i === a.length-1 ? 'none' : undefined}
+                lines={i === a.length - 1 ? 'none' : undefined}
               >
-                <IonIcon color={offer._id === selectedOffer ? 'primary' : undefined} icon={star} slot="start" />
+                <IonIcon color="primary" icon={
+                  offer._id === selectedOffer ? active : numb
+                } slot="start" />
                 <IonLabel>
                   <h3>{`${offer.value} credits`}</h3>
                   <p>{`USD ${offer.price}`}</p>
@@ -117,9 +137,9 @@ class Component extends React.Component<Props> {
                 key={channel._id}
                 onClick={() => this.onPaymentChannelSelect(channel)}
                 button
-                lines={i === a.length-1 ? 'none' : undefined}
+                lines={i === a.length - 1 ? 'none' : undefined}
               >
-                <IonIcon icon={rocket} slot="start" />
+                {/* <IonIcon icon={rocket} slot="start" /> */}
                 <IonLabel>
                   <h3>{channel.name}</h3>
                   <p>{channel.description}</p>
@@ -130,12 +150,12 @@ class Component extends React.Component<Props> {
           <Alert
             open={alert.shown}
             errored={alert.errored}
-            onConfirm={() => {}}
+            onConfirm={() => { }}
             afterDismiss={this.onAlertDismiss}
           />
         </IonContent>
       </IonPage>
-    )
+    ) : null
   }
 
 }
@@ -146,20 +166,6 @@ type Offer = {
   price: number,
   starred?: boolean
 }
-const offers: Array<Offer> = [{
-  _id: '1',
-  value: 500,
-  price: 2,
-  starred: true
-}, {
-  _id: '2',
-  value: 5000,
-  price: 15
-}, {
-  _id: '3',
-  value: 20000,
-  price: 40
-}]
 
 type Channel = {
   _id: string,
@@ -190,19 +196,19 @@ const Alert: React.FC<AlertProps> = ({
   onConfirm,
   afterDismiss
 }) => (
-  <IonAlert
-    isOpen={open}
-    onDidDismiss={afterDismiss}
-    header={AlertText[textIndex].header}
-    message={AlertText[textIndex].message}
-    buttons={[
-      {
-        text: 'Okay',
-        handler: onConfirm
-      }
-    ]}
-  />
-)
+    <IonAlert
+      isOpen={open}
+      onDidDismiss={afterDismiss}
+      header={AlertText[textIndex].header}
+      message={AlertText[textIndex].message}
+      buttons={[
+        {
+          text: 'Okay',
+          handler: onConfirm
+        }
+      ]}
+    />
+  )
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   showLoading: () => ({
@@ -210,6 +216,9 @@ const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   }),
   hideLoading: () => ({
     type: constants.HIDE_LOADING
+  }),
+  showToast: () => ({
+    type: constants.HIDE_TOAST
   }),
 }, dispatch)
 

@@ -1,4 +1,5 @@
 const tokenKey = 'auth-token'
+const phoneKey = 'phone'
 const locationKey = 'location'
 
 export const getSessionToken = () => {
@@ -9,6 +10,14 @@ export const sessionAvailable = () => Boolean(getSessionToken())
 
 export const setSessionToken = (token: string) => {
   localStorage.setItem(tokenKey, token)
+}
+
+export const getSessionPhone = () => {
+  return localStorage.getItem(phoneKey)
+}
+
+export const setSessionPhone = (phone: string) => {
+  localStorage.setItem(phoneKey, phone)
 }
 
 export const setSessionLocation = (location: Object) => {

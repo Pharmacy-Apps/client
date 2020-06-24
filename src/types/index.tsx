@@ -4,7 +4,7 @@ export interface Action {
 }
 
 export interface ToolbarAction {
-  component: string | React.Component,
+  component: string | Element,
   handler: Function
 }
 
@@ -17,8 +17,21 @@ export interface MedSearchResult {
   _id: string,
   med: Med,
   pharmacy: {
-    _id: string, name: string, distance: string | undefined
+    _id: string, name: string
   },
   price: string,
+  distance: string | undefined,
+  distanceRaw: number | undefined,
   unit: object
+}
+
+export interface MedRequest {
+  _id: string,
+  pharmacyMeds: Array<{
+    med: { _id: string, 'common-name': string, 'scientific-name': string },
+    pharmacy: { _id: string, 'name': string },
+  }>,
+  notes: string,
+  state: string,
+  createdAt: number
 }

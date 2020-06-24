@@ -11,7 +11,7 @@ import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton } 
 import { Header } from 'components'
 
 import Requests, { endPoints } from 'requests'
-import { setSessionToken } from 'session'
+import { setSessionToken, setSessionPhone } from 'session'
 
 export type Props = {
   history: History,
@@ -34,7 +34,7 @@ class Component extends React.Component<Props> {
     e.preventDefault()
     const {
       showLoading, hideLoading, showToast, hideToast,
-      history: { location: { state: { token } } }
+      history: { location: { state: { token, phone } } }
     } = this.props
     const { code, password, name } = this.state
     if (code && password && name) {
@@ -43,7 +43,8 @@ class Component extends React.Component<Props> {
       Requests.post(endPoints.signup2, { token, code, secret: password, name }).then((response: any) => {
         console.info(response)
         setSessionToken(response.token)
-        this.props.history.push(Routes.home.path)
+        setSessionPhone(phone)
+        window.location.replace(Routes.home.path)
       }).catch(err => {
         console.error(err)
         showToast(err.error || err.toString())

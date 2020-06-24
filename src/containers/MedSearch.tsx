@@ -1,6 +1,6 @@
 import React from 'react'
-import { IonPopover, IonSearchbar, IonList, IonItem, IonButton, IonIcon } from '@ionic/react'
-import { send } from 'ionicons/icons';
+import { IonPopover, IonSearchbar, IonList, IonItem, IonButton, IonIcon, IonLabel } from '@ionic/react'
+import { send, close } from 'ionicons/icons';
 
 import { MedSearchResult } from 'components'
 
@@ -57,7 +57,7 @@ class Component extends React.Component<Props> {
   }
 
   onSearch = (e: any) => {
-    this.fetchMeds(e.target.value)
+    // this.fetchMeds(e.target.value)
     // this.props.onSearch(e.target.value)
   }
 
@@ -87,6 +87,7 @@ class Component extends React.Component<Props> {
 
   render() {
     const { open } = this.props
+    const { meds } = this.state
     return (
       <IonPopover
         isOpen={open}
@@ -94,21 +95,26 @@ class Component extends React.Component<Props> {
         cssClass="popover-search-results"
       >
         <IonList className="ion-no-margin ion-no-padding">
-          <IonItem lines="full" className="ion-no-margin ion-no-padding">
-            <IonSearchbar onIonChange={e => e.detail.value}></IonSearchbar>
+          <IonItem lines="none" className="ion-no-margin ion-no-padding">
+            <IonSearchbar className="searchbar ion-no-padding" clearIcon="close-circle" onIonChange={this.onSearch}></IonSearchbar>
             <IonButton onClick={this.onSubmit} slot="end" fill="clear">
-              <IonIcon slot="icon-only" icon={send} />
+              <IonIcon color="primary" slot="icon-only" icon={send} />
+            </IonButton>
+            <IonButton onClick={this.onDismiss} slot="end" fill="clear">
+              <IonIcon color="primary" slot="icon-only" icon={close} />
             </IonButton>
           </IonItem>{
-          this.state.meds.map((result, i, a) => (
-            <MedSearchResult
-              key={i}
-              result={result}
-              lines={i !== a.length - 1}
-              selected={this.isSelected(result)}
-              onSelect={this.onSelect} />
-          ))
-        }</IonList>
+            meds.length ? meds.map((result, i, a) => (
+              <MedSearchResult
+                key={i}
+                result={result}
+                lines={i !== a.length - 1}
+                selected={this.isSelected(result)}
+                onSelect={this.onSelect} />
+            )) : <IonItem lines="none">
+              <IonLabel><p>No meds found, please try a different search</p></IonLabel>
+            </IonItem>
+          }</IonList>
       </IonPopover>
     )
   }

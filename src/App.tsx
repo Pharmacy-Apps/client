@@ -5,38 +5,51 @@ import { IonReactRouter } from '@ionic/react-router'
 
 import Routes from './routes'
 
-import { Signup1, Signup2, Login, Home, Order, Credit, Account } from './pages'
 import { Progress, Toast } from './components'
 import { sessionAvailable } from './session'
 
 import { watchPosition as watchUserLocation } from 'location'
 
+import 'worker'
 import 'styles'
+
+// For public pages, redirect to /home if session available
+const fn1 = (Component: Function, props: any) => sessionAvailable()
+  ? <Redirect to={Routes.home.path} />
+  : <Component {...props} />
+
+// For protected pages, redirect to /login if session not available
+const fn2 = (Component: Function, props: any) => sessionAvailable()
+  ? <Component {...props} />
+  : <Redirect to={Routes.login.path} />
+
+const routeValues = Object.values(Routes)
 
 export default class App extends React.Component {
 
   componentDidMount() {
+    if (this.routeNotFound()) window.location.replace(Routes.home.path)
     watchUserLocation()
   }
 
   componentWillUnmount() { /* clear location watch */ }
 
+  routeNotFound = () => {
+    const currentPath = window.location.pathname
+    return routeValues.map(({ path }) => path).indexOf(currentPath) < 0
+  }
+
   render() {
     return (
       <IonApp>
         <IonReactRouter>
-          <IonRouterOutlet>
-            <Route path="/*" render={
-              () => <Redirect to={sessionAvailable() ? Routes.home.path : Routes.login.path} />
-            } />
-            <Route path={Routes.signup1.path} render={props => <Signup1 {...props} />} />
-            <Route path={Routes.signup2.path} render={props => <Signup2 {...props} />} />
-            <Route path={Routes.login.path} render={props => <Login {...props} />} />
-            <Route path={Routes.home.path} render={props => <Home {...props} />} />
-            <Route path={Routes.order.path} render={props => <Order {...props} />} />
-            <Route path={Routes.credit.path} render={props => <Credit {...props} />} />
-            <Route path={Routes.account.path} render={props => <Account {...props} />} />
-          </IonRouterOutlet>
+          <IonRouterOutlet>{
+            routeValues.map(({ path, component: Component, isPublic }, i) => (
+              <Route exact key={i} path={path} render={
+                props => isPublic ? fn1(Component, props) : fn2(Component, props)
+              } />
+            ))
+          }</IonRouterOutlet>
         </IonReactRouter>
         <Progress />
         <Toast />

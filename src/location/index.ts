@@ -16,3 +16,10 @@ export const watchPosition = () => {
     } catch (e) { }
   }, console.error)
 }
+
+export const formatDistance = (mDistance: number) => { // mDistance - meter distance
+  if (mDistance < 50) return '< 50m'
+  if (mDistance < 1000) return `${mDistance}m`
+  if (mDistance < 50000) return `${mDistance / 1000}km`
+  return '> 50km'
+}

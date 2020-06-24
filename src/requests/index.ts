@@ -1,7 +1,9 @@
 import Axios from 'axios'
+import { sessionAvailable, getSessionToken } from 'session'
 
 const baseURL = process.env.REACT_APP_BACKEND_URL
-const instance = Axios.create({ baseURL })
+const headers = sessionAvailable() ? { 'Authorization': `Bearer ${getSessionToken()}` } : {}
+const instance = Axios.create({ baseURL, headers })
 
 const NETWORK_ERROR = 'Please check that you have an active internet connection'
 
@@ -19,5 +21,8 @@ export const endPoints = {
   'login': '/user/login',
   'signup1': '/user/new',
   'signup2': '/user/register',
-  'med-search': '/meds/search'
+  'med-search': '/meds/search',
+  'med-requests': '/med-request',
+  'credits': '/credits',
+  'credit-offers': '/credits/offers'
 }

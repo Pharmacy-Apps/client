@@ -40,7 +40,7 @@ class Component extends React.Component<Props> {
         console.info(response)
         history.push({
           pathname: Routes.signup2.path,
-          state: { token: response.token }
+          state: { token: response.token, phone }
         })
       }).catch(err => {
         console.error(err)
