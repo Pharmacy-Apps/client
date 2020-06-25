@@ -30,6 +30,7 @@ type Props = {
   item: MedRequest,
   detailed: boolean,
   selected: boolean,
+  selectMode: boolean,
   onTap: Function
 }
 
@@ -39,6 +40,7 @@ const Component: React.FC<Props> = ({
   item: { _id, pharmacyMeds, state, createdAt },
   detailed,
   selected,
+  selectMode,
   onTap
 }) => {
   const onClick = (position: Number, item: String, event: any) => {
@@ -51,7 +53,9 @@ const Component: React.FC<Props> = ({
       <IonIcon
         color="primary"
         icon={
-          selected ? active : numb
+          selectMode ? (
+            selected ? active : numb
+          ) : 'no-icon'
         }
         slot="start"
         onClick={e => onClick(0, _id, e)}
@@ -65,7 +69,8 @@ const Component: React.FC<Props> = ({
               pharmacyMeds.map((o, i) => (i > 0 ? ', ' : '') + (
                 o.med['common-name'] || o.med['scientific-name']
               ))
-            }</h2>
+            }
+          </h2>
           <p>{state}</p>
           {detailed ? <p>Delivery at {`${lat}, ${lon}`}</p> : null}
         </IonLabel>

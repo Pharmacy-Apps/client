@@ -226,18 +226,21 @@ class Component extends React.Component<Props> {
     const activeRequests = this.getActiveRequests(requests)
     const archivedRequests = this.getArchivedRequests(requests)
 
+    const selectModeOn = requestsSelected.length > 0
+
     const requestComponent = (item: any, i: number, a: Array<MedRequestInterface>) => (
       <div key={item._id}>
         <IonItem
           button
           onClick={() => this.onRequestTapped(1, item._id)}
-          className="request ion-no-padding"
+          className={`request ${selectModeOn ? 'select-mode' : ''} ion-no-padding`}
           style={{ paddingTop: 0, paddingBottom: 0 }}
         >
           <MedRequest
             item={item}
             detailed={item._id === requestDetailed}
             selected={requestsSelected.includes(item._id)}
+            selectMode={selectModeOn}
             onTap={this.onRequestTapped} />
         </IonItem>
         {i === a.length - 1 ? null : <IonItemDivider style={{ minHeight: 0 }} />}

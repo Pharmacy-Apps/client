@@ -70,17 +70,19 @@
     }
 
     .request ion-icon {
-      padding: calc(var(--ion-padding, 15px) * 2)
+      height: 3.5em
+    }
+
+    .request.select-mode ion-icon {
+      padding: 0 calc(var(--ion-padding, 15px) * 1.5)
     }
 
     .ion-item-archive {
       --min-height: 0;
       --padding-top: calc(var(--ion-padding, 15px) / 4);
       --padding-bottom: calc(var(--ion-padding, 15px) / 4);
-      --background: var(
-        --ion-item-background-hover,
-        rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.04)
-      )
+      --background: var(--ion-item-background-hover,
+          rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.04))
     }
   </style>
 
