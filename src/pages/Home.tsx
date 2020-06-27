@@ -1,5 +1,5 @@
 import React from 'react'
-import Routes from 'routes'
+import Routes, { getDefaultRoute } from 'routes'
 import { History } from 'history'
 
 import { connect } from 'react-redux'
@@ -25,7 +25,7 @@ import eventsInstance, { name as localEventName } from '../events'
 export type Props = {
   history: History,
   location: {
-    state: { fetchRequests: boolean }
+    state: { fetchRequests: boolean }, pathname: string
   },
   showLoading: () => {},
   hideLoading: () => {},
@@ -205,9 +205,13 @@ class Component extends React.Component<Props> {
   }
 
   componentDidMount() {
+    const defaultRoute = getDefaultRoute()
+    if (this.props.location.pathname !== defaultRoute) {
+      window.location.replace(defaultRoute)
+      return
+    }
     // this.onPrimaryAction()
     this.fetchRequests()
-
     if (eventsInstance.listenerCount(localEventName) === 0)
       eventsInstance.on(localEventName, this.updateRequests)
   }

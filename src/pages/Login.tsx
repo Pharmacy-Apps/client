@@ -1,5 +1,5 @@
 import React from 'react'
-import Routes from 'routes'
+import Routes, { getDefaultRoute } from 'routes'
 import { History } from 'history'
 
 import { connect } from 'react-redux'
@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton} from '@ionic/react'
+import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton } from '@ionic/react'
 import { Header } from 'components'
 
 import Requests, { endPoints } from 'requests'
@@ -24,7 +24,9 @@ export type Props = {
 class Component extends React.Component<Props> {
 
   // state = { phone: null, password: null }
-  state = { phone: '773828773', password: '773828773' }
+  // state = { phone: '773828773', password: '773828773' } // client user
+  // state = { phone: '773828774', password: '773828773' } // courier
+  state = { phone: '773828775', password: '773828773' } // admin
 
   onChange = (e: any) => {
     const { name, value } = e.target
@@ -38,10 +40,10 @@ class Component extends React.Component<Props> {
     if (phone && password) {
       hideToast()
       showLoading()
-      Requests.post(endPoints.login, { phone, secret: password }).then((response: any) => {
-        setSessionToken(response.token)
+      Requests.post(endPoints.login, { phone, secret: password }).then(({ token }: any) => {
+        setSessionToken(token)
         setSessionPhone(phone || '')
-        window.location.replace(Routes.home.path)
+        window.location.replace(getDefaultRoute(token))
       }).catch(err => {
         console.error(err)
         showToast(err.error || err.toString())

@@ -1,3 +1,6 @@
+import decrypt from 'libs/jwt'
+import { getSessionToken } from 'session'
+
 import { Signup1, Signup2, Login, Home, Order, Credit, Account } from 'pages'
 
 interface Routes {
@@ -8,7 +11,7 @@ interface Routes {
   }
 }
 
-const routes: Routes = {
+const Routes: Routes = {
   courier: {
     path: '/courier',
     component: Home
@@ -50,4 +53,15 @@ const routes: Routes = {
   }
 }
 
-export default routes
+export default Routes
+
+const RoutesIndexedOnRoles = [
+  Routes.home.path,
+  Routes.courier.path,
+  Routes.admin.path,
+  Routes.admin.path
+]
+
+export const getDefaultRoute = (token = getSessionToken()) => (
+  RoutesIndexedOnRoles[decrypt(token).role - 1]
+)

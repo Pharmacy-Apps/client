@@ -3,7 +3,7 @@ import { Redirect, Route } from 'react-router-dom'
 import { IonApp, IonRouterOutlet } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
 
-import Routes from './routes'
+import Routes, { getDefaultRoute } from './routes'
 
 import { Progress, Toast } from './components'
 import { sessionAvailable } from './session'
@@ -13,9 +13,9 @@ import { watchPosition as watchUserLocation } from 'location'
 import 'worker'
 import 'styles'
 
-// For public pages, redirect to /home if session available
+// For public pages, redirect to  default home if session available
 const fn1 = (Component: Function, props: any) => sessionAvailable()
-  ? <Redirect to={Routes.home.path} />
+  ? <Redirect to={getDefaultRoute()} />
   : <Component {...props} />
 
 // For protected pages, redirect to /login if session not available
