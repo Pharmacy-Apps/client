@@ -1,5 +1,5 @@
 import decrypt from 'libs/jwt'
-import { getSessionToken } from 'session'
+import { getSessionToken, clearSession } from 'session'
 
 import { Signup1, Signup2, Login, Home, Order, Credit, Account } from 'pages'
 
@@ -62,6 +62,11 @@ const RoutesIndexedOnRoles = [
   Routes.admin.path
 ]
 
-export const getDefaultRoute = (token = getSessionToken()) => (
-  RoutesIndexedOnRoles[decrypt(token).role - 1]
-)
+export const getDefaultRoute = (token = getSessionToken()) => {
+  const role = decrypt(token).role
+  if (role === undefined) { // Force logout for old client
+    clearSession()
+    window.location.reload()
+  }
+  return RoutesIndexedOnRoles[role - 1]
+}
