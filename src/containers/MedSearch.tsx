@@ -22,6 +22,10 @@ type State = {
   selectedItems: MedSearchResultInterface[]
 }
 
+const submitButtonStyle = {
+  'margin-inline-start': '16px'
+}
+
 function fetchMeds(
   search: string,
   onResultsReturned: (value: AxiosResponse<any>) => void
@@ -97,10 +101,10 @@ class Component extends React.Component<Props> {
         <IonList className="ion-no-margin ion-no-padding">
           <IonItem lines="none" className="ion-no-margin ion-no-padding">
             <IonSearchbar className="searchbar ion-no-padding" clearIcon="close-circle" onIonChange={this.onSearch}></IonSearchbar>
-            <IonButton onClick={this.onSubmit} slot="end" fill="clear">
+            <IonButton onClick={this.onSubmit} fill="clear" className="ion-no-margin" style={submitButtonStyle}>
               <IonIcon color="primary" slot="icon-only" icon={send} />
             </IonButton>
-            <IonButton onClick={this.onDismiss} slot="end" fill="clear">
+            <IonButton onClick={this.onDismiss} fill="clear" className="ion-no-margin">
               <IonIcon color="primary" slot="icon-only" icon={close} />
             </IonButton>
           </IonItem>{
@@ -112,8 +116,8 @@ class Component extends React.Component<Props> {
                 selected={this.isSelected(result)}
                 onSelect={this.onSelect} />
             )) : <IonItem lines="none">
-              <IonLabel><p>No meds found, please try a different search</p></IonLabel>
-            </IonItem>
+                <IonLabel><p>No meds found, please try a different search</p></IonLabel>
+              </IonItem>
           }</IonList>
       </IonPopover>
     )
