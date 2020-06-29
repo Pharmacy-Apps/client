@@ -4,8 +4,9 @@ export interface Action {
 }
 
 export interface ToolbarAction {
-  component: string | Element,
-  handler: Function
+  text?: string,
+  icon?: any,
+  handler: () => any
 }
 
 export interface Med {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton } from '@ionic/react'
+import { IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton, IonIcon } from '@ionic/react'
 
 import { ToolbarAction } from 'types'
 
@@ -7,8 +7,12 @@ const appName = 'App'
 
 export type Props = {
   omitsBack?: boolean
-  title?: string | any
-  actions?: ToolbarAction []
+  title?: string
+  actions?: Array<ToolbarAction>
+}
+
+const buttonStyle = {
+  textTransform: 'unset'
 }
 
 const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
@@ -20,9 +24,22 @@ const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
         </IonButtons>}
         <IonTitle>{title}</IonTitle>
         <IonButtons slot="secondary">{
-          actions.map((action, i) => <IonButton key={i} onClick={e => action.handler(e)}>
-            {action.component}
-          </IonButton>)
+          actions.map((
+            { icon, text, handler },
+            i
+          ) => <IonButton
+            key={i}
+            onClick={handler}
+            style={buttonStyle}
+          >
+              {
+                icon ? <IonIcon icon={icon} /> : null
+              }
+              {
+                text ? text : null
+              }
+            </IonButton>
+          )
         }</IonButtons>
       </IonToolbar>
     </IonHeader>

@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux'
 import * as constants from 'reducers/constants'
 
 import { IonContent, IonPage, IonButton, IonList, IonItem, IonItemDivider, IonLabel, IonIcon } from '@ionic/react'
-import { arrowDropdown as down, arrowDropup as up } from 'ionicons/icons'
+import { arrowDropdown as down, arrowDropup as up, person } from 'ionicons/icons'
 
 import { Header, MedRequest } from 'components'
 import { MedSearch as SearchPopover, Select as SelectPopover } from 'containers'
@@ -60,17 +60,8 @@ class Component extends React.Component<Props> {
     const { requestsSelected } = this.state
 
     const defaultToolbarActions = [{
-      component: 'Account',
+      icon: person,
       handler: () => history.push(Routes.account.path)
-    }, {
-      component: 'U',
-      handler: () => history.replace(Routes.home.path)
-    }, {
-      component: 'A',
-      handler: () => history.replace(Routes.admin.path)
-    }, {
-      component: 'C',
-      handler: () => history.replace(Routes.courier.path)
     }]
 
     if (requestsSelected.length > 0) {
@@ -92,24 +83,24 @@ class Component extends React.Component<Props> {
 
       switch (window.location.pathname) {
         case Routes.home.path: return [{
-          component: 'Mark as Received',
+          text: 'Mark as Received',
           handler: () => {
             updateBackend({ state: 5 }) // received
           }
         }, {
-          component: 'Mark as Cancelled',
+          text: 'Cancel',
           handler: () => {
             updateBackend({ state: 3 }) // cancelled
           }
         }]
         case Routes.courier.path: return [{
-          component: 'Mark as Delivered',
+          text: 'Mark as Delivered',
           handler: () => {
             updateBackend({ state: 4 }) // delivered
           }
         }]
         case Routes.admin.path: return [{
-          component: 'Assign to Courier',
+          text: 'Assign to Courier',
           handler: this.onAssignCourier
         }]
         default: return defaultToolbarActions

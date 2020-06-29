@@ -24,9 +24,9 @@ export type Props = {
 class Component extends React.Component<Props> {
 
   // state = { phone: null, password: null }
-  // state = { phone: '773828773', password: '773828773' } // client user
+  state = { phone: '773828773', password: '773828773' } // client user
   // state = { phone: '773828774', password: '773828773' } // courier
-  state = { phone: '773828775', password: '773828773' } // admin
+  // state = { phone: '773828775', password: '773828773' } // admin
 
   onChange = (e: any) => {
     const { name, value } = e.target
