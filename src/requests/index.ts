@@ -21,8 +21,8 @@ export const endPoints = {
   'login': '/user/login',
   'signup1': '/user/new',
   'signup2': '/user/register',
-  'med-search': '/meds/search',
-  'med-requests': '/med-request',
+  'item-search': '/items/search',
+  'item-requests': '/item-request',
   'credits': '/credits',
   'credit-offers': '/credits/offers'
 }

@@ -1,7 +1,7 @@
-import MedSearch from './MedSearch'
+import ItemSearch from './ItemSearch'
 import Select from './Select'
 
 export {
-  MedSearch,
+  ItemSearch,
   Select
 }

@@ -9,14 +9,14 @@ export interface ToolbarAction {
   handler: () => any
 }
 
-export interface Med {
+export interface Item {
   _id: string,
   name: string,
 }
 
-export interface MedSearchResult {
+export interface ItemSearchResult {
   _id: string,
-  med: Med,
+  item: Item,
   pharmacy: {
     _id: string, name: string
   },
@@ -26,10 +26,10 @@ export interface MedSearchResult {
   unit: object
 }
 
-export interface MedRequest {
+export interface ItemRequest {
   _id: string,
-  pharmacyMeds: Array<{
-    med: { _id: string, 'common-name': string, 'scientific-name': string },
+  pharmacyItems: Array<{
+    item: { _id: string, 'common-name': string, 'scientific-name': string },
     pharmacy: { _id: string, 'name': string },
   }>,
   notes: string,

@@ -1,13 +1,13 @@
 import Header from './Header'
 import Progress from './Progress'
 import Toast from './Toast'
-import MedSearchResult from './MedSearchResult'
-import MedRequest from './MedRequest'
+import ItemSearchResult from './ItemSearchResult'
+import ItemRequest from './ItemRequest'
 
 export {
   Header,
   Progress,
   Toast,
-  MedSearchResult,
-  MedRequest
+  ItemSearchResult,
+  ItemRequest
 }

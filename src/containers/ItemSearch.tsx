@@ -2,31 +2,31 @@ import React from 'react'
 import { IonPopover, IonSearchbar, IonList, IonItem, IonButton, IonIcon, IonLabel } from '@ionic/react'
 import { send, close } from 'ionicons/icons';
 
-import { MedSearchResult } from 'components'
+import { ItemSearchResult } from 'components'
 
 import Requests, { endPoints } from 'requests'
 import { getSessionLocation as getUserLocation } from 'session'
 
 import { AxiosResponse } from 'axios'
-import { MedSearchResult as MedSearchResultInterface } from 'types'
+import { ItemSearchResult as ItemSearchResultInterface } from 'types'
 
 export type Props = {
   open: boolean,
   onDismiss: Function,
   onSubmit: Function,
-  selectedItems?: MedSearchResultInterface[]
+  selectedItems?: Array<ItemSearchResultInterface>
 }
 
 type State = {
-  meds: MedSearchResultInterface[],
-  selectedItems: MedSearchResultInterface[]
+  items: Array<ItemSearchResultInterface>,
+  selectedItems: Array<ItemSearchResultInterface>
 }
 
 const submitButtonStyle = {
   'margin-inline-start': '16px'
 }
 
-function fetchMeds(
+function fetchItems(
   search: string,
   onResultsReturned: (value: AxiosResponse<any>) => void
 ) {
@@ -35,37 +35,37 @@ function fetchMeds(
 
   const { lat, lon } = getUserLocation()
   Requests.get(
-    endPoints['med-search'],
+    endPoints['item-search'],
     { params: { search, lat, lon } }
   ).then(onResultsReturned).catch(console.error)
 }
 
 class Component extends React.Component<Props> {
   state: State = {
-    meds: [],
+    items: [],
     selectedItems: this.props.selectedItems || []
   }
 
   componentDidUpdate(prevProps: Props) {
-    const fetchMeds = (
+    const fetchItems = (
       prevProps.open !== this.props.open &&
       prevProps.open === false
     )
-    if (fetchMeds) this.fetchMeds('*')
+    if (fetchItems) this.fetchItems('*')
   }
 
-  fetchMeds = (search: string) => {
-    fetchMeds(search, response => {
-      this.setState({ meds: response })
+  fetchItems = (search: string) => {
+    fetchItems(search, response => {
+      this.setState({ items: response })
     })
   }
 
   onSearch = (e: any) => {
-    // this.fetchMeds(e.target.value)
+    // this.fetchItems(e.target.value)
     // this.props.onSearch(e.target.value)
   }
 
-  onSelect = (result: MedSearchResultInterface) => {
+  onSelect = (result: ItemSearchResultInterface) => {
     const { selectedItems } = this.state
     const index = selectedItems.findIndex(item => item._id === result._id)
     if (index < 0) {
@@ -76,7 +76,7 @@ class Component extends React.Component<Props> {
     this.setState({ selectedItems })
   }
 
-  isSelected = (result: MedSearchResultInterface) => (
+  isSelected = (result: ItemSearchResultInterface) => (
     this.state.selectedItems.findIndex(item => item._id === result._id) > -1
   )
 
@@ -91,7 +91,7 @@ class Component extends React.Component<Props> {
 
   render() {
     const { open } = this.props
-    const { meds } = this.state
+    const { items } = this.state
     return (
       <IonPopover
         isOpen={open}
@@ -108,15 +108,15 @@ class Component extends React.Component<Props> {
               <IonIcon color="primary" slot="icon-only" icon={close} />
             </IonButton>
           </IonItem>{
-            meds.length ? meds.map((result, i, a) => (
-              <MedSearchResult
+            items.length ? items.map((result, i, a) => (
+              <ItemSearchResult
                 key={i}
                 result={result}
                 lines={i !== a.length - 1}
                 selected={this.isSelected(result)}
                 onSelect={this.onSelect} />
             )) : <IonItem lines="none">
-                <IonLabel><p>No meds found, please try a different search</p></IonLabel>
+                <IonLabel><p>No items found, please try a different search</p></IonLabel>
               </IonItem>
           }</IonList>
       </IonPopover>

@@ -4,7 +4,7 @@ import { IonLabel, IonIcon, IonText } from '@ionic/react'
 
 import { squareOutline as numb, checkbox as active } from 'ionicons/icons'
 
-import { MedRequest } from 'types'
+import { ItemRequest } from 'types'
 
 import { getSessionLocation } from 'session'
 
@@ -27,7 +27,7 @@ Moment.updateLocale('en', {
 })
 
 type Props = {
-  item: MedRequest,
+  item: ItemRequest,
   detailed: boolean,
   selected: boolean,
   selectMode: boolean,
@@ -37,7 +37,7 @@ type Props = {
 const { lat, lon } = getSessionLocation()
 
 const Component: React.FC<Props> = ({
-  item: { _id, pharmacyMeds, state, createdAt },
+  item: { _id, pharmacyItems, state, createdAt },
   detailed,
   selected,
   selectMode,
@@ -66,8 +66,8 @@ const Component: React.FC<Props> = ({
             detailed ? 'ion-text-wrap' : 'ellipses'
           }>
             {
-              pharmacyMeds.map((o, i) => (i > 0 ? ', ' : '') + (
-                o.med['common-name'] || o.med['scientific-name']
+              pharmacyItems.map((o, i) => (i > 0 ? ', ' : '') + (
+                o.item['common-name'] || o.item['scientific-name']
               ))
             }
           </h2>

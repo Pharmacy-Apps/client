@@ -10,12 +10,12 @@ import * as constants from 'reducers/constants'
 import { IonContent, IonPage, IonButton, IonList, IonItem, IonItemDivider, IonLabel, IonIcon } from '@ionic/react'
 import { arrowDropdown as down, arrowDropup as up, person } from 'ionicons/icons'
 
-import { Header, MedRequest } from 'components'
-import { MedSearch as SearchPopover, Select as SelectPopover } from 'containers'
+import { Header, ItemRequest } from 'components'
+import { ItemSearch as SearchPopover, Select as SelectPopover } from 'containers'
 
 import {
-  MedSearchResult as MedSearchResultInterface,
-  MedRequest as MedRequestInterface
+  ItemSearchResult as ItemSearchResultInterface,
+  ItemRequest as ItemRequestInterface
 } from 'types'
 
 import Requests, { endPoints } from 'requests'
@@ -33,7 +33,7 @@ export type Props = {
   hideToast: () => {},
 }
 
-const primaryAction = 'Action' // 'Request for Meds'
+const primaryAction = 'Action' // 'Request for Items'
 const placeholderText = 'Lorem ipsum requests lorem ipsum'
 
 class Component extends React.Component<Props> {
@@ -67,12 +67,12 @@ class Component extends React.Component<Props> {
     if (requestsSelected.length > 0) {
 
       const defaultUpdateRequestBody = {
-        'med-requests': requestsSelected
+        'item-requests': requestsSelected
       }
 
       const updateBackend = (body: Object) => {
         showLoading()
-        Requests.put(endPoints['med-requests'], {
+        Requests.put(endPoints['item-requests'], {
           ...defaultUpdateRequestBody,
           update: body
         }).then(this.updateRequests).catch(err => {
@@ -113,14 +113,14 @@ class Component extends React.Component<Props> {
   }
 
   /**
-   * Reponse ("response"), a result of med request updates from either
+   * Reponse ("response"), a result of item request updates from either
    * Axios requests by current user
    * Or events from other user
    * 
    * */
   updateRequests = (response: any) => {
-    const { requests = [] as Array<MedRequestInterface> } = this.state
-    response.forEach((request: MedRequestInterface) => {
+    const { requests = [] as Array<ItemRequestInterface> } = this.state
+    response.forEach((request: ItemRequestInterface) => {
       const index = requests.findIndex(o => o._id === request._id)
       requests[index] = {
         ...requests[index], ...request
@@ -133,9 +133,9 @@ class Component extends React.Component<Props> {
     this.setState({ searchPopoverShown: true })
   }
 
-  onSelectedMedsReturned = (selectedMeds: MedSearchResultInterface) => {
+  onSelectedItemsReturned = (selectedItems: ItemSearchResultInterface) => {
     this.setState({ searchPopoverShown: false }, () => {
-      this.props.history.replace(Routes.order.path, { selectedMeds })
+      this.props.history.replace(Routes.order.path, { selectedItems })
     })
   }
 
@@ -174,11 +174,11 @@ class Component extends React.Component<Props> {
     this.setState({ archivedRequestsShown: !archivedRequestsShown })
   }
 
-  getActiveRequests = (requests: Array<MedRequestInterface>) => (
+  getActiveRequests = (requests: Array<ItemRequestInterface>) => (
     requests.slice(0, 2)
   )
 
-  getArchivedRequests = (requests: Array<MedRequestInterface>) => (
+  getArchivedRequests = (requests: Array<ItemRequestInterface>) => (
     requests.slice(2)
   )
 
@@ -186,7 +186,7 @@ class Component extends React.Component<Props> {
     const { showLoading, hideLoading, showToast } = this.props
     showLoading()
     setTimeout(() => {
-      Requests.get(endPoints['med-requests']).then((response: any) => {
+      Requests.get(endPoints['item-requests']).then((response: any) => {
         this.setState({ requests: response })
       }).catch(err => {
         console.error(err)
@@ -223,7 +223,7 @@ class Component extends React.Component<Props> {
 
     const selectModeOn = requestsSelected.length > 0
 
-    const requestComponent = (item: any, i: number, a: Array<MedRequestInterface>) => (
+    const requestComponent = (item: any, i: number, a: Array<ItemRequestInterface>) => (
       <div key={item._id}>
         <IonItem
           button
@@ -231,7 +231,7 @@ class Component extends React.Component<Props> {
           className={`request ${selectModeOn ? 'select-mode' : ''} ion-no-padding`}
           style={{ paddingTop: 0, paddingBottom: 0 }}
         >
-          <MedRequest
+          <ItemRequest
             item={item}
             detailed={item._id === requestDetailed}
             selected={requestsSelected.includes(item._id)}
@@ -274,7 +274,7 @@ class Component extends React.Component<Props> {
           <SearchPopover
             open={searchPopoverShown}
             onDismiss={this.onSearchPopoverDismiss}
-            onSubmit={this.onSelectedMedsReturned}
+            onSubmit={this.onSelectedItemsReturned}
           />
           <SelectPopover
             open={courierPopoverShown}

@@ -17,15 +17,15 @@ import {
 import { addCircleOutline, removeCircleOutline } from 'ionicons/icons';
 
 import { Header } from 'components'
-import { MedSearch as SearchPopover } from 'containers'
-import { MedSearchResult as MedSearchResultInterface } from 'types'
+import { ItemSearch as SearchPopover } from 'containers'
+import { ItemSearchResult as ItemSearchResultInterface } from 'types'
 
 import Requests, { endPoints } from 'requests'
 
 type Props = {
   history: History,
   location: {
-    state: { selectedMeds: Array<MedSearchResultInterface> }
+    state: { selectedItems: Array<ItemSearchResultInterface> }
   },
   showLoading: () => {},
   hideLoading: () => {},
@@ -35,7 +35,7 @@ type Props = {
 type State = {
   searchPopoverShown: boolean,
   orderConfirmationShown: boolean,
-  selectedMeds: Array<MedSearchResultInterface>,
+  selectedItems: Array<ItemSearchResultInterface>,
   cost: number,
   distance: number
 }
@@ -51,8 +51,8 @@ const ionButtonStyle = {
 
 const primaryAction = 'Action'
 
-function computeOrderCostAndDistance(meds: Array<MedSearchResultInterface>) {
-  return meds.reduce((acc, { price, distanceRaw = 0 }) => {
+function computeOrderCostAndDistance(items: Array<ItemSearchResultInterface>) {
+  return items.reduce((acc, { price, distanceRaw = 0 }) => {
     acc.cost = acc.cost + parseInt(price)
     acc.distance = acc.distance + distanceRaw / 2
     return acc
@@ -60,36 +60,36 @@ function computeOrderCostAndDistance(meds: Array<MedSearchResultInterface>) {
 }
 
 class Component extends React.Component<Props> {
-  selectedMeds = this.props.location.state
-    ? this.props.location.state.selectedMeds
+  selectedItems = this.props.location.state
+    ? this.props.location.state.selectedItems
     : []
 
   state: State = {
     searchPopoverShown: false,
     orderConfirmationShown: false,
-    selectedMeds: this.selectedMeds,
-    ...computeOrderCostAndDistance(this.selectedMeds)
+    selectedItems: this.selectedItems,
+    ...computeOrderCostAndDistance(this.selectedItems)
   }
 
-  handleRemoveMed = (id: string) => {
-    const { selectedMeds } = this.state
-    const index = selectedMeds.findIndex(med => med._id === id)
-    selectedMeds.splice(index, 1)
+  handleRemoveItem = (id: string) => {
+    const { selectedItems } = this.state
+    const index = selectedItems.findIndex(item => item._id === id)
+    selectedItems.splice(index, 1)
     this.setState({
-      selectedMeds,
-      ...computeOrderCostAndDistance(selectedMeds)
+      selectedItems,
+      ...computeOrderCostAndDistance(selectedItems)
     })
   }
 
-  handleAddMed = () => {
+  handleAddItem = () => {
     this.setState({ searchPopoverShown: true })
   }
 
-  onSelectedMedsReturned = (selectedMeds: Array<MedSearchResultInterface>) => {
+  onSelectedItemsReturned = (selectedItems: Array<ItemSearchResultInterface>) => {
     this.setState({
       searchPopoverShown: false,
-      selectedMeds,
-      ...computeOrderCostAndDistance(selectedMeds)
+      selectedItems,
+      ...computeOrderCostAndDistance(selectedItems)
     })
   }
 
@@ -107,17 +107,17 @@ class Component extends React.Component<Props> {
   onOrderConfirmation = () => {
     const { showLoading, hideLoading, showToast } = this.props
     const payload = {
-      'pharmacy-meds': this.state.selectedMeds.map(o => o._id),
+      'pharmacy-items': this.state.selectedItems.map(o => o._id),
       'notes': ''
     }
     showLoading()
     setTimeout(() => {
-      Requests.post(endPoints['med-requests'], payload).then((response: any) => {
+      Requests.post(endPoints['item-requests'], payload).then((response: any) => {
         console.info(response)
         const errored = false
         if (errored) {
-          const { selectedMeds } = this.state
-          this.props.history.push(Routes.credit.path, { selectedMeds })
+          const { selectedItems } = this.state
+          this.props.history.push(Routes.credit.path, { selectedItems })
         } else
           this.props.history.replace(Routes.home.path)
       }).catch(err => {
@@ -134,7 +134,7 @@ class Component extends React.Component<Props> {
     const {
       searchPopoverShown,
       orderConfirmationShown,
-      selectedMeds,
+      selectedItems,
       cost, distance
     } = this.state
     return (
@@ -144,19 +144,19 @@ class Component extends React.Component<Props> {
           <IonList lines="full">
             <IonItem>
               <IonLabel>
-                <p>Medicines</p>
+                <p>Itemicines</p>
                 <IonList className="ion-no-margin ion-no-padding">{
-                  this.state.selectedMeds.map(({ _id, med }) => (
+                  this.state.selectedItems.map(({ _id, item }) => (
                     <IonItem key={_id} lines="none" className="ion-no-padding mini-list-item">
-                      <IonText slot="start"><h4>{med.name}</h4></IonText>
+                      <IonText slot="start"><h4>{item.name}</h4></IonText>
                       {/* ion-grid, ion-toolbar don't work, try table */}
-                      <IonButton onClick={() => this.handleRemoveMed(_id)} slot="end" fill="clear" style={ionButtonStyle}>
+                      <IonButton onClick={() => this.handleRemoveItem(_id)} slot="end" fill="clear" style={ionButtonStyle}>
                         <IonIcon slot="icon-only" icon={removeCircleOutline} />
                       </IonButton>
                     </IonItem>
                   ))
                 }<IonItem lines="none" className="ion-no-padding mini-list-item">
-                    <IonButton onClick={this.handleAddMed} slot="end" fill="clear" style={ionButtonStyle}>
+                    <IonButton onClick={this.handleAddItem} slot="end" fill="clear" style={ionButtonStyle}>
                       <IonIcon slot="icon-only" icon={addCircleOutline} />
                     </IonButton>
                   </IonItem>
@@ -194,8 +194,8 @@ class Component extends React.Component<Props> {
           <SearchPopover
             open={searchPopoverShown}
             onDismiss={this.onSearchPopoverDismiss}
-            onSubmit={this.onSelectedMedsReturned}
-            selectedItems={selectedMeds}
+            onSubmit={this.onSelectedItemsReturned}
+            selectedItems={selectedItems}
           />
           <OrderConfirmation
             open={orderConfirmationShown}

@@ -3,13 +3,13 @@ import { IonItem, IonLabel, IonIcon, IonGrid, IonRow, IonCol } from '@ionic/reac
 
 import { squareOutline as numb, checkbox as active } from 'ionicons/icons'
 
-import { MedSearchResult } from 'types'
+import { ItemSearchResult } from 'types'
 
 export type Props = {
   selected: boolean,
   onSelect: Function,
   lines: boolean,
-  result: MedSearchResult
+  result: ItemSearchResult
 }
 
 const Component: React.FC<Props> = ({
@@ -18,7 +18,7 @@ const Component: React.FC<Props> = ({
   selected,
   onSelect
 }) => {
-  const { med, price, distance } = result
+  const { item, price, distance } = result
   return (
     <IonItem
       button
@@ -34,7 +34,7 @@ const Component: React.FC<Props> = ({
       <IonGrid>
         <IonRow>
           <IonCol className="ion-no-padding">
-            <IonLabel>{med.name}</IonLabel>
+            <IonLabel>{item.name}</IonLabel>
           </IonCol>
         </IonRow>
         <IonRow>

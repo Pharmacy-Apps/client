@@ -86,14 +86,14 @@ class Component extends React.Component<Props> {
     this.hideAlert()
     if (this.redirectedFromOrder()) {
       const { history: { location: { state } } } = this.props
-      console.info('state.selectedMeds', state)
+      console.info('state.selectedItems', state)
       this.props.history.replace(Routes.order.path, state)
     }
   }
 
   redirectedFromOrder = () => {
     const { history: { location: { state } } } = this.props
-    return state && state.selectedMeds
+    return state && state.selectedItems
   }
 
   render() {
