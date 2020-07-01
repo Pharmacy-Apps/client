@@ -12,6 +12,8 @@ export type Props = {
   result: ItemSearchResult
 }
 
+const checkBoxStyle = { margin: 0, padding: '16px' }
+
 const Component: React.FC<Props> = ({
   result,
   lines,
@@ -24,17 +26,18 @@ const Component: React.FC<Props> = ({
       button
       lines={lines ? 'inset' : 'none'}
       onClick={() => onSelect(result)}
-      className="search-result"
+      className="search-result ion-no-padding"
     >
       <IonIcon
         color="primary"
         icon={selected ? active : numb}
         slot="start"
+        style={checkBoxStyle}
       />
       <IonGrid>
         <IonRow>
           <IonCol className="ion-no-padding">
-            <IonLabel>{item.name}</IonLabel>
+            <IonLabel><h2>{item.name}</h2></IonLabel>
           </IonCol>
         </IonRow>
         <IonRow>
@@ -45,6 +48,16 @@ const Component: React.FC<Props> = ({
             <IonLabel className="ion-text-right"><p>{distance}</p></IonLabel>
           </IonCol>
         </IonRow>
+        {selected ? <>
+          <IonRow>
+            <IonCol className="ion-no-padding">
+              <IonLabel><p>{
+                result.item.description.map((text, i, a) =>
+                  `${text}${a.length - 1 === i ? '' : ', '}`)
+              }</p></IonLabel>
+            </IonCol>
+          </IonRow>
+        </> : null}
       </IonGrid>
     </IonItem>
   )

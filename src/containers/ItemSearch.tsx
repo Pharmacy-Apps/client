@@ -22,8 +22,8 @@ type State = {
   selectedItems: Array<ItemSearchResultInterface>
 }
 
-const submitButtonStyle = {
-  'margin-inline-start': '16px'
+const actionButtonStyle = {
+  marginInlineStart: '16px'
 }
 
 function fetchItems(
@@ -91,7 +91,7 @@ class Component extends React.Component<Props> {
 
   render() {
     const { open } = this.props
-    const { items } = this.state
+    const { items, selectedItems } = this.state
     return (
       <IonPopover
         isOpen={open}
@@ -101,10 +101,22 @@ class Component extends React.Component<Props> {
         <IonList className="ion-no-margin ion-no-padding">
           <IonItem lines="none" className="ion-no-margin ion-no-padding">
             <IonSearchbar className="searchbar ion-no-padding" clearIcon="close-circle" onIonChange={this.onSearch}></IonSearchbar>
-            <IonButton onClick={this.onSubmit} fill="clear" className="ion-no-margin" style={submitButtonStyle}>
-              <IonIcon color="primary" slot="icon-only" icon={send} />
-            </IonButton>
-            <IonButton onClick={this.onDismiss} fill="clear" className="ion-no-margin">
+            {selectedItems.length ? (
+              <IonButton
+                onClick={this.onSubmit}
+                fill="clear"
+                className="ion-no-margin"
+                style={actionButtonStyle}
+              >
+                <IonIcon color="primary" slot="icon-only" icon={send} />
+              </IonButton>
+            ) : null}
+            <IonButton
+              onClick={this.onDismiss}
+              fill="clear"
+              className="ion-no-margin"
+              style={selectedItems.length ? {} : actionButtonStyle}
+            >
               <IonIcon color="primary" slot="icon-only" icon={close} />
             </IonButton>
           </IonItem>{
