@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux'
 import * as constants from 'reducers/constants'
 
 import { IonContent, IonPage, IonButton, IonList, IonItem, IonItemDivider, IonLabel, IonIcon } from '@ionic/react'
-import { arrowDropdown as down, arrowDropup as up, person } from 'ionicons/icons'
+import { chevronDown as down, chevronUp as up, person } from 'ionicons/icons'
 
 import { Header, ItemRequest } from 'components'
 import { ItemSearch as SearchPopover, Select as SelectPopover } from 'containers'
