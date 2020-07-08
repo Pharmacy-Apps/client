@@ -90,26 +90,34 @@
       --background: var(--ion-item-background-hover,
           rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.04))
     }
+
+    .alert-message p {
+      margin: 5px 0
+    }
+
+    .alert-message p:first-child,
+    .alert-message p:last-child:not(:nth-child(2)) {
+      margin: 0
+    }
+
+    .msisdn-modify-section * {
+      font-size: 18px;
+      letter-spacing: 3px
+    }
+    .msisdn-modify-section input {
+      padding: 10px;
+      width: calc(100% - 40px);
+      border-width: 0
+    }
+    .msisdn-modify-section input:focus {
+      outline: none
+    }
   </style>
 
 </head>
 
 <body>
   <div id="root"></div>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-  <script>
-    const IO = io
-    if (window.Worker) {
-      const worker = new Worker('worker.js', { type: 'module' })
-      worker.onmessage = function (e) {
-        // result.textContent = e.data
-        console.info('Message received from worker', e.data)
-      }
-      // setInterval(() => {
-        worker.postMessage(IO)
-      // }, 2000)
-    }
-  </script> -->
 </body>
 
 </html>

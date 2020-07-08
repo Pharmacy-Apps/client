@@ -7,12 +7,17 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonIcon, IonItemDivider, IonAlert } from '@ionic/react'
-import { starOutline as numb, star as active } from 'ionicons/icons';
+import { IonContent, IonPage, IonList, IonItem, IonLabel, IonIcon, IonItemDivider, IonAlert, IonButton } from '@ionic/react'
+import { starOutline as numb, star as active } from 'ionicons/icons'
 
 import { Header } from 'components'
+import { MSISDNModify as MSISDNModifyPopover } from 'containers'
 
 import Requests, { endPoints } from 'requests'
+
+import decrypt from 'libs/jwt'
+import { formatUGMSISDN } from 'libs/msisdn'
+import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
 
 type Props = {
   history: History,
@@ -24,7 +29,14 @@ type Props = {
 type State = {
   offers: Array<Offer>,
   selectedOffer: string | null,
-  alert: { shown: boolean, errored: number }
+  alert: {
+    shown: boolean,
+    header: string,
+    message: string,
+    buttonText: string,
+    confirmsPayment: boolean
+  },
+  msisdnPopoverShown: boolean
 }
 
 const message = {
@@ -37,7 +49,10 @@ class Component extends React.Component<Props> {
   state: State = {
     offers: [],
     selectedOffer: null,
-    alert: { shown: false, errored: 0 }
+    alert: {
+      shown: false, header: '', message: '', buttonText: '', confirmsPayment: false
+    },
+    msisdnPopoverShown: false
   }
 
   componentDidMount() {
@@ -51,18 +66,35 @@ class Component extends React.Component<Props> {
     }).finally(hideLoading)
   }
 
-  onPaymentChannelSelect = (channel: Channel) => {
-    const { selectedOffer: offer } = this.state
+  onPaymentChannelSelect = ({ _id: id }: Channel) => {
+    const { header, message } = AlertText[id]()
+    switch (id) {
+      case 'airtel': {
+        this.showAlert({ header, message, confirmsPayment: true })
+        break
+      }
+      default: {
+        this.showAlert({ header, message, confirmsPayment: true })
+        break
+      }
+    }
+  }
+
+  onConfirmPaymentChannel = () => {
+    const { selectedOffer: offer, offers } = this.state
     const { showLoading, hideLoading, showToast } = this.props
     showLoading()
     Requests.post(endPoints['credits'], { offer }).then((response: any) => {
       const errored = false // Payment succeeded
       if (errored) {
-        this.showAlert({ errored: 1 })
-      } else if (this.redirectedFromOrder()) {
-        this.showAlert({ errored: 0 })
+        this.showAlert(AlertText['payment-errored']())
       } else {
-        this.showAlert({ errored: 0 })
+        this.showAlert(AlertText['payment-succeded']((
+          offers.find(({ _id }) => _id === offer) || {}
+        ).value))
+        if (this.redirectedFromOrder()) {
+          // Redirect back
+        }
       }
     }).catch(err => {
       console.error(err)
@@ -74,6 +106,14 @@ class Component extends React.Component<Props> {
     this.setState({ selectedOffer: _id })
   }
 
+  showMSISDNPopover = () => {
+    this.setState({ msisdnPopoverShown: true })
+  }
+
+  hideMSISDNPopover = () => {
+    this.setState({ msisdnPopoverShown: false })
+  }
+
   showAlert = (alert: AlertState) => {
     this.setState({ alert: { ...alert, shown: true } })
   }
@@ -82,11 +122,32 @@ class Component extends React.Component<Props> {
     this.setState({ alert: { ...this.state.alert, shown: false } })
   }
 
+  onAlertConfirm = () => {
+    const { alert } = this.state
+    if (alert.confirmsPayment)
+      this.onConfirmPaymentChannel()
+  }
+
+  onSubmitChangeNumber = (msisdn: string) => {
+    this.hideMSISDNPopover()
+    const { showLoading, hideLoading, showToast } = this.props
+    showLoading()
+    Requests.post(
+      endPoints['mtn-msisdn'], { msisdn }
+    ).then((response: any) => {
+      setSessionToken(response)
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    }).finally(hideLoading)
+  }
+
   onAlertDismiss = () => {
     this.hideAlert()
+    const { alert } = this.state
+    if (alert.confirmsPayment) return
     if (this.redirectedFromOrder()) {
       const { history: { location: { state } } } = this.props
-      console.info('state.selectedItems', state)
       this.props.history.replace(Routes.order.path, state)
     }
   }
@@ -96,8 +157,21 @@ class Component extends React.Component<Props> {
     return state && state.selectedItems
   }
 
+  getChannels = () => {
+    const mtnMSISDNKey = 'mtn-msisdn'
+    const {
+      [mtnMSISDNKey]: msisdn
+    } = decrypt(getSessionToken())
+    return [{
+      _id: 'mtn',
+      name: 'MTN Mobile Money',
+      description: formatUGMSISDN(msisdn || getSessionPhone()),
+      requiresNumber: true
+    }] as Array<Channel>
+  }
+
   render() {
-    const { offers, alert, selectedOffer } = this.state
+    const { offers, alert, selectedOffer, msisdnPopoverShown } = this.state
     return offers.length ? (
       <IonPage>
         <Header title="Purchase credits" />
@@ -132,7 +206,7 @@ class Component extends React.Component<Props> {
             </IonLabel>
           </IonItemDivider>
           <IonList lines="full" className="ion-no-padding">{
-            channels.map((channel, i, a) => (
+            this.getChannels().map((channel, i, a) => (
               <IonItem
                 key={channel._id}
                 onClick={() => this.onPaymentChannelSelect(channel)}
@@ -144,14 +218,24 @@ class Component extends React.Component<Props> {
                   <h3>{channel.name}</h3>
                   <p>{channel.description}</p>
                 </IonLabel>
+                {channel.requiresNumber ? <IonButton onClick={e => {
+                  e.stopPropagation()
+                  this.showMSISDNPopover()
+                }} fill="clear">Change Number</IonButton> : null}
               </IonItem>
             ))
           }</IonList>
           <Alert
             open={alert.shown}
-            errored={alert.errored}
-            onConfirm={() => { }}
-            afterDismiss={this.onAlertDismiss}
+            header={alert.header}
+            message={alert.message}
+            onConfirm={this.onAlertConfirm}
+            onDismiss={this.onAlertDismiss}
+          />
+          <MSISDNModifyPopover
+            open={msisdnPopoverShown}
+            onDismiss={this.hideMSISDNPopover}
+            onSubmit={this.onSubmitChangeNumber}
           />
         </IonContent>
       </IonPage>
@@ -171,39 +255,69 @@ type Channel = {
   _id: string,
   name: string,
   description: string,
+  requiresNumber?: boolean
 }
-const channels: Array<Channel> = [{
-  _id: '1', name: 'MTN Mobile Money', description: '+256 783 324449'
-}, {
-  _id: '2', name: 'Airtel Money', description: ''
-}]
 
-const AlertText = [
-  { header: 'Lorem ipsum', message: 'Lorem ipsum payment lorem ipsum payment' },
-  { header: 'Lorem ipsum error', message: 'Lorem ipsum payment lorem ipsum payment error' }
-]
+type AlertState = {
+  shown?: boolean,
+  header: string,
+  message: string,
+  buttonText?: string,
+  confirmsPayment?: boolean
+}
 
-type AlertState = { errored: number, shown?: boolean }
 type AlertProps = {
   open: boolean,
-  errored: number,
+  header: string,
+  message: string,
+  buttonText?: string,
   onConfirm: () => void
-  afterDismiss: () => void
+  onDismiss: () => void
 }
+
+const AlertText: ({
+  [key: string]: ((e?: any) => ({
+    header: string,
+    message: string
+  }))
+}) = {
+  'payment-succeded': (credits: number) => ({
+    header: 'Lorem ipsum',
+    message: `Lorem ipsum ${credits} payment lorem ipsum payment`
+  }),
+  'payment-errored': () => ({
+    header: 'Lorem ipsum error',
+    message: 'Lorem ipsum payment lorem ipsum payment error'
+  }),
+  'mtn': () => ({
+    header: 'Lorem ipsum MTN',
+    message: `
+      <p>Lorem ipsum payment lorem ipsum payment</p>
+      <p>Lorem ipsum payment</p>
+    `
+  }),
+  'airtel': () => ({
+    header: 'Lorem ipsum Airtel',
+    message: 'Lorem ipsum payment lorem ipsum payment error'
+  })
+}
+
 const Alert: React.FC<AlertProps> = ({
   open,
-  errored: textIndex,
+  header,
+  message,
+  buttonText,
   onConfirm,
-  afterDismiss
+  onDismiss
 }) => (
     <IonAlert
       isOpen={open}
-      onDidDismiss={afterDismiss}
-      header={AlertText[textIndex].header}
-      message={AlertText[textIndex].message}
+      onWillDismiss={onDismiss}
+      header={header || ''}
+      message={message || ''}
       buttons={[
         {
-          text: 'Okay',
+          text: buttonText || 'Okay',
           handler: onConfirm
         }
       ]}
@@ -217,8 +331,9 @@ const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   hideLoading: () => ({
     type: constants.HIDE_LOADING
   }),
-  showToast: () => ({
-    type: constants.HIDE_TOAST
+  showToast: (payload: string) => ({
+    type: constants.SHOW_TOAST,
+    payload
   }),
 }, dispatch)
 

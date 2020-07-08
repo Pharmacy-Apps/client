@@ -10,20 +10,20 @@ import { IState } from 'reducers'
 export type Props = {
   open: boolean,
   message: string | null,
-  hideToast: Function
+  hideToast: () => void
 }
 
 const Component: React.FC<Props> = ({ open, message, hideToast }) => (
   <IonToast
     isOpen={open}
-    onDidDismiss={() => hideToast()}
+    onDidDismiss={hideToast}
     message={message || ''}
-    position="top"
+    position="bottom"
     buttons={[
       {
         text: 'Close',
         role: 'cancel',
-        handler: () => hideToast()
+        handler: hideToast
       }
     ]}
   />
