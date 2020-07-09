@@ -1,7 +1,10 @@
 import Axios from 'axios'
 import { sessionAvailable, getSessionToken } from 'session'
 
-const baseURL = process.env.REACT_APP_BACKEND_URL
+const baseURL = window.location.host === 'localhost' // deployment on mobile
+  ? process.env.REACT_APP_BACKEND_URL_REMOTE
+  : process.env.REACT_APP_BACKEND_URL
+
 const headers = sessionAvailable() ? { 'Authorization': `Bearer ${getSessionToken()}` } : {}
 const instance = Axios.create({ baseURL, headers })
 

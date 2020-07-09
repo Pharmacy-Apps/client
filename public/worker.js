@@ -2,12 +2,16 @@ importScripts('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.
 
 let event = null
 
-const url = location.port == '3000'
-  ? 'http://localhost:3015'
-  : 'https://pharmacy-demo-server.herokuapp.com'
+const url = location.host == 'localhost'
+  ? 'https://pharmacy-demo-server.herokuapp.com'
+  : (
+    location.port == '3000'
+      ? 'http://localhost:3015'
+      : 'https://pharmacy-demo-server.herokuapp.com'
+  )
 
 onmessage = function ({ data }) {
-  
+
   console.info(
     (
       data.token ? 'Token' : 'Message'
