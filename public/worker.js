@@ -10,6 +10,10 @@ const url = location.host == 'localhost'
       : 'https://pharmacy-demo-server.herokuapp.com'
   )
 
+const onSocketEvent = ({ action, result }) => {
+  postMessage(result)
+}
+
 onmessage = function ({ data }) {
 
   console.info(
@@ -21,7 +25,7 @@ onmessage = function ({ data }) {
 
   if (data.token) {
     const socket = io(url) // or self.io()
-    socket.on(data.token, postMessage)
+    socket.on(data.token, onSocketEvent)
     event = data.token
     return
   }
