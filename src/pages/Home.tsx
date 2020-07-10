@@ -39,6 +39,8 @@ export type Props = {
 const primaryAction = 'Action' // 'Request for Items'
 const placeholderText = 'Lorem ipsum requests lorem ipsum'
 
+const archivedRequestStates: Array<String> = ['cancelled', 'received']
+
 class Component extends React.Component<Props> {
 
   state = {
@@ -50,7 +52,7 @@ class Component extends React.Component<Props> {
     archivedRequestsShown: false,
     couriers: undefined
   }
-  
+
   defaultUpdateRequestBody = () => ({
     'item-requests': this.state.requestsSelected
   })
@@ -115,6 +117,7 @@ class Component extends React.Component<Props> {
    * 
    * */
   updateRequests = (response: any) => {
+    const { showToast } = this.props
     const { requests = [] as Array<ItemRequestInterface> } = this.state
     response.forEach((request: ItemRequestInterface) => {
       const index = requests.findIndex(o => o._id === request._id)
@@ -122,7 +125,15 @@ class Component extends React.Component<Props> {
         ...requests[index], ...request
       }
     })
-    this.setState({ requests, requestsSelected: [] })
+    this.setState({ requests, requestsSelected: [] }, () => {
+      const requestsArchived = response.filter(
+        ({ state }: ItemRequestInterface) => archivedRequestStates.includes(state)
+      )
+      if (requestsArchived.length)
+        showToast(`${requestsArchived.length} ${
+          requestsArchived.length > 1 ? 'requests' : 'request'
+        } archived`)
+    })
   }
 
   onPrimaryAction = () => {
@@ -181,11 +192,11 @@ class Component extends React.Component<Props> {
   }
 
   getActiveRequests = (requests: Array<ItemRequestInterface>) => (
-    requests.slice(0, 2)
+    requests.filter(({ state }) => archivedRequestStates.indexOf(state) < 0)
   )
 
   getArchivedRequests = (requests: Array<ItemRequestInterface>) => (
-    requests.slice(2)
+    requests.filter(({ state }) => archivedRequestStates.indexOf(state) > -1)
   )
 
   fetchRequests() {
@@ -202,10 +213,12 @@ class Component extends React.Component<Props> {
   fetchCouriers() {
     const { showToast } = this.props
     Requests.get(endPoints['couriers']).then((response: any) => {
-      this.setState({ couriers: response.map((o: CourierInterface) => ({
-        label: o.name,
-        value: o._id
-      })) })
+      this.setState({
+        couriers: response.map((o: CourierInterface) => ({
+          label: o.name,
+          value: o._id
+        }))
+      })
     }).catch(err => {
       console.error(err)
       showToast(err.error || err.toString())
