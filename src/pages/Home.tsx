@@ -117,7 +117,7 @@ class Component extends React.Component<Props> {
    * 
    * */
   updateRequests = (response: any) => {
-    const { showToast } = this.props
+    const { showToast, hideToast } = this.props
     const { requests = [] as Array<ItemRequestInterface> } = this.state
     response.forEach((request: ItemRequestInterface) => {
       const index = requests.findIndex(o => o._id === request._id)
@@ -125,14 +125,16 @@ class Component extends React.Component<Props> {
         ...requests[index], ...request
       }
     })
+    hideToast()
     this.setState({ requests, requestsSelected: [] }, () => {
       const requestsArchived = response.filter(
         ({ state }: ItemRequestInterface) => archivedRequestStates.includes(state)
       )
-      if (requestsArchived.length)
+      if (requestsArchived.length) setTimeout(() => {
         showToast(`${requestsArchived.length} ${
           requestsArchived.length > 1 ? 'requests' : 'request'
         } archived`)
+      }, 400)
     })
   }
 
