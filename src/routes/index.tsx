@@ -1,4 +1,4 @@
-import decrypt from 'libs/jwt'
+import decrypt from 'utils/jwt'
 import { getSessionToken, clearSession } from 'session'
 
 import { Signup1, Signup2, Login, Home, Order, Credit, Account } from 'pages'

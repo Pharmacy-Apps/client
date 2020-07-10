@@ -15,8 +15,8 @@ import { MSISDNModify as MSISDNModifyPopover } from 'containers'
 
 import Requests, { endPoints } from 'requests'
 
-import decrypt from 'libs/jwt'
-import { formatUGMSISDN } from 'libs/msisdn'
+import decrypt from 'utils/jwt'
+import { formatUGMSISDN } from 'utils/msisdn'
 import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
 
 type Props = {

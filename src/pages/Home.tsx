@@ -23,7 +23,7 @@ import Requests, { endPoints } from 'requests'
 
 import eventsInstance, { name as localEventName } from '../events'
 
-import { userIsAdmin } from 'libs/role'
+import { userIsAdmin } from 'utils/role'
 
 export type Props = {
   history: History,

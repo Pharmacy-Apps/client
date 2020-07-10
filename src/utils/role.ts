@@ -1,4 +1,4 @@
-import decrypt from 'libs/jwt'
+import decrypt from 'utils/jwt'
 import { getSessionToken } from 'session'
 
 export function getUserRole() {

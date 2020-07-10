@@ -1,5 +1,5 @@
 import eventsInstance, { name as localEventName } from './events'
-import decrypt from './libs/jwt'
+import decrypt from './utils/jwt'
 import { getSessionToken } from './session'
 
 if (window.Worker) { // window.SharedWorker

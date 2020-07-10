@@ -3,7 +3,7 @@ import React from 'react'
 import { IonPopover, IonContent, IonLabel, IonItem, IonIcon, IonItemDivider, IonList } from '@ionic/react'
 import { send } from 'ionicons/icons'
 
-import { CCs, getMSISDNFromCCAndSN, parseMTNUGSN } from 'libs/msisdn'
+import { CCs, getMSISDNFromCCAndSN, parseMTNUGSN } from 'utils/msisdn'
 
 type Props = {
   open: boolean,
