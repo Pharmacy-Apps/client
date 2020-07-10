@@ -173,9 +173,7 @@ class Component extends React.Component<Props> {
     showLoading()
     setTimeout(() => {
       Requests.post(endPoints['item-requests'], payload).then((response: any) => {
-        console.info(response)
-        const errored = false
-        if (errored) {
+        if (response.error) {
           const { selectedItems } = this.state
           this.props.history.push(Routes.credit.path, { selectedItems })
         } else
