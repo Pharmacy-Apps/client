@@ -8,15 +8,14 @@ type Item = {
 
 type Props = {
   open: boolean,
+  items: Array<Item>
   onDismiss: () => void,
   onSelect: Function
 }
 
-const couriers: Array<String> = ['Joe', 'Kim', 'Lea']
-const items: Array<Item> = couriers.map(o => ({ value: o, label: o }))
-
 const Component: React.FC<Props> = ({
   open,
+  items,
   onDismiss,
   onSelect
 }) => {

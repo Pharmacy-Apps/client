@@ -28,5 +28,6 @@ export const endPoints = {
   'item-requests': '/item-request',
   'credits': '/credits',
   'credit-offers': '/credits/offers',
-  'mtn-msisdn': '/user/mtn-msisdn'
+  'mtn-msisdn': '/user/mtn-msisdn',
+  'couriers': '/courier'
 }

@@ -37,7 +37,7 @@ type Props = {
 const { lat, lon } = getSessionLocation()
 
 const Component: React.FC<Props> = ({
-  item: { _id, pharmacyItems, state, createdAt },
+  item: { _id, pharmacyItems, state, createdAt, courier },
   detailed,
   selected,
   selectMode,
@@ -72,7 +72,10 @@ const Component: React.FC<Props> = ({
             }
           </h2>
           <p>{state}</p>
-          {detailed ? <p>Delivery at {`${lat}, ${lon}`}</p> : null}
+          {detailed ? <>
+            <p>Delivery at {`${lat}, ${lon}`}</p>
+            {courier ? <p>Courier - {`${courier.name}`}</p> : null}
+          </> : null}
         </IonLabel>
       </IonText>
       <IonText slot="end" onClick={e => onClick(2, _id, e)}>

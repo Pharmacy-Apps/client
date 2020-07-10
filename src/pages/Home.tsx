@@ -15,12 +15,15 @@ import { ItemSearch as SearchPopover, Select as SelectPopover } from 'containers
 
 import {
   ItemSearchResult as ItemSearchResultInterface,
-  ItemRequest as ItemRequestInterface
+  ItemRequest as ItemRequestInterface,
+  Courier as CourierInterface
 } from 'types'
 
 import Requests, { endPoints } from 'requests'
 
 import eventsInstance, { name as localEventName } from '../events'
+
+import { userIsAdmin } from 'libs/role'
 
 export type Props = {
   history: History,
@@ -44,16 +47,13 @@ class Component extends React.Component<Props> {
     courierPopoverShown: false,
     requestDetailed: null,
     requestsSelected: [] as Array<String>,
-    archivedRequestsShown: false
+    archivedRequestsShown: false,
+    couriers: undefined
   }
-
-  isAdmin = () => (
-    window.location.pathname === Routes.admin.path
-  )
-
-  isCourier = () => (
-    window.location.pathname === Routes.courier.path
-  )
+  
+  defaultUpdateRequestBody = () => ({
+    'item-requests': this.state.requestsSelected
+  })
 
   toolbarActions = () => {
     const { history, showLoading, hideLoading, showToast } = this.props
@@ -66,14 +66,10 @@ class Component extends React.Component<Props> {
 
     if (requestsSelected.length > 0) {
 
-      const defaultUpdateRequestBody = {
-        'item-requests': requestsSelected
-      }
-
       const updateBackend = (body: Object) => {
         showLoading()
         Requests.put(endPoints['item-requests'], {
-          ...defaultUpdateRequestBody,
+          ...this.defaultUpdateRequestBody(),
           update: body
         }).then(this.updateRequests).catch(err => {
           console.error(err)
@@ -161,8 +157,18 @@ class Component extends React.Component<Props> {
     this.setState({ courierPopoverShown: true })
   }
 
-  onCourierSelected = () => {
-    this.setState({ courierPopoverShown: false })
+  onCourierSelected = (courier: string) => {
+    this.setState({ courierPopoverShown: false }, () => {
+      const { showLoading, hideLoading, showToast } = this.props
+      showLoading()
+      Requests.put(endPoints['item-requests'], {
+        ...this.defaultUpdateRequestBody(),
+        update: { courier, state: 2 }
+      }).then(this.updateRequests).catch(err => {
+        console.error(err)
+        showToast(err.error || err.toString())
+      }).finally(hideLoading)
+    })
   }
 
   onCourierPopoverDismiss = () => {
@@ -185,14 +191,25 @@ class Component extends React.Component<Props> {
   fetchRequests() {
     const { showLoading, hideLoading, showToast } = this.props
     showLoading()
-    setTimeout(() => {
-      Requests.get(endPoints['item-requests']).then((response: any) => {
-        this.setState({ requests: response })
-      }).catch(err => {
-        console.error(err)
-        showToast(err.error || err.toString())
-      }).finally(hideLoading)
-    }, 1000)
+    Requests.get(endPoints['item-requests']).then((response: any) => {
+      this.setState({ requests: response })
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    }).finally(hideLoading)
+  }
+
+  fetchCouriers() {
+    const { showToast } = this.props
+    Requests.get(endPoints['couriers']).then((response: any) => {
+      this.setState({ couriers: response.map((o: CourierInterface) => ({
+        label: o.name,
+        value: o._id
+      })) })
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    })
   }
 
   componentDidMount() {
@@ -203,6 +220,7 @@ class Component extends React.Component<Props> {
     }
     // this.onPrimaryAction()
     this.fetchRequests()
+    if (userIsAdmin()) this.fetchCouriers()
     if (eventsInstance.listenerCount(localEventName) === 0)
       eventsInstance.on(localEventName, this.updateRequests)
   }
@@ -215,7 +233,8 @@ class Component extends React.Component<Props> {
       requests: requestsReturned,
       requestDetailed,
       requestsSelected,
-      archivedRequestsShown
+      archivedRequestsShown,
+      couriers = [],
     } = this.state
 
     const activeRequests = this.getActiveRequests(requests)
@@ -278,6 +297,7 @@ class Component extends React.Component<Props> {
           />
           <SelectPopover
             open={courierPopoverShown}
+            items={couriers}
             onDismiss={this.onCourierPopoverDismiss}
             onSelect={this.onCourierSelected}
           />

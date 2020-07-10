@@ -36,5 +36,14 @@ export interface ItemRequest {
   }>,
   notes: string,
   state: string,
-  createdAt: number
+  createdAt: number,
+  courier?: Courier
+}
+
+export interface Courier {
+  _id: string,
+  alias: string,
+  name: string,
+  phones: Array<string>,
+  means: Array<string>,
 }
