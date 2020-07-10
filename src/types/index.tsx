@@ -37,7 +37,9 @@ export interface ItemRequest {
   notes: string,
   state: string,
   createdAt: number,
-  courier?: Courier
+  courier?: Courier,
+  lat: number,
+  lon: number
 }
 
 export interface Courier {

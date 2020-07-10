@@ -14,31 +14,25 @@ import { Header } from 'components'
 import Requests, { endPoints } from 'requests'
 import { getSessionPhone, getSessionLocation } from 'session'
 
-export type Props = {
+import { userIsClientUser } from 'utils/role'
+
+type Props = {
   history: History,
   showLoading: () => {},
   hideLoading: () => {},
   showToast: (e: string) => {},
 }
 
-const { lat, lon } = getSessionLocation()
+type Item = {
+  name: string,
+  value: any,
+  action?: string,
+  handler?: () => void,
+  starred?: true,
+  skipsAction?: true
+}
 
-const items = (history: History, credits: number) => [{
-  name: 'Credits',
-  value: credits,
-  action: 'Purchase Credits',
-  handler: () => history.push(Routes.credit.path),
-  starred: true
-}, {
-  name: 'Last delivery location',
-  value: `${lat}, ${lon}`,
-  action: 'Update',
-  handler: () => {}
-}, {
-  name: 'Phone',
-  value: getSessionPhone(),
-  skipsAction: true
-}]
+const { lat, lon } = getSessionLocation()
 
 /* 
  * To get address from coordinates,
@@ -50,7 +44,38 @@ const items = (history: History, credits: number) => [{
 class Component extends React.Component<Props> {
 
   state = { credits: 0 }
-  
+
+  getListItems = () => {
+    const { history } = this.props
+    const { credits } = this.state
+
+    const defaultItems: Array<Item> = [{
+      name: 'Phone',
+      value: getSessionPhone(),
+      skipsAction: true
+    }]
+
+    const clientUserItems: Array<Item> = [{
+      name: 'Credits',
+      value: credits,
+      action: 'Purchase Credits',
+      handler: () => history.push(Routes.credit.path),
+      starred: true
+    }, {
+      name: 'Last delivery location',
+      value: `${lat}, ${lon}`,
+      action: 'Update',
+      handler: () => { }
+    }]
+
+    return userIsClientUser()
+      ? [
+        ...clientUserItems,
+        ...defaultItems
+      ]
+      : defaultItems
+  }
+
   componentDidMount() {
     const { showLoading, hideLoading, showToast } = this.props
     showLoading()
@@ -63,26 +88,24 @@ class Component extends React.Component<Props> {
   }
 
   render() {
-    const { history } = this.props
-    const { credits } = this.state
     return (
       <IonPage>
         <Header title="Account" />
         <IonContent>
           <IonList lines="full" className="ion-no-margin ion-no-padding">{
-            items(history, credits).map((item, i, a) => {
-              return <IonItem key={i} { ...i + 1 === a.length ?  { lines: "none" } : {} }>
-              <IonLabel>
-                <p>{item.name}</p>
-                <IonText { ...item.starred ?  { color: "primary" } : {} }>
-                  <h2>{item.value}</h2>
-                </IonText>
-              </IonLabel>
-              {item.skipsAction ? null : <IonButton type="button" { ...item.starred ?  {} : { fill: "clear" } } className="ion-no-margin" slot="end" onClick={item.handler}>{
-                item.action
-              }</IonButton>}
-            </IonItem>
-          })}</IonList>
+            this.getListItems().map((item, i, a) => {
+              return <IonItem key={i} {...i + 1 === a.length ? { lines: "none" } : {}}>
+                <IonLabel>
+                  <p>{item.name}</p>
+                  <IonText {...item.starred ? { color: "primary" } : {}}>
+                    <h2>{item.value}</h2>
+                  </IonText>
+                </IonLabel>
+                {item.skipsAction ? null : <IonButton type="button" {...item.starred ? {} : { fill: "clear" }} className="ion-no-margin" slot="end" onClick={item.handler}>{
+                  item.action
+                }</IonButton>}
+              </IonItem>
+            })}</IonList>
         </IonContent>
       </IonPage>
     )

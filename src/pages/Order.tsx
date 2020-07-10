@@ -22,6 +22,9 @@ import { ItemSearchResult as ItemSearchResultInterface } from 'types'
 
 import Requests, { endPoints } from 'requests'
 
+import { updateCurrentPosition } from 'location'
+import { getSessionLocation } from 'session'
+
 type Props = {
   history: History,
   location: {
@@ -30,6 +33,7 @@ type Props = {
   showLoading: () => {},
   hideLoading: () => {},
   showToast: (e: string) => {},
+  hideToast: () => {},
 }
 
 type State = {
@@ -37,7 +41,8 @@ type State = {
   orderConfirmationShown: boolean,
   selectedItems: Array<ItemSearchResultInterface>,
   cost: number,
-  distance: number
+  distance: number,
+  showLocationInfo: boolean
 }
 
 const ionButtonStyle = {
@@ -68,7 +73,8 @@ class Component extends React.Component<Props> {
     searchPopoverShown: false,
     orderConfirmationShown: false,
     selectedItems: this.selectedItems,
-    ...computeOrderCostAndDistance(this.selectedItems)
+    ...computeOrderCostAndDistance(this.selectedItems),
+    showLocationInfo: false
   }
 
   handleRemoveItem = (id: string) => {
@@ -97,18 +103,72 @@ class Component extends React.Component<Props> {
     this.setState({ searchPopoverShown: false })
   }
 
-  onPrimaryAction = () => {
-    const { orderConfirmationShown } = this.state
-    if (orderConfirmationShown === false) {
-      this.setState({ orderConfirmationShown: true })
+  onPrimaryAction = async () => {
+    const { showToast } = this.props
+    if (this.locationNotAvailable()) {
+      showToast(this.locationInfo().locationInfo3)
+    } else {
+      const { orderConfirmationShown } = this.state
+      if (orderConfirmationShown === false) {
+        this.setState({ orderConfirmationShown: true })
+      }
     }
+  }
+
+  locationNotAvailable = () => {
+    let { lat, lon } = getSessionLocation()
+    return lat === undefined || lon === undefined
+  }
+
+  updateLocation = () => {
+    const { showToast, hideToast } = this.props
+    hideToast()
+    if (this.locationNotAvailable()) {
+      this.setState({ showLocationInfo: true }, () => {
+        setTimeout(async () => {
+          try {
+            const result = await updateCurrentPosition()
+            this.forceUpdate()
+            return result
+          } catch (error) {
+            console.error(error)
+            showToast(this.locationInfo().locationInfo4)
+          }
+        }, 500)
+      })
+    }
+  }
+
+  locationInfo = () => {
+    const { lat, lon } = getSessionLocation()
+
+    const locationInfo1 = 'Your location is needed so we can make a delivery'
+    const locationInfo2 = lat && lon
+      ? `Your location, ${lat}, ${lon}`
+      : 'Tap to update location'
+    const locationInfo3 = 'Please update your location'
+    const locationInfo4 =
+      `We could not find your location\nPlease ensure the following then click the "Tap to update location" button\n- You are connected to internet\n- When asked, you allow access your location`
+
+    return {
+      locationInfo1,
+      locationInfo2,
+      locationInfo3,
+      locationInfo4
+    }
+  }
+
+  componentWillMount() {
+    this.updateLocation() // Ensure location is available
   }
 
   onOrderConfirmation = () => {
     const { showLoading, hideLoading, showToast } = this.props
+    const { lat, lon } = getSessionLocation()
     const payload = {
       'pharmacy-items': this.state.selectedItems.map(o => o._id),
-      'notes': ''
+      'notes': '',
+      lat, lon
     }
     showLoading()
     setTimeout(() => {
@@ -135,8 +195,9 @@ class Component extends React.Component<Props> {
       searchPopoverShown,
       orderConfirmationShown,
       selectedItems,
-      cost, distance
+      cost, distance, showLocationInfo
     } = this.state
+
     return (
       <IonPage className="order">
         <Header title="Order" />
@@ -144,7 +205,7 @@ class Component extends React.Component<Props> {
           <IonList lines="full">
             <IonItem>
               <IonLabel>
-                <p>Itemicines</p>
+                <p>Items</p>
                 <IonList className="ion-no-margin ion-no-padding">{
                   this.state.selectedItems.map(({ _id, item }) => (
                     <IonItem key={_id} lines="none" className="ion-no-padding mini-list-item">
@@ -180,12 +241,14 @@ class Component extends React.Component<Props> {
             </IonItem>
 
             {/* Location change option */}
-            {/* <IonItem button>
+            {showLocationInfo ? <IonItem button onClick={this.updateLocation}>
               <IonLabel className="ion-text-wrap">
-                <p>Lorem ipsum delivery lorem ipsum delivery lorem ipsum delivery lorem ipsum delivery lorem ipsum delivery lorem ipsum delivery lorem ipsum delivery lorem ipsum delivery lorem ipsum delivery lorem ipsum</p>
-                <IonText color="secondary"><h4>Secondary</h4></IonText>
+                <p>{this.locationInfo().locationInfo1}</p>
+                <IonText color="secondary"><h4>{
+                  this.locationInfo().locationInfo2
+                }</h4></IonText>
               </IonLabel>
-            </IonItem> */}
+            </IonItem> : null}
 
             <IonItem lines="none">
               <IonButton className="ion-margin-top" size="default" onClick={this.onPrimaryAction}>{primaryAction}</IonButton>
@@ -252,6 +315,9 @@ const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   showToast: (payload: string) => ({
     type: constants.SHOW_TOAST,
     payload
+  }),
+  hideToast: () => ({
+    type: constants.HIDE_TOAST
   }),
 }, dispatch)
 

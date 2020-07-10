@@ -6,8 +6,6 @@ import { squareOutline as numb, checkbox as active } from 'ionicons/icons'
 
 import { ItemRequest } from 'types'
 
-import { getSessionLocation } from 'session'
-
 Moment.updateLocale('en', {
   relativeTime: {
     past: '%s',
@@ -34,10 +32,8 @@ type Props = {
   onTap: Function
 }
 
-const { lat, lon } = getSessionLocation()
-
 const Component: React.FC<Props> = ({
-  item: { _id, pharmacyItems, state, createdAt, courier },
+  item: { _id, pharmacyItems, state, createdAt, courier, lat, lon },
   detailed,
   selected,
   selectMode,
@@ -73,7 +69,10 @@ const Component: React.FC<Props> = ({
           </h2>
           <p>{state}</p>
           {detailed ? <>
-            <p>Delivery at {`${lat}, ${lon}`}</p>
+            {(
+              lat !== undefined &&
+              lon !== undefined
+            ) ? <p>Delivery at {`${lat}, ${lon}`}</p> : null}
             {courier ? <p>Courier - {`${courier.name}`}</p> : null}
           </> : null}
         </IonLabel>

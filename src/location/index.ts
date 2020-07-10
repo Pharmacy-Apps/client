@@ -1,11 +1,12 @@
 import { Geolocation } from '@ionic-native/geolocation'
 import { setSessionLocation } from 'session'
 
-export const updateCurrentPosition = () => {
-  Geolocation.getCurrentPosition().then(res => {
-    const { latitude: lat, longitude: lon, accuracy: acc } = res.coords
-    setSessionLocation({ lat, lon, acc })
-  }).catch(console.error)
+export const updateCurrentPosition = async () => {
+  const res = await Geolocation.getCurrentPosition()
+  const { latitude: lat, longitude: lon, accuracy: acc } = res.coords
+  const location = { lat, lon, acc }
+  setSessionLocation(location)
+  return location
 }
 
 export const watchPosition = () => {
