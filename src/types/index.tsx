@@ -39,7 +39,10 @@ export interface ItemRequest {
   createdAt: number,
   courier?: Courier,
   lat: number,
-  lon: number
+  lon: number,
+  user: {
+    _id: string, name: string, phone: string
+  }
 }
 
 export interface Courier {

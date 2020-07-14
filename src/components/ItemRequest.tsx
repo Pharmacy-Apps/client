@@ -5,6 +5,7 @@ import { IonLabel, IonIcon, IonText } from '@ionic/react'
 import { squareOutline as numb, checkbox as active } from 'ionicons/icons'
 
 import { ItemRequest } from 'types'
+import { userIsAdmin, userIsPharmacyOperator } from 'utils/role'
 
 Moment.updateLocale('en', {
   relativeTime: {
@@ -33,7 +34,7 @@ type Props = {
 }
 
 const Component: React.FC<Props> = ({
-  item: { _id, pharmacyItems, state, createdAt, courier, lat, lon },
+  item: { _id, pharmacyItems, state, createdAt, courier, lat, lon, user },
   detailed,
   selected,
   selectMode,
@@ -43,6 +44,8 @@ const Component: React.FC<Props> = ({
     event.stopPropagation()
     onTap(position, item)
   }
+
+  const userCanViewRequestClient = userIsPharmacyOperator() || userIsAdmin()
 
   return (
     <>
@@ -73,6 +76,9 @@ const Component: React.FC<Props> = ({
               lat !== undefined &&
               lon !== undefined
             ) ? <p>Delivery at {`${lat}, ${lon}`}</p> : null}
+            {userCanViewRequestClient
+              ? <p>Client - {user.name || user.phone}</p>
+              : null}
             {courier ? <p>Courier - {`${courier.name}`}</p> : null}
           </> : null}
         </IonLabel>
