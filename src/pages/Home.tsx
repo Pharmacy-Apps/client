@@ -21,7 +21,10 @@ import {
 
 import Requests, { endPoints } from 'requests'
 
-import eventsInstance, { name as localEventName } from '../events'
+import eventsInstance, {
+  requestCreate as requestCreateAction,
+  requestUpdate as requestUpdateAction
+} from '../events'
 
 import { userIsAdmin } from 'utils/role'
 
@@ -116,15 +119,19 @@ class Component extends React.Component<Props> {
    * Or events from other user
    * 
    * */
-  updateRequests = (response: any) => {
+  updateRequests = (response: any, prependRequests?: true) => {
     const { showToast, hideToast } = this.props
-    const { requests = [] as Array<ItemRequestInterface> } = this.state
-    response.forEach((request: ItemRequestInterface) => {
-      const index = requests.findIndex(o => o._id === request._id)
-      requests[index] = {
-        ...requests[index], ...request
-      }
-    })
+    let { requests = [] as Array<ItemRequestInterface> } = this.state
+    if (prependRequests) {
+      requests = response.concat(requests)
+    } else {
+      response.forEach((request: ItemRequestInterface) => {
+        const index = requests.findIndex(o => o._id === request._id)
+        requests[index] = {
+          ...requests[index], ...request
+        }
+      })
+    }
     hideToast()
     this.setState({ requests, requestsSelected: [] }, () => {
       const requestsArchived = response.filter(
@@ -236,8 +243,16 @@ class Component extends React.Component<Props> {
     // this.onPrimaryAction()
     this.fetchRequests()
     if (userIsAdmin()) this.fetchCouriers()
-    if (eventsInstance.listenerCount(localEventName) === 0)
-      eventsInstance.on(localEventName, this.updateRequests)
+    this.setEventListeners()
+  }
+
+  setEventListeners = () => {
+    eventsInstance.removeAllListeners()
+    const fn = (result: Array<ItemRequestInterface>) => {
+      this.updateRequests(result, true)
+    }
+    eventsInstance.on(requestCreateAction, fn)
+    eventsInstance.on(requestUpdateAction, this.updateRequests)
   }
 
   render() {

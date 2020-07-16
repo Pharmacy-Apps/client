@@ -1,4 +1,4 @@
-import eventsInstance, { name as localEventName } from './events'
+import eventsInstance from './events'
 import decrypt from './utils/jwt'
 import { getSessionToken } from './session'
 
@@ -12,8 +12,8 @@ if (window.Worker) { // window.SharedWorker
     worker.postMessage({ token: id })
 
     worker.onmessage = function (e) {
-      console.info('Message received from worker', e.data)
-      eventsInstance.emit(localEventName, e.data)
+      const { action, result } = e.data
+      eventsInstance.emit(action, result)
     }
 
     // // Shared Worker Implementation
