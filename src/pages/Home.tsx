@@ -156,7 +156,8 @@ class Component extends React.Component<Props> {
   }
 
   onSearchPopoverDismiss = () => {
-    this.setState({ searchPopoverShown: false })
+    if (this.state.searchPopoverShown)
+      this.setState({ searchPopoverShown: false })
   }
 
   onRequestTapped = (position: Number, request: String) => {
@@ -192,7 +193,8 @@ class Component extends React.Component<Props> {
   }
 
   onCourierPopoverDismiss = () => {
-    this.setState({ courierPopoverShown: false })
+    if (this.state.courierPopoverShown)
+      this.setState({ courierPopoverShown: false })
   }
 
   onArchives = () => {
