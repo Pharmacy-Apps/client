@@ -158,7 +158,7 @@ class Component extends React.Component<Props> {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.updateLocation() // Ensure location is available
   }
 
