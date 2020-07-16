@@ -26,7 +26,7 @@ import eventsInstance, {
   requestUpdate as requestUpdateAction
 } from '../events'
 
-import { userIsAdmin } from 'utils/role'
+import { userIsAdmin, userIsClientUser } from 'utils/role'
 
 export type Props = {
   history: History,
@@ -319,7 +319,7 @@ class Component extends React.Component<Props> {
           </IonList> : <div className="ion-padding">{
             placeholderText
           }</div>}
-          {requestsReturned ? <div className="ion-padding">
+          {userIsClientUser() && requestsReturned ? <div className="ion-padding">
             <IonButton onClick={this.onPrimaryAction} className="ion-no-margin">{primaryAction}</IonButton>
           </div> : null}
           <SearchPopover
