@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux'
 import { Action } from 'types'
 
-import App, { IState as IAppState } from './app'
+import App, { State as AppState } from './app'
 
-export interface IState {
-  App: IAppState
+export interface State {
+  App: AppState
 }
 
-export default (state: IState | undefined, action: Action) => combineReducers({
+export default (state: State | undefined, action: Action) => combineReducers({
   App
 })(state, action)

@@ -13,6 +13,7 @@ import { chevronDown as down, chevronUp as up, person } from 'ionicons/icons'
 import { Header, ItemRequest } from 'components'
 import { ItemSearch as SearchPopover, Select as SelectPopover } from 'containers'
 
+import { State as ReducerState } from 'reducers'
 import {
   ItemSearchResult as ItemSearchResultInterface,
   ItemRequest as ItemRequestInterface,
@@ -33,6 +34,8 @@ export type Props = {
   location: {
     state: { fetchRequests: boolean }, pathname: string
   },
+  requests: undefined | Array<ItemRequestInterface>,
+  setItemRequests: (e: Array<ItemRequestInterface> | null) => {},
   showLoading: () => {},
   hideLoading: () => {},
   showToast: (e: string) => {},
@@ -47,7 +50,7 @@ const archivedRequestStates: Array<String> = ['cancelled', 'received']
 class Component extends React.Component<Props> {
 
   state = {
-    requests: undefined,
+    // requests: undefined,
     searchPopoverShown: false,
     courierPopoverShown: false,
     requestDetailed: null,
@@ -120,8 +123,10 @@ class Component extends React.Component<Props> {
    * 
    * */
   updateRequests = (response: any, prependRequests?: true) => {
-    const { showToast, hideToast } = this.props
-    let { requests = [] as Array<ItemRequestInterface> } = this.state
+    let {
+      requests = [],
+      showToast, hideToast, setItemRequests
+    } = this.props
     if (prependRequests) {
       requests = response.concat(requests)
     } else {
@@ -133,14 +138,15 @@ class Component extends React.Component<Props> {
       })
     }
     hideToast()
-    this.setState({ requests, requestsSelected: [] }, () => {
+    setItemRequests(requests)
+    this.setState({ requestsSelected: [] }, () => {
       const requestsArchived = response.filter(
         ({ state }: ItemRequestInterface) => archivedRequestStates.includes(state)
       )
       if (requestsArchived.length) setTimeout(() => {
         showToast(`${requestsArchived.length} ${
           requestsArchived.length > 1 ? 'requests' : 'request'
-        } archived`)
+          } archived`)
       }, 400)
     })
   }
@@ -211,10 +217,10 @@ class Component extends React.Component<Props> {
   )
 
   fetchRequests() {
-    const { showLoading, hideLoading, showToast } = this.props
+    const { showLoading, hideLoading, showToast, setItemRequests } = this.props
     showLoading()
     Requests.get(endPoints['item-requests']).then((response: any) => {
-      this.setState({ requests: response })
+      setItemRequests(response)
     }).catch(err => {
       console.error(err)
       showToast(err.error || err.toString())
@@ -261,13 +267,16 @@ class Component extends React.Component<Props> {
     const {
       searchPopoverShown,
       courierPopoverShown,
-      requests = [],
-      requests: requestsReturned,
       requestDetailed,
       requestsSelected,
       archivedRequestsShown,
       couriers = [],
     } = this.state
+
+    const {
+      requests = [],
+      requests: requestsReturned
+    } = this.props
 
     const activeRequests = this.getActiveRequests(requests)
     const archivedRequests = this.getArchivedRequests(requests)
@@ -340,7 +349,15 @@ class Component extends React.Component<Props> {
 
 }
 
+const mapStateToProps = (state: ReducerState) => ({
+  requests: state.App.requests || undefined
+})
+
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+  setItemRequests: payload => ({
+    type: constants.SET_ITEM_REQUESTS,
+    payload
+  }),
   showLoading: () => ({
     type: constants.SHOW_LOADING
   }),
@@ -356,4 +373,4 @@ const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   })
 }, dispatch)
 
-export default connect(null, mapDispatchToProps)(Component)
+export default connect(mapStateToProps, mapDispatchToProps)(Component)

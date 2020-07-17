@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
-import { IState } from 'reducers'
+import { State as ReducerState } from 'reducers'
 
 export type Props = {
   open: boolean,
@@ -29,7 +29,7 @@ const Component: React.FC<Props> = ({ open, message, hideToast }) => (
   />
 )
 
-const mapStateToProps = (state: IState) => ({
+const mapStateToProps = (state: ReducerState) => ({
   open: Boolean(state.App.toast),
   message: state.App.toast
 })
