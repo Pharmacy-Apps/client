@@ -13,21 +13,35 @@ export type Props = {
   hideToast: () => void
 }
 
-const Component: React.FC<Props> = ({ open, message, hideToast }) => (
-  <IonToast
-    isOpen={open}
-    onDidDismiss={hideToast}
-    message={message || ''}
-    position="bottom"
-    buttons={[
-      {
-        text: 'Close',
-        role: 'cancel',
-        handler: hideToast
-      }
-    ]}
-  />
-)
+const toastTimeout = 7000
+
+class Component extends React.Component<Props> {
+
+  render() {
+    const { open, message, hideToast } = this.props
+    return (
+      <IonToast
+        isOpen={open}
+        onDidDismiss={hideToast}
+        message={message || ''}
+        position="bottom"
+        buttons={[
+          {
+            text: 'Close',
+            role: 'cancel',
+            handler: hideToast
+          }
+        ]}
+      />
+    )
+  }
+
+  componentDidUpdate({ open, hideToast }: Props) { // previous props
+    if (open) return
+    setTimeout(hideToast, toastTimeout)
+  }
+
+}
 
 const mapStateToProps = (state: ReducerState) => ({
   open: Boolean(state.App.toast),
