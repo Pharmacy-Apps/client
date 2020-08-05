@@ -104,11 +104,13 @@
       font-size: 18px;
       letter-spacing: 3px
     }
+
     .msisdn-modify-section input {
       padding: 10px;
       width: calc(100% - 40px);
       border-width: 0
     }
+
     .msisdn-modify-section input:focus {
       outline: none
     }
@@ -118,6 +120,16 @@
 
 <body>
   <div id="root"></div>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <!-- FIREBASE CONFIGURATION -->
+  <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>
+
+  <script src="/firebase/fns.js"></script>
+  <script src="/firebase/index.js"></script>
+
 </body>
 
 </html>

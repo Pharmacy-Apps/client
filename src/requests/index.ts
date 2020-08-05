@@ -29,5 +29,6 @@ export const endPoints = {
   'credits': '/credits',
   'credit-offers': '/credits/offers',
   'mtn-msisdn': '/user/mtn-msisdn',
-  'couriers': '/courier'
+  'couriers': '/courier',
+  'push-notification-token': '/push-notification-token'
 }

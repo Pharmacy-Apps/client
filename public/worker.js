@@ -19,13 +19,13 @@ onmessage = function ({ data }) {
 
   console.info(
     (
-      data.token ? 'Token' : 'Message'
+      data.token ? 'Session token' : 'Message'
     ) + ' received from main script',
-    data.token ? '.. setting up socket' : ''
+    data.token ? '.. setting up socket io' : ''
   )
 
   if (data.token) {
-    const socket = io(url, { query: `token=${data.token}` }) // or self.io()
+    const socket = io(url, { query: `token=${data.token}` })
     socket.on(data.token, onSocketEvent)
     event = data.token
     return
@@ -36,15 +36,3 @@ onmessage = function ({ data }) {
   // Do other stuff here
 
 }
-
-// // Shared Worker Implementation
-
-// onconnect = function ({ ports: [port] }) {
-
-//   port.onmessage = function (e) {
-//     const workerResult = e.data[0] * e.data[1]
-//     port.postMessage(workerResult)
-//     console.info('e')
-//   }
-
-// }

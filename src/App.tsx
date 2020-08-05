@@ -11,6 +11,8 @@ import { sessionAvailable } from './session'
 import { watchPosition as watchUserLocation } from 'location'
 
 import 'worker'
+import 'tasks/index'
+
 import 'styles'
 
 // For public pages, redirect to  default home if session available

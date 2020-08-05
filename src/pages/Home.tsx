@@ -7,7 +7,11 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonButton, IonList, IonItem, IonItemDivider, IonLabel, IonIcon } from '@ionic/react'
+import {
+  IonContent, IonPage, IonButton, IonList, IonItem, IonItemDivider, IonLabel, IonIcon,
+  IonRefresher, IonRefresherContent
+} from '@ionic/react'
+import { RefresherEventDetail } from '@ionic/core'
 import { chevronDown as down, chevronUp as up, person } from 'ionicons/icons'
 
 import { Header, ItemRequest } from 'components'
@@ -24,7 +28,8 @@ import Requests, { endPoints } from 'requests'
 
 import eventsInstance, {
   requestCreate as requestCreateAction,
-  requestUpdate as requestUpdateAction
+  requestUpdate as requestUpdateAction,
+  syncData as syncDataAction
 } from '../events'
 
 import { userIsAdmin, userIsClientUser } from 'utils/role'
@@ -216,15 +221,24 @@ class Component extends React.Component<Props> {
     requests.filter(({ state }) => archivedRequestStates.indexOf(state) > -1)
   )
 
-  fetchRequests() {
+  syncRequestData = (event?: CustomEvent<RefresherEventDetail>) => {
+    this.fetchRequests(false, () => {
+      event && event.detail.complete()
+    })
+  }
+
+  fetchRequests(animate: boolean = true, cb?: Function) {
     const { showLoading, hideLoading, showToast, setItemRequests } = this.props
-    showLoading()
+    if (animate) showLoading()
     Requests.get(endPoints['item-requests']).then((response: any) => {
       setItemRequests(response)
     }).catch(err => {
       console.error(err)
       showToast(err.error || err.toString())
-    }).finally(hideLoading)
+    }).finally(() => {
+      hideLoading()
+      cb && cb()
+    })
   }
 
   fetchCouriers() {
@@ -261,6 +275,7 @@ class Component extends React.Component<Props> {
     }
     eventsInstance.on(requestCreateAction, fn)
     eventsInstance.on(requestUpdateAction, this.updateRequests)
+    eventsInstance.on(syncDataAction, this.syncRequestData)
   }
 
   render() {
@@ -305,29 +320,34 @@ class Component extends React.Component<Props> {
     return (
       <IonPage>
         <Header omitsBack title="Requests" actions={this.toolbarActions()} />
-        <IonContent>{
-          requests.length ? <IonList
-            style={{ paddingTop: 0, paddingBottom: 0 }}
-            lines="none"
-          >
-            {activeRequests.map(requestComponent)}
-            {archivedRequests.length ? <IonItem
-              button
-              onClick={this.onArchives}
-              className="ion-item-archive"
+        <IonContent>
+          <IonRefresher slot="fixed" onIonRefresh={this.syncRequestData}>
+            <IonRefresherContent></IonRefresherContent>
+          </IonRefresher>
+          {
+            requests.length ? <IonList
+              style={{ paddingTop: 0, paddingBottom: 0 }}
               lines="none"
             >
-              <IonLabel className="ion-no-margin ion-text-center">
-                <p>Archived</p>
-              </IonLabel>
-              <IonIcon className="ion-no-margin" icon={
-                archivedRequestsShown ? up : down
-              } slot="end"></IonIcon>
-            </IonItem> : null}
-            {archivedRequestsShown ? archivedRequests.map(requestComponent) : null}
-          </IonList> : <div className="ion-padding">{
-            placeholderText
-          }</div>}
+              {activeRequests.map(requestComponent)}
+              {archivedRequests.length ? <IonItem
+                button
+                onClick={this.onArchives}
+                className="ion-item-archive"
+                lines="none"
+              >
+                <IonLabel className="ion-no-margin ion-text-center">
+                  <p>Archived</p>
+                </IonLabel>
+                <IonIcon className="ion-no-margin" icon={
+                  archivedRequestsShown ? up : down
+                } slot="end"></IonIcon>
+              </IonItem> : null}
+              {archivedRequestsShown ? archivedRequests.map(requestComponent) : null}
+            </IonList> : <div className="ion-padding">{
+              placeholderText
+            }</div>
+          }
           {userIsClientUser() && requestsReturned ? <div className="ion-padding">
             <IonButton onClick={this.onPrimaryAction} className="ion-no-margin">{primaryAction}</IonButton>
           </div> : null}
