@@ -17,7 +17,6 @@ import {
 import { addCircleOutline, removeCircleOutline } from 'ionicons/icons';
 
 import { Header } from 'components'
-import { ItemSearch as SearchPopover } from 'containers'
 import { ItemSearchResult as ItemSearchResultInterface } from 'types'
 
 import Requests, { endPoints } from 'requests'
@@ -37,7 +36,6 @@ type Props = {
 }
 
 type State = {
-  searchPopoverShown: boolean,
   orderConfirmationShown: boolean,
   selectedItems: Array<ItemSearchResultInterface>,
   cost: number,
@@ -70,7 +68,6 @@ class Component extends React.Component<Props> {
     : []
 
   state: State = {
-    searchPopoverShown: false,
     orderConfirmationShown: false,
     selectedItems: this.selectedItems,
     ...computeOrderCostAndDistance(this.selectedItems),
@@ -88,19 +85,8 @@ class Component extends React.Component<Props> {
   }
 
   handleAddItem = () => {
-    this.setState({ searchPopoverShown: true })
-  }
-
-  onSelectedItemsReturned = (selectedItems: Array<ItemSearchResultInterface>) => {
-    this.setState({
-      searchPopoverShown: false,
-      selectedItems,
-      ...computeOrderCostAndDistance(selectedItems)
-    })
-  }
-
-  onSearchPopoverDismiss = () => {
-    this.setState({ searchPopoverShown: false })
+    const { selectedItems } = this.state
+    this.props.history.replace(Routes.search.path, { selectedItems })
   }
 
   onPrimaryAction = async () => {
@@ -190,9 +176,7 @@ class Component extends React.Component<Props> {
 
   render() {
     const {
-      searchPopoverShown,
       orderConfirmationShown,
-      selectedItems,
       cost, distance, showLocationInfo
     } = this.state
 
@@ -252,12 +236,6 @@ class Component extends React.Component<Props> {
               <IonButton className="ion-margin-top" size="default" onClick={this.onPrimaryAction}>{primaryAction}</IonButton>
             </IonItem>
           </IonList>
-          <SearchPopover
-            open={searchPopoverShown}
-            onDismiss={this.onSearchPopoverDismiss}
-            onSubmit={this.onSelectedItemsReturned}
-            selectedItems={selectedItems}
-          />
           <OrderConfirmation
             open={orderConfirmationShown}
             bill={`${cost}`}

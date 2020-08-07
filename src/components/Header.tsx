@@ -7,7 +7,7 @@ const appName = 'App'
 
 export type Props = {
   omitsBack?: boolean
-  title?: string
+  title?: any
   actions?: Array<ToolbarAction>
 }
 
@@ -18,14 +18,14 @@ const buttonStyle = {
 const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
   return (
     <IonHeader>
-      <IonToolbar>
+      <IonToolbar color="primary">
         {omitsBack ? null : <IonButtons slot="start">
           <IonBackButton defaultHref="/" />
         </IonButtons>}
         <IonTitle>{title}</IonTitle>
         <IonButtons slot="secondary">{
           actions.map((
-            { icon, text, handler },
+            { icon, text, component: Component, handler },
             i
           ) => <IonButton
             key={i}
@@ -37,6 +37,9 @@ const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
               }
               {
                 text ? text : null
+              }
+              {
+                Component ? <Component /> : null
               }
             </IonButton>
           )

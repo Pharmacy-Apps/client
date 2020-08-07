@@ -5,7 +5,8 @@ export interface Action {
 
 export interface ToolbarAction {
   text?: string,
-  icon?: any,
+  icon?: string,
+  component?: () => JSX.Element,
   handler: () => any
 }
 

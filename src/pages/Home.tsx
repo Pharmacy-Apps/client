@@ -15,11 +15,10 @@ import { RefresherEventDetail } from '@ionic/core'
 import { chevronDown as down, chevronUp as up, person } from 'ionicons/icons'
 
 import { Header, ItemRequest } from 'components'
-import { ItemSearch as SearchPopover, Select as SelectPopover } from 'containers'
+import { Select as SelectPopover } from 'containers'
 
 import { State as ReducerState } from 'reducers'
 import {
-  ItemSearchResult as ItemSearchResultInterface,
   ItemRequest as ItemRequestInterface,
   Courier as CourierInterface
 } from 'types'
@@ -55,8 +54,6 @@ const archivedRequestStates: Array<String> = ['cancelled', 'received']
 class Component extends React.Component<Props> {
 
   state = {
-    // requests: undefined,
-    searchPopoverShown: false,
     courierPopoverShown: false,
     requestDetailed: null,
     requestsSelected: [] as Array<String>,
@@ -157,18 +154,7 @@ class Component extends React.Component<Props> {
   }
 
   onPrimaryAction = () => {
-    this.setState({ searchPopoverShown: true })
-  }
-
-  onSelectedItemsReturned = (selectedItems: ItemSearchResultInterface) => {
-    this.setState({ searchPopoverShown: false }, () => {
-      this.props.history.replace(Routes.order.path, { selectedItems })
-    })
-  }
-
-  onSearchPopoverDismiss = () => {
-    if (this.state.searchPopoverShown)
-      this.setState({ searchPopoverShown: false })
+    this.props.history.push(Routes.search.path)
   }
 
   onRequestTapped = (position: Number, request: String) => {
@@ -280,7 +266,6 @@ class Component extends React.Component<Props> {
 
   render() {
     const {
-      searchPopoverShown,
       courierPopoverShown,
       requestDetailed,
       requestsSelected,
@@ -351,11 +336,6 @@ class Component extends React.Component<Props> {
           {userIsClientUser() && requestsReturned ? <div className="ion-padding">
             <IonButton onClick={this.onPrimaryAction} className="ion-no-margin">{primaryAction}</IonButton>
           </div> : null}
-          <SearchPopover
-            open={searchPopoverShown}
-            onDismiss={this.onSearchPopoverDismiss}
-            onSubmit={this.onSelectedItemsReturned}
-          />
           <SelectPopover
             open={courierPopoverShown}
             items={couriers}

@@ -40,15 +40,44 @@
       padding-left: 0
     }
 
-    .searchbar {
+    /* .searchbar {
       --icon-color: var(--ion-color-primary);
       --clear-button-color: var(--ion-color-primary);
       --cancel-button-color: var(--ion-color-primary)
+    } */
+
+    ion-select-popover ion-list {
+      padding: 0 !important
+    }
+
+    .select-filter {
+      display: none !important
+    }
+
+    .select-filter::part(icon) {
+      display: none !important
+    }
+
+    .button-select-filter::part(native) {
+      padding: 0;
+      --ripple-color: transparent;
+      --background-hover: transparent;
+      --background-focused: transparent;
+      --background-activated: transparent
+    }
+
+    .select-interface-option.last::part(open) ::part(native) .item-native .item-inner {
+      --border: none
     }
 
     .searchbar input {
-      box-shadow: 0 1px 0 0 rgba(0, 0, 0, .16) !important;
+      box-shadow: 0 0 0 0 rgba(0, 0, 0, .16) !important;
       border-radius: 0 !important
+    }
+
+    .search ion-title {
+      padding-inline-start: 0;
+      padding-inline-end: 0
     }
 
     .order .mini-list-item {

@@ -1,18 +1,20 @@
 import produce from 'immer'
-import { Action, ItemRequest } from 'types'
+import { Action, ItemRequest, ItemSearchResult } from 'types'
 
 import * as constants from './constants'
 
 export interface State {
   loading: boolean,
   toast: string | null,
-  requests: Array<ItemRequest> | null
+  requests: Array<ItemRequest> | null,
+  items: Array<ItemSearchResult> | null
 }
 
 const initialState: State = {
   loading: false,
   toast: null,
-  requests: null
+  requests: null,
+  items: null
 }
 
 export default (state = initialState, action: Action) => produce(state, (draft: State) => {
@@ -35,6 +37,10 @@ export default (state = initialState, action: Action) => produce(state, (draft: 
     }
     case constants.SET_ITEM_REQUESTS: {
       draft.requests = action.payload
+      break
+    }
+    case constants.SET_ITEMS: {
+      draft.items = action.payload
       break
     }
     default: break
