@@ -5,6 +5,8 @@ import Home from './Home'
 import Account from './Account'
 import Search from './Search'
 import Order from './Order'
+import Location from './Location'
+import Requests from './Requests'
 import Credit from './Credit'
 
-export { Signup1, Signup2, Login, Home, Account, Order, Search, Credit }
+export { Signup1, Signup2, Login, Home, Account, Search, Order, Location, Requests, Credit }

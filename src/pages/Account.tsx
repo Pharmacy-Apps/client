@@ -32,7 +32,7 @@ type Item = {
   skipsAction?: true
 }
 
-const { lat, lon } = getSessionLocation()
+const { lat, lon } = getSessionLocation() || {}
 
 /* 
  * To get address from coordinates,

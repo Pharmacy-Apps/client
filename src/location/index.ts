@@ -1,5 +1,6 @@
 import { Geolocation } from '@ionic-native/geolocation'
-import { setSessionLocation } from 'session'
+import { setSessionLocation, getLastAttemptedDeliveryLocation, getSessionLocation } from 'session'
+import { platformIsWeb } from 'utils'
 
 export const updateCurrentPosition = async () => {
   const res = await Geolocation.getCurrentPosition()
@@ -24,3 +25,15 @@ export const formatDistance = (mDistance: number) => { // mDistance - meter dist
   if (mDistance < 50000) return `${mDistance / 1000}km`
   return '> 50km'
 }
+
+export const getMapKey: () => string = () => (
+  platformIsWeb ? process.env.REACT_APP_MAP_KEY_WEB : process.env.REACT_APP_MAP_KEY_MOBILE
+) || ''
+
+export const CentralLocation = {
+  lat: 0.3476, lon: 32.5825
+}
+
+export const getDeliveryLocationForNextOrder = () => (
+  getLastAttemptedDeliveryLocation() || getSessionLocation() || {}
+)

@@ -15,7 +15,7 @@ import { send, ellipsisHorizontal } from 'ionicons/icons'
 import { Header, ItemSearchResult } from 'components'
 
 import Requests, { endPoints } from 'requests'
-import { getSessionLocation as getUserLocation } from 'session'
+import { getDeliveryLocationForNextOrder } from 'location'
 
 import { ItemSearchResult as ItemSearchResultInterface, ToolbarAction } from 'types'
 
@@ -24,7 +24,7 @@ import ItemCategoryMap from 'utils/item-category-map'
 export type Props = {
   history: History,
   location: {
-    state: { selectedItems: Array<ItemSearchResultInterface> }
+    state: { selectedItems: Array<ItemSearchResultInterface>, category: string }
   },
   selectedItems?: Array<ItemSearchResultInterface>,
   items: Array<ItemSearchResultInterface> | undefined,
@@ -36,7 +36,7 @@ export type Props = {
 
 type State = {
   selectedItems: Array<ItemSearchResultInterface>,
-  categorySelected: string
+  selectedCategory: string
 }
 
 const searchPlaceholder = 'search'
@@ -49,12 +49,15 @@ const itemCategories = Object.keys(ItemCategoryMap).map((key: string) => ({
 
 class Component extends React.Component<Props> {
   selectedItems = this.props.location.state
-    ? this.props.location.state.selectedItems
+    ? this.props.location.state.selectedItems || []
     : []
+  selectedCategory = this.props.location.state
+    ? this.props.location.state.category
+    : null
 
   state: State = {
     selectedItems: this.selectedItems,
-    categorySelected: itemCategories[0].value
+    selectedCategory: this.selectedCategory || itemCategories[0].value
   }
 
   componentDidMount() {
@@ -67,7 +70,7 @@ class Component extends React.Component<Props> {
     if (search === '') return
     if (search === null) return
 
-    const { lat, lon } = getUserLocation()
+    const { lat, lon } = getDeliveryLocationForNextOrder()
     const { setItems, showLoading, hideLoading, showToast } = this.props
 
     showLoading()
@@ -108,11 +111,11 @@ class Component extends React.Component<Props> {
   }
 
   onCategorySelected = (category: string) => {
-    this.setState({ categorySelected: category })
+    this.setState({ selectedCategory: category })
   }
 
   toolbarActions = () => {
-    const { categorySelected } = this.state
+    const { selectedCategory } = this.state
     let selectRef: any = null
     let buttonRef: any = null
     const defaultToolbarActions: Array<ToolbarAction> = [{
@@ -127,7 +130,7 @@ class Component extends React.Component<Props> {
             interfaceOptions={{ showBackdrop: false }}
             interface="popover"
             onIonChange={({ detail: { value } }: any) => this.onCategorySelected(value)}
-            value={categorySelected}
+            value={selectedCategory}
             className="select-filter"
           >
             {
@@ -151,15 +154,15 @@ class Component extends React.Component<Props> {
   }
 
   title = () => (
-    <IonSearchbar color="primary" placeholder={searchPlaceholder} className="searchbar ion-no-padding" clearIcon="close-circle" onIonChange={() => { }}></IonSearchbar>
+    <IonSearchbar /* color="primary" */ placeholder={searchPlaceholder} className="searchbar ion-no-padding" clearIcon="close-circle" onIonChange={() => { }}></IonSearchbar>
   )
 
   computeItemsShown = () => {
     const { items = [] } = this.props
-    const { categorySelected } = this.state
-    return categorySelected !== itemCategories[0].value
+    const { selectedCategory } = this.state
+    return selectedCategory !== itemCategories[0].value
       ? items.filter(({ item: { category } }) => (
-        category === categorySelected
+        category === selectedCategory
       ))
       : items
   }

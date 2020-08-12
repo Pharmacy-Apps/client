@@ -18,7 +18,7 @@ const buttonStyle = {
 const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
   return (
     <IonHeader>
-      <IonToolbar color="primary">
+      <IonToolbar /* color="primary" */>
         {omitsBack ? null : <IonButtons slot="start">
           <IonBackButton defaultHref="/" />
         </IonButtons>}

@@ -1,6 +1,7 @@
 const tokenKey = 'auth-token'
 const phoneKey = 'phone'
 const locationKey = 'location'
+const deliveryLocationKey = 'delivery-location'
 
 export const getSessionToken = () => {
   return localStorage.getItem(tokenKey)
@@ -28,9 +29,23 @@ export const setSessionLocation = (location: Object) => {
 }
 
 export const getSessionLocation = () => {
-  return JSON.parse(
-    localStorage.getItem(locationKey) || '{}'
+  const location = localStorage.getItem(locationKey)
+  return location ? JSON.parse(location) : null
+  // return JSON.parse(
+  //   localStorage.getItem(locationKey) || '{}'
+  // )
+}
+
+export const setDeliveryLocation = (location: Object) => {
+  localStorage.setItem(
+    deliveryLocationKey,
+    JSON.stringify(location)
   )
+}
+
+export const getLastAttemptedDeliveryLocation = () => {
+  const location = localStorage.getItem(deliveryLocationKey)
+  return location ? JSON.parse(location) : null
 }
 
 export const clearSession = () => {
