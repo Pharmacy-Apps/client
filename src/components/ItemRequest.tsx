@@ -1,10 +1,10 @@
 import React from 'react'
 import Moment from 'moment'
-import { IonLabel, IonIcon, IonText } from '@ionic/react'
+import { IonLabel, IonIcon, IonText, IonButton, IonSelect, IonSelectOption } from '@ionic/react'
 
-import { squareOutline as numb, checkbox as active } from 'ionicons/icons'
+import { squareOutline as numb, checkbox as active, ellipsisHorizontal as more } from 'ionicons/icons'
 
-import { ItemRequest } from 'types'
+import { ItemRequest, MenuAction } from 'types'
 import { userIsAdmin, userIsPharmacyOperator } from 'utils/role'
 
 Moment.updateLocale('en', {
@@ -30,7 +30,8 @@ type Props = {
   detailed: boolean,
   selected: boolean,
   selectMode: boolean,
-  onTap: Function
+  onTap: Function,
+  actions: Array<MenuAction>
 }
 
 const Component: React.FC<Props> = ({
@@ -38,11 +39,23 @@ const Component: React.FC<Props> = ({
   detailed,
   selected,
   selectMode,
-  onTap
+  onTap,
+  actions
 }) => {
+
+  let selectRef: any = null
+
   const onClick = (position: Number, item: String, event: any) => {
     event.stopPropagation()
-    onTap(position, item)
+    if (position < 0) {
+      selectRef.open({ target: event.target })
+    } else
+      onTap(position, item)
+  }
+
+  const onIonChange = ({ detail: { value } }: any) => {
+    const { handler } = actions.find(({ text }) => value === text) || {}
+    handler && handler(_id)
   }
 
   const userCanViewRequestClient = userIsPharmacyOperator() || userIsAdmin()
@@ -88,6 +101,24 @@ const Component: React.FC<Props> = ({
           <p style={{ textAlign: "right" }}>{formatDate(createdAt)}</p>
         </IonLabel>
       </IonText>
+      <IonButton onClick={e => onClick(-1, _id, e)} slot="end" fill="clear">
+        <IonIcon icon={more} />
+      </IonButton>
+      <IonSelect
+        ref={node => selectRef = node}
+        interfaceOptions={{ showBackdrop: false }}
+        interface="popover"
+        onIonChange={onIonChange}
+        className="select-menu"
+      >
+        {
+          actions.map(({ text }, i, a) => (
+            <IonSelectOption key={i} className={
+              i < a.length - 1 ? '' : 'last'
+            } value={text}>{text}</IonSelectOption>
+          ))
+        }
+      </IonSelect>
     </>
   )
 }

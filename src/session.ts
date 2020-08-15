@@ -2,6 +2,7 @@ const tokenKey = 'auth-token'
 const phoneKey = 'phone'
 const locationKey = 'location'
 const deliveryLocationKey = 'delivery-location'
+const activeRequestsPresenceKey = 'active-requests-present'
 
 export const getSessionToken = () => {
   return localStorage.getItem(tokenKey)
@@ -46,6 +47,18 @@ export const setDeliveryLocation = (location: Object) => {
 export const getLastAttemptedDeliveryLocation = () => {
   const location = localStorage.getItem(deliveryLocationKey)
   return location ? JSON.parse(location) : null
+}
+
+export const setActiveRequestsPresence = (o: boolean) => {
+  localStorage.setItem(
+    activeRequestsPresenceKey,
+    JSON.stringify(o)
+  )
+}
+
+export const getActiveRequestsPresence = () => {
+  const o = localStorage.getItem(activeRequestsPresenceKey)
+  return o ? JSON.parse(o) : null
 }
 
 export const clearSession = () => {

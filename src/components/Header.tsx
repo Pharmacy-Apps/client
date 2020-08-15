@@ -8,6 +8,7 @@ const appName = 'App'
 export type Props = {
   omitsBack?: boolean
   title?: any
+  size?: 'small' | 'large'
   actions?: Array<ToolbarAction>
 }
 
@@ -15,14 +16,14 @@ const buttonStyle = {
   textTransform: 'unset'
 }
 
-const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
+const Component: React.FC<Props> = ({ omitsBack, title, size, actions = [] }) => {
   return (
     <IonHeader>
       <IonToolbar /* color="primary" */>
         {omitsBack ? null : <IonButtons slot="start">
           <IonBackButton defaultHref="/" />
         </IonButtons>}
-        <IonTitle>{title}</IonTitle>
+        <IonTitle size={size}>{title}</IonTitle>
         <IonButtons slot="secondary">{
           actions.map((
             { icon, text, component: Component, handler },
@@ -34,11 +35,9 @@ const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
           >
               {
                 icon ? <IonIcon icon={icon} /> : null
-              }
-              {
+              }{
                 text ? text : null
-              }
-              {
+              }{
                 Component ? <Component /> : null
               }
             </IonButton>
@@ -49,6 +48,6 @@ const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
   )
 }
 
-Component.defaultProps = { title: appName }
+Component.defaultProps = { title: appName, size: 'large' }
 
 export default Component

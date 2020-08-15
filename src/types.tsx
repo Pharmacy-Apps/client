@@ -10,6 +10,8 @@ export interface ToolbarAction {
   handler: () => any
 }
 
+export interface MenuAction { text: string, handler: (a1: string) => void }
+
 export interface Item {
   _id: string,
   name: string,
@@ -53,3 +55,5 @@ export interface Courier {
   phones: Array<string>,
   means: Array<string>,
 }
+
+export interface Location { lat: number, lon: number }

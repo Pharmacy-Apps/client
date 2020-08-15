@@ -1,7 +1,7 @@
 import decrypt from 'utils/jwt'
 import { getSessionToken, clearSession } from 'session'
 
-import { Signup1, Signup2, Login, Home, Search, Order, Location, Requests, Credit, Account } from 'pages'
+import { Signup1, Signup2, Login, Home, Search, Order, Location, Requests, Request, Credit, Account } from 'pages'
 
 interface Routes {
   [key: string]: {
@@ -43,6 +43,10 @@ const Routes: Routes = {
   requests: {
     path: '/requests',
     component: Requests
+  },
+  request: {
+    path: '/request',
+    component: Request
   },
   credit: {
     path: '/credit',

@@ -21,7 +21,8 @@ import { State as ReducerState } from 'reducers'
 import {
   ItemRequest as ItemRequestInterface,
   Courier as CourierInterface,
-  ToolbarAction
+  ToolbarAction,
+  MenuAction
 } from 'types'
 
 import Requests, { endPoints } from 'requests'
@@ -33,12 +34,13 @@ import eventsInstance, {
 } from '../events'
 
 import { userIsAdmin, userIsClientUser } from 'utils/role'
-import { getActiveRequests, getArchivedRequests, archivedRequestStates } from 'utils'
+import { getActiveRequests, getArchivedRequests } from 'utils'
+import { setActiveRequestsPresence } from 'session'
 
 export type Props = {
   history: History,
   location: {
-    state: { requests: Array<ItemRequestInterface> }, pathname: string
+    pathname: string
   },
   requests: undefined | Array<ItemRequestInterface>,
   setItemRequests: (e: Array<ItemRequestInterface> | null) => {},
@@ -71,7 +73,7 @@ class Component extends React.Component<Props> {
 
     const defaultToolbarActions: Array<ToolbarAction> = []
 
-    if (requestsSelected.length > 0) {
+    if (false && requestsSelected.length > 0) {
 
       const updateBackend = (body: Object) => {
         showLoading()
@@ -115,6 +117,62 @@ class Component extends React.Component<Props> {
 
   }
 
+  menuActions = () => {
+    const { showLoading, hideLoading, showToast } = this.props
+
+    const defaultMenuActions: Array<MenuAction> = []
+
+    const updateBackend = (body: Object) => {
+      showLoading()
+      Requests.put(endPoints['item-requests'], {
+        ...this.defaultUpdateRequestBody(),
+        update: body
+      }).then(this.updateRequests).catch(err => {
+        console.error(err)
+        showToast(err.error || err.toString())
+      }).finally(hideLoading)
+    }
+
+    const defaultHandler = (requestSelected: string, cb: () => void) => {
+      this.setState({ requestsSelected: [requestSelected] }, cb)
+    }
+
+    switch (window.location.pathname) {
+      case Routes.requests.path: return [{
+        text: 'Mark as received',
+        handler: (requestSelected: string) => {
+          defaultHandler(requestSelected, () => {
+            updateBackend({ state: 5 }) // received
+          })
+        }
+      }, {
+        text: 'Mark as cancelled',
+        handler: (requestSelected: string) => {
+          defaultHandler(requestSelected, () => {
+            updateBackend({ state: 3 }) // cancelled
+          })
+        }
+      }]
+      case Routes.courier.path: return [{
+        text: 'Mark as delivered',
+        handler: (requestSelected: string) => {
+          defaultHandler(requestSelected, () => {
+            updateBackend({ state: 4 }) // delivered
+          })
+        }
+      }]
+      case Routes.admin.path: return [{
+        text: 'Assign to courier',
+        handler: (requestSelected: string) =>
+          defaultHandler(requestSelected, () => {
+            this.onAssignCourier()
+          })
+      }]
+      default: return defaultMenuActions
+    }
+
+  }
+
   /**
    * Reponse ("response"), a result of item request updates from either
    * Axios requests by current user
@@ -139,25 +197,31 @@ class Component extends React.Component<Props> {
     hideToast()
     setItemRequests(requests)
     this.setState({ requestsSelected: [] }, () => {
-      const requestsArchived = response.filter(
-        ({ state }: ItemRequestInterface) => archivedRequestStates.includes(state)
-      )
-      if (requestsArchived.length) setTimeout(() => {
-        showToast(`${requestsArchived.length} ${
-          requestsArchived.length > 1 ? 'requests' : 'request'
+      const archivedRequests = getArchivedRequests(response)
+      if (archivedRequests.length) setTimeout(() => {
+        showToast(`${archivedRequests.length} ${
+          archivedRequests.length > 1 ? 'requests' : 'request'
           } archived`)
       }, 400)
+      setActiveRequestsPresence(
+        requests.length > getArchivedRequests(requests).length
+      )
     })
   }
 
   onPrimaryAction = () => {
-    this.props.history.push(Routes.search.path)
+    this.props.history.replace(Routes.search.path)
   }
 
   onRequestTapped = (position: Number, request: String) => {
     const { requestDetailed, requestsSelected } = this.state
     if (position > 0) {
-      this.setState({ requestDetailed: request === requestDetailed ? null : request })
+      if (userIsClientUser()) {
+        this.props.history.push(Routes.request.path, {
+          request: (this.props.requests || []).find(({ _id }) => _id === request)
+        })
+      } else
+        this.setState({ requestDetailed: request === requestDetailed ? null : request })
     } else {
       const index = requestsSelected.indexOf(request)
       if (index < 0) {
@@ -205,12 +269,8 @@ class Component extends React.Component<Props> {
   fetchRequests(animate: boolean = true, cb?: Function) {
     const {
       showLoading, hideLoading, showToast,
-      setItemRequests,
-      location: { state }
+      setItemRequests
     } = this.props
-    if (state && state.requests) {
-      setItemRequests(state.requests); return
-    }
     if (animate) showLoading()
     Requests.get(endPoints['item-requests']).then((response: any) => {
       setItemRequests(response)
@@ -271,7 +331,7 @@ class Component extends React.Component<Props> {
     const activeRequests = getActiveRequests(requests)
     const archivedRequests = getArchivedRequests(requests)
 
-    const selectModeOn = requestsSelected.length > 0
+    const selectModeOn = false // requestsSelected.length > 0
 
     const requestComponent = (item: any, i: number, a: Array<ItemRequestInterface>) => (
       <div key={item._id}>
@@ -286,7 +346,8 @@ class Component extends React.Component<Props> {
             detailed={item._id === requestDetailed}
             selected={requestsSelected.includes(item._id)}
             selectMode={selectModeOn}
-            onTap={this.onRequestTapped} />
+            onTap={this.onRequestTapped}
+            actions={this.menuActions()} />
         </IonItem>
         {i === a.length - 1 ? null : <IonItemDivider style={{ minHeight: 0 }} />}
       </div>
@@ -294,7 +355,7 @@ class Component extends React.Component<Props> {
 
     return (
       <IonPage>
-        <Header omitsBack title="Requests" actions={this.toolbarActions()} />
+        <Header title="Requests" actions={this.toolbarActions()} />
         <IonContent>
           <IonRefresher slot="fixed" onIonRefresh={this.syncRequestData}>
             <IonRefresherContent></IonRefresherContent>

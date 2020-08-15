@@ -21,6 +21,7 @@ import { ItemSearchResult as ItemSearchResultInterface } from 'types'
 
 import Requests, { endPoints } from 'requests'
 
+import { setActiveRequestsPresence } from 'session'
 import { updateCurrentPosition, getDeliveryLocationForNextOrder } from 'location'
 
 type Props = {
@@ -147,18 +148,18 @@ class Component extends React.Component<Props> {
       lat, lon
     }
     showLoading()
-    setTimeout(() => {
-      Requests.post(endPoints['item-requests'], payload).then((response: any) => {
-        if (response.error) {
-          const { selectedItems } = this.state
-          this.props.history.push(Routes.credit.path, { selectedItems })
-        } else
-          this.props.history.replace(Routes.requests.path)
-      }).catch(err => {
-        console.error(err)
-        showToast(err.error || err.toString())
-      }).finally(hideLoading)
-    }, 1000)
+    Requests.post(endPoints['item-requests'], payload).then((response: any) => {
+      if (response.error) {
+        const { selectedItems } = this.state
+        this.props.history.push(Routes.credit.path, { selectedItems })
+      } else {
+        setActiveRequestsPresence(true)
+        window.location.replace(Routes.home.path)
+      }
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    }).finally(hideLoading)
   }
 
   onOrderConfirmationDismiss = () =>

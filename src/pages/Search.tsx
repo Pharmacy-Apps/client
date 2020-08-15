@@ -9,8 +9,8 @@ import * as constants from 'reducers/constants'
 
 import { State as ReducerState } from 'reducers'
 
-import { IonPage, IonContent, IonSearchbar, IonList, IonItem, IonButton, IonIcon, IonLabel, IonSelect, IonSelectOption } from '@ionic/react'
-import { send, ellipsisHorizontal } from 'ionicons/icons'
+import { IonPage, IonContent, IonSearchbar, IonList, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/react'
+import { send } from 'ionicons/icons'
 
 import { Header, ItemSearchResult } from 'components'
 
@@ -43,7 +43,7 @@ const searchPlaceholder = 'search'
 const noItemsPlaceholder = 'No items found, please try a different search'
 
 const itemCategories = Object.keys(ItemCategoryMap).map((key: string) => ({
-  label: ItemCategoryMap[key],
+  label: ItemCategoryMap[key].label,
   value: key
 }))
 
@@ -116,22 +116,14 @@ class Component extends React.Component<Props> {
 
   toolbarActions = () => {
     const { selectedCategory } = this.state
-    let selectRef: any = null
-    let buttonRef: any = null
     const defaultToolbarActions: Array<ToolbarAction> = [{
       component: () => (
         <>
-          <IonButton
-            ref={node => buttonRef = node}
-            className="button-select-filter"
-          ><IonIcon icon={ellipsisHorizontal} /></IonButton>
           <IonSelect
-            ref={node => selectRef = node}
             interfaceOptions={{ showBackdrop: false }}
             interface="popover"
             onIonChange={({ detail: { value } }: any) => this.onCategorySelected(value)}
             value={selectedCategory}
-            className="select-filter"
           >
             {
               itemCategories.map(({ label, value }, i, a) => (
@@ -143,9 +135,7 @@ class Component extends React.Component<Props> {
           </IonSelect>
         </>
       ),
-      handler: () => {
-        selectRef && selectRef.open({ target: buttonRef })
-      }
+      handler: () => {}
     }]
     return this.state.selectedItems.length ? [{
       icon: send,

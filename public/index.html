@@ -50,15 +50,12 @@
       padding: 0 !important
     }
 
-    .select-filter {
-      display: none !important
+    .select-menu,
+    ion-radio::part(container) {
+      visibility: hidden
     }
 
-    .select-filter::part(icon) {
-      display: none !important
-    }
-
-    .button-select-filter::part(native) {
+    .button-select-menu::part(native) {
       padding: 0;
       --ripple-color: transparent;
       --background-hover: transparent;
@@ -142,6 +139,12 @@
 
     .msisdn-modify-section input:focus {
       outline: none
+    }
+
+    .fill-height {
+      --min-height: 100% !important;
+      min-height: 100% !important;
+      height: 100% !important
     }
   </style>
 
