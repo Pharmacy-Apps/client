@@ -22,3 +22,7 @@ export function userIsPharmacyOperator() {
 export function userIsAdmin() {
   return getUserRole() === 4
 }
+
+export function userIsNotClientUser() {
+  return getUserRole() !== 1
+}

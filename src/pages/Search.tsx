@@ -9,7 +9,10 @@ import * as constants from 'reducers/constants'
 
 import { State as ReducerState } from 'reducers'
 
-import { IonPage, IonContent, IonSearchbar, IonList, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/react'
+import {
+  IonPage, IonContent, IonSearchbar, IonList, IonItem, IonLabel, IonSelect, IonSelectOption,
+  IonFabButton, IonFab, IonIcon
+} from '@ionic/react'
 import { send } from 'ionicons/icons'
 
 import { Header, ItemSearchResult } from 'components'
@@ -116,7 +119,7 @@ class Component extends React.Component<Props> {
 
   toolbarActions = () => {
     const { selectedCategory } = this.state
-    const defaultToolbarActions: Array<ToolbarAction> = [{
+    const toolbarActions: Array<ToolbarAction> = [{
       component: () => (
         <>
           <IonSelect
@@ -135,16 +138,13 @@ class Component extends React.Component<Props> {
           </IonSelect>
         </>
       ),
-      handler: () => {}
+      handler: () => { }
     }]
-    return this.state.selectedItems.length ? [{
-      icon: send,
-      handler: this.onSubmit
-    }, ...defaultToolbarActions] : defaultToolbarActions
+    return toolbarActions
   }
 
   title = () => (
-    <IonSearchbar /* color="primary" */ placeholder={searchPlaceholder} className="searchbar ion-no-padding" clearIcon="close-circle" onIonChange={() => { }}></IonSearchbar>
+    <IonSearchbar /* color="primary" */ placeholder={searchPlaceholder} className="searchbar ion-no-padding" clearIcon="close-circle" onIonChange={() => { }} />
   )
 
   computeItemsShown = () => {
@@ -180,6 +180,13 @@ class Component extends React.Component<Props> {
                   : null
               )
           }</IonList>
+          {this.state.selectedItems.length ? (
+            <IonFab className="ion-margin" vertical="bottom" horizontal="end" slot="fixed">
+              <IonFabButton onClick={this.onSubmit} color="light">
+                <IonIcon color="primary" icon={send} />
+              </IonFabButton>
+            </IonFab>
+          ) : null}
         </IonContent>
       </IonPage>
     )

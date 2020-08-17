@@ -12,7 +12,7 @@ import {
 
 import { Header } from 'components'
 
-// import { userIsAdmin, userIsClientUser } from 'utils/role'
+import { userIsClientUser, userIsNotClientUser } from 'utils/role'
 
 import { getActiveRequestsPresence } from 'session'
 import { getDeliveryLocationForNextOrder } from 'location'
@@ -32,14 +32,25 @@ const itemCategories = Object.keys(ItemCategories)
 
 class Component extends React.Component<Props> {
 
-  async componentDidMount() {
-    const defaultRoute = getDefaultRoute()
-    if (this.props.location.pathname !== defaultRoute)
-      window.location.replace(defaultRoute)
+  state = { renderContent: false }
 
-    const activeRequestsPresent = getActiveRequestsPresence()
+  componentDidMount() {
+    const defaultRoute = getDefaultRoute()
+    if (this.props.location.pathname !== defaultRoute) {
+      window.location.replace(defaultRoute)
+      return
+    }
+
+    const activeRequestsPresent = (
+      userIsClientUser() && getActiveRequestsPresence()
+    )
+
     if (activeRequestsPresent)
+      this.props.history.push(Routes.requests.path)
+    else if (userIsNotClientUser())
       window.location.replace(Routes.requests.path)
+    else
+      this.setState({ renderContent: true })
   }
 
   toolbarActions = () => [{
@@ -61,7 +72,7 @@ class Component extends React.Component<Props> {
   render() {
     const { lat, lon } = getDeliveryLocationForNextOrder()
     return (
-      <IonPage>
+      this.state.renderContent ? <IonPage>
         <Header omitsBack actions={this.toolbarActions()} />
         <IonContent>
           <IonList className="ion-no-padding">
@@ -71,7 +82,7 @@ class Component extends React.Component<Props> {
                 <h3>{lat}, {lon}</h3>
               </IonLabel>
               <IonButton onClick={this.onChangeDeliveryLocation} fill="clear">
-                <IonIcon src="assets/icon/edit.svg" />
+                <IonIcon src="assets/icons/edit.svg" />
               </IonButton>
             </IonItem>{
               itemCategories.map(({ icon, label, description, value }, i, a) => (
@@ -86,7 +97,7 @@ class Component extends React.Component<Props> {
               ))
             }</IonList>
         </IonContent>
-      </IonPage>
+      </IonPage> : null
     )
   }
 

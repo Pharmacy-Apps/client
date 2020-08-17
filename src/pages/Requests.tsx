@@ -210,7 +210,7 @@ class Component extends React.Component<Props> {
   }
 
   onPrimaryAction = () => {
-    this.props.history.replace(Routes.search.path)
+    this.props.history.push(Routes.search.path)
   }
 
   onRequestTapped = (position: Number, request: String) => {
@@ -355,7 +355,7 @@ class Component extends React.Component<Props> {
 
     return (
       <IonPage>
-        <Header title="Requests" actions={this.toolbarActions()} />
+        <Header omitsBack title="Requests" actions={this.toolbarActions()} />
         <IonContent>
           <IonRefresher slot="fixed" onIonRefresh={this.syncRequestData}>
             <IonRefresherContent></IonRefresherContent>

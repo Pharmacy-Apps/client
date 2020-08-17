@@ -17,6 +17,7 @@ export interface Item {
   name: string,
   category: string,
   description: Array<string>,
+  'icon-url': string
 }
 
 export interface ItemSearchResult {

@@ -15,3 +15,7 @@ export const getActiveRequests = (requests: Array<ItemRequestInterface>) => (
 export const getArchivedRequests = (requests: Array<ItemRequestInterface>) => (
   requests.filter(({ state }) => archivedRequestStates.indexOf(state) > -1)
 )
+
+export const imageServerUrl = window.location.host === 'localhost' // deployment on mobile
+  ? process.env.REACT_APP_IMAGE_SERVER_URL_REMOTE
+  : process.env.REACT_APP_IMAGE_SERVER_URL
