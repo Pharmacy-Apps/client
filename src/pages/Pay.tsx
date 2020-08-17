@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonAlert, IonButton } from '@ionic/react'
+import { IonContent, IonPage, IonList, IonItem, IonLabel, IonAlert, IonButton, IonIcon } from '@ionic/react'
 
 import { Header } from 'components'
 import { MSISDNModify as MSISDNModifyPopover } from 'containers'
@@ -128,11 +128,13 @@ class Component extends React.Component<Props> {
       _id: 'mtn',
       name: 'MTN Mobile Money',
       description: formatUGMSISDN(msisdn || getSessionPhone()),
+      icon: '/assets/icons/mobile-pay.svg',
       requiresNumber: true
     }, {
       _id: 'cash',
       name: 'Pay with Cash',
-      description: ''
+      description: '',
+      icon: '/assets/icons/wallet.svg',
     }] as Array<Channel>
   }
 
@@ -144,7 +146,7 @@ class Component extends React.Component<Props> {
         <IonContent>
           <IonList lines="full" className="ion-no-padding">
             <IonItem lines="none">
-              <IonLabel>
+              <IonLabel style={{ whiteSpace: 'inherit' }}>
                 <p>{message}</p>
               </IonLabel>
             </IonItem>{this.getChannels().map((channel, i, a) => (
@@ -154,7 +156,7 @@ class Component extends React.Component<Props> {
                 button
                 lines={i === a.length - 1 ? 'none' : undefined}
               >
-                {/* <IonIcon icon={rocket} slot="start" /> */}
+                <IonIcon icon={channel.icon} slot="start" />
                 <IonLabel>
                   <h3>{channel.name}</h3>
                   <p>{channel.description}</p>
@@ -189,6 +191,7 @@ type Channel = {
   _id: string,
   name: string,
   description: string,
+  icon: string,
   requiresNumber?: boolean
 }
 

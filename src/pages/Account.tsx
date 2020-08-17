@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonButton, IonText } from '@ionic/react'
+import { IonContent, IonPage, IonList, IonItem, IonLabel, IonButton, IonText, IonIcon } from '@ionic/react'
 
 import { Header } from 'components'
 import { MSISDNModify as MSISDNModifyPopover } from 'containers'
@@ -21,6 +21,8 @@ import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
 
 import { userIsClientUser } from 'utils/role'
 
+import { locationSharp as location, person } from 'ionicons/icons'
+
 type Props = {
   history: History,
   showLoading: () => {},
@@ -31,6 +33,7 @@ type Props = {
 type Item = {
   name: string,
   value: any,
+  icon: string,
   action?: string,
   handler?: () => void,
   starred?: true,
@@ -57,7 +60,8 @@ class Component extends React.Component<Props> {
     const defaultItems: Array<Item> = [{
       name: 'Phone',
       value: formatUGMSISDN(getSessionPhone() || ''),
-      skipsAction: true
+      skipsAction: true,
+      icon: person
     }]
 
     // {
@@ -77,12 +81,14 @@ class Component extends React.Component<Props> {
       name: 'Delivery location',
       value: lat && lon ? `${lat}, ${lon}` : 'Not known yet',
       action: lat && lon ? 'Update' : 'Set',
-      handler: () => history.push(Routes.location.path)
+      handler: () => history.push(Routes.location.path),
+      icon: location
     }, {
       name: 'MTN account to debit',
       value: formatUGMSISDN(msisdn || getSessionPhone()),
       action: 'Change',
-      handler: this.showMSISDNPopover
+      handler: this.showMSISDNPopover,
+      icon: '/assets/icons/mobile-pay.svg'
     }]
 
     return userIsClientUser()
@@ -135,6 +141,7 @@ class Component extends React.Component<Props> {
           <IonList lines="inset" className="ion-no-margin ion-no-padding">{
             this.getListItems().map((item, i, a) => {
               return <IonItem key={i} {...i + 1 === a.length ? { lines: "none" } : {}}>
+                <IonIcon icon={item.icon} color="primary" slot="start" />
                 <IonLabel>
                   <p>{item.name}</p>
                   <IonText {...item.starred ? { color: "primary" } : {}}>

@@ -43,7 +43,7 @@ class Component extends React.Component<Props> {
 
     const activeRequestsPresent = (
       userIsClientUser() && getActiveRequestsPresence()
-    )
+    ) && false
 
     if (activeRequestsPresent)
       this.props.history.push(Routes.requests.path)
@@ -111,7 +111,7 @@ const CategoryComponent: React.FC<{
   onSelect: () => void
 }> = ({ lines, label, description, icon, onSelect }) => (
   <IonItem button onClick={onSelect} lines={lines}>
-    <IonIcon color="primary" slot="start" icon={icon} />
+    <IonIcon color="primary" slot="start" icon={icon} size="large" />
     <IonLabel>
       <h3>{label}</h3>
       <p>{description}</p>

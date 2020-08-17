@@ -21,9 +21,9 @@ const Component: React.FC<Props> = ({ omitsBack, title, size, actions = [] }) =>
     <IonHeader>
       <IonToolbar /* color="primary" */>
         {omitsBack ? null : <IonButtons slot="start">
-          <IonBackButton defaultHref="/" />
+          <IonBackButton color="primary" defaultHref="/" />
         </IonButtons>}
-        <IonTitle size={size}>{title}</IonTitle>
+        <IonTitle size={size} color="primary">{title}</IonTitle>
         <IonButtons slot="secondary">{
           actions.map((
             { icon, text, component: Component, handler },
@@ -34,7 +34,7 @@ const Component: React.FC<Props> = ({ omitsBack, title, size, actions = [] }) =>
             style={buttonStyle}
           >
               {
-                icon ? <IonIcon icon={icon} /> : null
+                icon ? <IonIcon color="primary" icon={icon} /> : null
               }{
                 text ? text : null
               }{

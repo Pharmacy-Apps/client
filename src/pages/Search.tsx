@@ -13,7 +13,7 @@ import {
   IonPage, IonContent, IonSearchbar, IonList, IonItem, IonLabel, IonSelect, IonSelectOption,
   IonFabButton, IonFab, IonIcon
 } from '@ionic/react'
-import { send } from 'ionicons/icons'
+import { send, closeOutline as close } from 'ionicons/icons'
 
 import { Header, ItemSearchResult } from 'components'
 
@@ -88,9 +88,10 @@ class Component extends React.Component<Props> {
     }).finally(hideLoading)
   }
 
-  onSearch = (e: any) => {
+  onSearch = ({ detail: { value } }: CustomEvent) => {
     // this.fetchItems(e.target.value)
     // this.props.onSearch(e.target.value)
+    console.info('Search', value)
   }
 
   onSelect = (result: ItemSearchResultInterface) => {
@@ -144,7 +145,15 @@ class Component extends React.Component<Props> {
   }
 
   title = () => (
-    <IonSearchbar /* color="primary" */ placeholder={searchPlaceholder} className="searchbar ion-no-padding" clearIcon="close-circle" onIonChange={() => { }} />
+    <IonSearchbar
+      style={{
+        '--icon-color': 'var(--ion-color-primary)',
+        '--color': 'var(--ion-color-primary)'
+      }}
+      placeholder={searchPlaceholder}
+      className="searchbar ion-no-padding"
+      clearIcon={close}
+      onIonChange={this.onSearch} />
   )
 
   computeItemsShown = () => {
