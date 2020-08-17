@@ -10,19 +10,15 @@ import * as constants from 'reducers/constants'
 import {
   IonContent,
   IonPage,
-  IonList, IonItem, IonLabel, IonButton, IonText, IonItemDivider, IonIcon,
-  IonAlert
+  IonList, IonItem, IonLabel, IonButton, IonText, IonItemDivider, IonIcon
 } from '@ionic/react'
 
 import { addCircleOutline, removeCircleOutline } from 'ionicons/icons';
 
 import { Header } from 'components'
-import { ItemSearchResult as ItemSearchResultInterface } from 'types'
-
-import Requests, { endPoints } from 'requests'
-
-import { setActiveRequestsPresence } from 'session'
 import { updateCurrentPosition, getDeliveryLocationForNextOrder } from 'location'
+
+import { ItemSearchResult as ItemSearchResultInterface } from 'types'
 
 type Props = {
   history: History,
@@ -87,13 +83,6 @@ class Component extends React.Component<Props> {
     this.props.history.replace(Routes.search.path, { selectedItems })
   }
 
-  onPrimaryAction = async () => {
-    const { orderConfirmationShown } = this.state
-    if (orderConfirmationShown === false) {
-      this.setState({ orderConfirmationShown: true })
-    }
-  }
-
   locationNotAvailable = () => {
     let { lat, lon } = getDeliveryLocationForNextOrder()
     return lat === undefined || lon === undefined
@@ -135,39 +124,13 @@ class Component extends React.Component<Props> {
     }
   }
 
-  componentDidMount() {
-    // this.locationNotAvailable() && this.updateLocation() // Ensure location is available
+  onPrimaryAction = () => {
+    const { selectedItems } = this.state
+    this.props.history.push(Routes.pay.path, { selectedItems })
   }
-
-  onOrderConfirmation = () => {
-    const { showLoading, hideLoading, showToast } = this.props
-    const { lat, lon } = getDeliveryLocationForNextOrder()
-    const payload = {
-      'pharmacy-items': this.state.selectedItems.map(o => o._id),
-      'notes': '',
-      lat, lon
-    }
-    showLoading()
-    Requests.post(endPoints['item-requests'], payload).then((response: any) => {
-      if (response.error) {
-        const { selectedItems } = this.state
-        this.props.history.push(Routes.credit.path, { selectedItems })
-      } else {
-        setActiveRequestsPresence(true)
-        window.location.replace(Routes.home.path)
-      }
-    }).catch(err => {
-      console.error(err)
-      showToast(err.error || err.toString())
-    }).finally(hideLoading)
-  }
-
-  onOrderConfirmationDismiss = () =>
-    this.setState({ orderConfirmationShown: false })
 
   render() {
     const {
-      orderConfirmationShown,
       cost,
       distance
     } = this.state
@@ -203,7 +166,7 @@ class Component extends React.Component<Props> {
                   <IonItem lines="none" className="ion-no-margin ion-no-padding"
                     style={{ '--min-height': '25px' }}>
                     <IonLabel className="ion-no-margin" slot="start"><p>Cost</p></IonLabel>
-                    <IonText slot="end"><h4>{`${cost} credits`}</h4></IonText>
+                    <IonText slot="end"><h4>UGX {cost}</h4></IonText>
                   </IonItem>{
                     distance
                       ? <IonItem lines="none" className="ion-no-padding"
@@ -215,7 +178,6 @@ class Component extends React.Component<Props> {
                   }</IonList>
               </IonLabel>
             </IonItem>
-
             {/* Location change option */}
             <IonItem button onClick={this.onSelectDestination}>{
               locationNotAvailable ? <IonLabel className="ion-text-wrap">
@@ -227,48 +189,42 @@ class Component extends React.Component<Props> {
                   }</h4></IonText>
                 </IonLabel>
             }</IonItem>
-
             <IonItem lines="none">
               <IonButton onClick={this.onPrimaryAction} disabled={locationNotAvailable} className="ion-margin-top" size="default">{primaryAction}</IonButton>
             </IonItem>
           </IonList>
-          <OrderConfirmation
-            open={orderConfirmationShown}
-            bill={`${cost}`}
-            onConfirm={this.onOrderConfirmation}
-            afterDismiss={this.onOrderConfirmationDismiss} />
         </IonContent>
       </IonPage>
     )
   }
 }
 
-export type OrderConfirmationProps = {
-  open: boolean,
-  bill: string,
-  onConfirm: () => void
-  afterDismiss: () => void
-}
-const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
-  open,
-  bill,
-  onConfirm,
-  afterDismiss
-}) => (
-    <IonAlert
-      isOpen={open}
-      onDidDismiss={afterDismiss}
-      header="Bill"
-      message={`Alert message ${bill} credits`}
-      buttons={[
-        {
-          text: 'Okay',
-          handler: onConfirm
-        },
-        'Cancel'
-      ]}
-    />
-  )
+// export type OrderConfirmationProps = {
+//   open: boolean,
+//   bill: string,
+//   onConfirm: () => void
+//   afterDismiss: () => void
+// }
+// const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
+//   open,
+//   bill,
+//   onConfirm,
+//   afterDismiss
+// }) => (
+//     <IonAlert
+//       isOpen={open}
+//       onDidDismiss={afterDismiss}
+//       header="Bill"
+//       message={`Alert message UGX ${bill}`}
+//       buttons={[
+//         {
+//           text: 'Okay',
+//           handler: onConfirm
+//         },
+//         'Cancel'
+//       ]}
+//     />
+//   )
 
 type DividerProps = {
   text?: string

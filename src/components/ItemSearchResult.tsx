@@ -44,7 +44,7 @@ const Component: React.FC<Props> = ({
         </IonRow>
         <IonRow>
           <IonCol className="ion-no-padding">
-            <IonLabel><p>{`${price} credits`}</p></IonLabel>
+            <IonLabel><p>{`UGX ${price}`}</p></IonLabel>
           </IonCol>
           <IonCol className="ion-no-padding">
             <IonLabel className="ion-text-right"><p>{distance}</p></IonLabel>

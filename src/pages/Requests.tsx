@@ -56,6 +56,7 @@ const placeholderText = 'Lorem ipsum requests lorem ipsum'
 class Component extends React.Component<Props> {
 
   state = {
+    renderContent: false,
     courierPopoverShown: false,
     requestDetailed: null,
     requestsSelected: [] as Array<String>,
@@ -278,6 +279,7 @@ class Component extends React.Component<Props> {
       console.error(err)
       showToast(err.error || err.toString())
     }).finally(() => {
+      this.setState({ renderContent: true })
       hideLoading()
       cb && cb()
     })
@@ -316,6 +318,7 @@ class Component extends React.Component<Props> {
 
   render() {
     const {
+      renderContent,
       courierPopoverShown,
       requestDetailed,
       requestsSelected,
@@ -353,7 +356,7 @@ class Component extends React.Component<Props> {
       </div>
     )
 
-    return (
+    return renderContent ? (
       <IonPage>
         <Header omitsBack title="Requests" actions={this.toolbarActions()} />
         <IonContent>
@@ -395,7 +398,7 @@ class Component extends React.Component<Props> {
           />
         </IonContent>
       </IonPage>
-    )
+    ) : null
   }
 
 }

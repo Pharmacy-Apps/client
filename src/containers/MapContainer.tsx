@@ -57,7 +57,7 @@ class Component extends React.Component<Props> {
           }}
         />
       </div>
-      <IonIcon style={markerStyle} icon={locationIcon} />
+      <IonIcon color="primary" style={markerStyle} icon={locationIcon} />
     </>)
   }
 

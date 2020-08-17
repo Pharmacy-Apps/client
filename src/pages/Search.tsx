@@ -110,7 +110,7 @@ class Component extends React.Component<Props> {
 
   onSubmit = () => {
     const { selectedItems } = this.state
-    this.props.history.replace(Routes.order.path, { selectedItems })
+    this.props.history.push(Routes.order.path, { selectedItems })
   }
 
   onCategorySelected = (category: string) => {
@@ -182,8 +182,8 @@ class Component extends React.Component<Props> {
           }</IonList>
           {this.state.selectedItems.length ? (
             <IonFab className="ion-margin" vertical="bottom" horizontal="end" slot="fixed">
-              <IonFabButton onClick={this.onSubmit} color="light">
-                <IonIcon color="primary" icon={send} />
+              <IonFabButton color="primary" onClick={this.onSubmit}>
+                <IonIcon icon={send} />
               </IonFabButton>
             </IonFab>
           ) : null}

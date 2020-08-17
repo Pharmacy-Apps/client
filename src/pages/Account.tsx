@@ -10,9 +10,14 @@ import * as constants from 'reducers/constants'
 import { IonContent, IonPage, IonList, IonItem, IonLabel, IonButton, IonText } from '@ionic/react'
 
 import { Header } from 'components'
+import { MSISDNModify as MSISDNModifyPopover } from 'containers'
 
 import Requests, { endPoints } from 'requests'
-import { getSessionPhone, getSessionLocation } from 'session'
+import { getDeliveryLocationForNextOrder } from 'location'
+
+import decrypt from 'utils/jwt'
+import { formatUGMSISDN } from 'utils/msisdn'
+import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
 
 import { userIsClientUser } from 'utils/role'
 
@@ -32,7 +37,7 @@ type Item = {
   skipsAction?: true
 }
 
-const { lat, lon } = getSessionLocation() || {}
+const { lat, lon } = getDeliveryLocationForNextOrder()
 
 /* 
  * To get address from coordinates,
@@ -43,29 +48,41 @@ const { lat, lon } = getSessionLocation() || {}
 
 class Component extends React.Component<Props> {
 
-  state = { credits: 0 }
+  // credits: 0
+  state = { msisdnPopoverShown: false }
 
   getListItems = () => {
     const { history } = this.props
-    const { credits } = this.state
 
     const defaultItems: Array<Item> = [{
       name: 'Phone',
-      value: getSessionPhone(),
+      value: formatUGMSISDN(getSessionPhone() || ''),
       skipsAction: true
     }]
 
+    // {
+    //   name: 'Credits',
+    //   value: this.state.credits,
+    //   action: 'Purchase Credits',
+    //   handler: () => history.push(Routes.credit.path),
+    //   starred: true
+    // }
+
+    const mtnMSISDNKey = 'mtn-msisdn'
+    const {
+      [mtnMSISDNKey]: msisdn
+    } = decrypt(getSessionToken())
+
     const clientUserItems: Array<Item> = [{
-      name: 'Credits',
-      value: credits,
-      action: 'Purchase Credits',
-      handler: () => history.push(Routes.credit.path),
-      starred: true
+      name: 'Delivery location',
+      value: lat && lon ? `${lat}, ${lon}` : 'Not known yet',
+      action: lat && lon ? 'Update' : 'Set',
+      handler: () => history.push(Routes.location.path)
     }, {
-      name: 'Last delivery location',
-      value: `${lat}, ${lon}`,
-      action: 'Update',
-      handler: () => { }
+      name: 'MTN account to debit',
+      value: formatUGMSISDN(msisdn || getSessionPhone()),
+      action: 'Change',
+      handler: this.showMSISDNPopover
     }]
 
     return userIsClientUser()
@@ -87,12 +104,35 @@ class Component extends React.Component<Props> {
     }).finally(hideLoading)
   }
 
+  showMSISDNPopover = () => {
+    this.setState({ msisdnPopoverShown: true })
+  }
+
+  hideMSISDNPopover = () => {
+    this.setState({ msisdnPopoverShown: false })
+  }
+
+  onSubmitChangeNumber = (msisdn: string) => {
+    this.hideMSISDNPopover()
+    const { showLoading, hideLoading, showToast } = this.props
+    showLoading()
+    Requests.post(
+      endPoints['mtn-msisdn'], { msisdn }
+    ).then((response: any) => {
+      setSessionToken(response)
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    }).finally(hideLoading)
+  }
+
   render() {
+    const { msisdnPopoverShown } = this.state
     return (
       <IonPage>
         <Header title="Account" />
         <IonContent>
-          <IonList lines="full" className="ion-no-margin ion-no-padding">{
+          <IonList lines="inset" className="ion-no-margin ion-no-padding">{
             this.getListItems().map((item, i, a) => {
               return <IonItem key={i} {...i + 1 === a.length ? { lines: "none" } : {}}>
                 <IonLabel>
@@ -106,6 +146,11 @@ class Component extends React.Component<Props> {
                 }</IonButton>}
               </IonItem>
             })}</IonList>
+            <MSISDNModifyPopover
+              open={msisdnPopoverShown}
+              onDismiss={this.hideMSISDNPopover}
+              onSubmit={this.onSubmitChangeNumber}
+            />
         </IonContent>
       </IonPage>
     )

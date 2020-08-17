@@ -10,7 +10,7 @@ import { setDeliveryLocation } from 'session'
 
 import { Location as LocationInterface } from 'types'
 
-const title = 'Destination'
+const title = 'Deliver to'
 const primaryAction = 'Select this location'
 
 const actionButtonStyle = {
