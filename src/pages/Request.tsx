@@ -6,6 +6,7 @@ import { Header } from 'components'
 import { MapContainer } from 'containers'
 
 import { ItemRequest as ItemRequestInterface } from 'types'
+import { userIsNotClientUser } from 'utils/role'
 
 type Props = {
   location: { state?: { request: ItemRequestInterface } }
@@ -28,7 +29,7 @@ class Component extends React.Component<Props> {
       ))
     }</p>
 
-    const userCanViewRequestClient = false
+    const userCanViewRequestClient = userIsNotClientUser()
 
     return (
       <IonPage>
@@ -51,7 +52,7 @@ class Component extends React.Component<Props> {
             </IonItem>
             <IonItem lines="none">
               <IonLabel>
-                <p>Delivery to <b>{`${lat}, ${lon}`}</b></p>
+                <p>Delivery at <b>{`${lat}, ${lon}`}</b></p>
                 {userCanViewRequestClient
                   ? <p>Client - {user.name || user.phone}</p>
                   : null}

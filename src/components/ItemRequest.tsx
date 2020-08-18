@@ -5,7 +5,7 @@ import { IonLabel, IonIcon, IonText, IonButton, IonSelect, IonSelectOption } fro
 import { squareOutline as numb, checkbox as active, ellipsisHorizontal as more } from 'ionicons/icons'
 
 import { ItemRequest, MenuAction } from 'types'
-import { userIsAdmin, userIsPharmacyOperator } from 'utils/role'
+import { userIsAdmin, userIsPharmacyOperator, userIsNotClientUser } from 'utils/role'
 
 Moment.updateLocale('en', {
   relativeTime: {
@@ -70,7 +70,9 @@ const Component: React.FC<Props> = ({
           ) : 'no-icon'
         }
         slot="start"
-        onClick={e => onClick(0, _id, e)}
+        onClick={e => onClick(
+          userIsNotClientUser() ? 0 : 1,
+          _id, e)}
         className="ion-no-margin" />
       <IonText className="ion-padding-vertical ellipses" onClick={e => onClick(1, _id, e)}>
         <IonLabel className="ion-no-margin spaced">
@@ -84,11 +86,11 @@ const Component: React.FC<Props> = ({
             }
           </h2>
           <p>{state}</p>
+          {(
+            lat !== undefined &&
+            lon !== undefined
+          ) ? <p>Delivery at {`${lat}, ${lon}`}</p> : null}
           {detailed ? <>
-            {(
-              lat !== undefined &&
-              lon !== undefined
-            ) ? <p>Delivery at {`${lat}, ${lon}`}</p> : null}
             {userCanViewRequestClient
               ? <p>Client - {user.name || user.phone}</p>
               : null}

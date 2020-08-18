@@ -136,7 +136,7 @@ class Component extends React.Component<Props> {
     const { msisdnPopoverShown } = this.state
     return (
       <IonPage>
-        <Header title="Account" />
+        <Header title="Profile" />
         <IonContent>
           <IonList lines="inset" className="ion-no-margin ion-no-padding">{
             this.getListItems().map((item, i, a) => {

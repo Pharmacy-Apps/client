@@ -12,7 +12,7 @@ import {
   IonRefresher, IonRefresherContent
 } from '@ionic/react'
 import { RefresherEventDetail } from '@ionic/core'
-import { chevronDown as down, chevronUp as up } from 'ionicons/icons'
+import { chevronDown as down, chevronUp as up, person } from 'ionicons/icons'
 
 import { Header, ItemRequest } from 'components'
 import { Select as SelectPopover } from 'containers'
@@ -33,7 +33,7 @@ import eventsInstance, {
   syncData as syncDataAction
 } from '../events'
 
-import { userIsAdmin, userIsClientUser } from 'utils/role'
+import { userIsAdmin, userIsClientUser, userIsNotClientUser } from 'utils/role'
 import { getActiveRequests, getArchivedRequests } from 'utils'
 import { setActiveRequestsPresence } from 'session'
 
@@ -69,12 +69,17 @@ class Component extends React.Component<Props> {
   })
 
   toolbarActions = () => {
-    const { showLoading, hideLoading, showToast } = this.props
+    const { history, showLoading, hideLoading, showToast } = this.props
     const { requestsSelected } = this.state
 
-    const defaultToolbarActions: Array<ToolbarAction> = []
+    const defaultToolbarActions: Array<ToolbarAction> = [{
+      icon: person,
+      handler: () => history.push(Routes.account.path)
+    }]
 
-    if (false && requestsSelected.length > 0) {
+    if (userIsClientUser()) return defaultToolbarActions
+
+    if (requestsSelected.length > 0) {
 
       const updateBackend = (body: Object) => {
         showLoading()
@@ -334,7 +339,7 @@ class Component extends React.Component<Props> {
     const activeRequests = getActiveRequests(requests)
     const archivedRequests = getArchivedRequests(requests)
 
-    const selectModeOn = false // requestsSelected.length > 0
+    const selectModeOn = userIsNotClientUser() && requestsSelected.length > 0
 
     const requestComponent = (item: any, i: number, a: Array<ItemRequestInterface>) => (
       <div key={item._id}>
