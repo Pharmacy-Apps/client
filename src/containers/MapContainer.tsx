@@ -11,19 +11,26 @@ import { Location as LocationInterface } from 'types'
 
 const mapKey = getMapKey()
 
-type Props = { setLocation?: (location: LocationInterface) => void }
+type Props = {
+  setLocation?: (location: LocationInterface) => void,
+  mapCenter?: { lat: number, lon: number }
+}
 
 const markerStyle = {
   width: '30px',
-  height: '30px',
+  height: '30px'
+}
+
+const floatedMarkerStyle = {
   position: 'absolute',
-  top: 'calc(50% - 30px)',
-  left: 'calc(50% - 15px)'
+  top: '50%',
+  left: '50%'
 }
 
 class Component extends React.Component<Props> {
 
-  mapCenter = getLastAttemptedDeliveryLocation() || getSessionLocation() || CentralLocation
+  mapCenter = this.props.mapCenter ||
+    getLastAttemptedDeliveryLocation() || getSessionLocation() || CentralLocation
 
   mapDefaults = {
     center: {
@@ -44,6 +51,7 @@ class Component extends React.Component<Props> {
   }
 
   render() {
+    const { mapCenter } = this.props
     return (<>
       <div style={{ height: '100%', width: '100%' }}>
         <Map
@@ -55,12 +63,27 @@ class Component extends React.Component<Props> {
             zoomControl: false,
             fullscreenControl: false
           }}
-        />
-      </div>
-      <IonIcon color="primary" style={markerStyle} icon={locationIcon} />
+        >
+          {
+            mapCenter ? <Marker lat={mapCenter.lat} lng={mapCenter.lon} /> : null
+          }
+        </Map>
+      </div>{
+        mapCenter
+          ? null
+          : <IonIcon
+            color="primary"
+            style={{ ...markerStyle, ...floatedMarkerStyle }}
+            icon={locationIcon}
+          />
+      }
     </>)
   }
 
 }
+
+const Marker: React.FC<{ lat: number, lng: number }> = ({ lat, lng }) => (
+  <IonIcon color="primary" icon={locationIcon} style={markerStyle} />
+)
 
 export default Component

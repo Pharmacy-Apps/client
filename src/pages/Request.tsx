@@ -1,18 +1,66 @@
 import React from 'react'
 import Moment from 'moment'
 
-import { IonContent, IonPage, IonLabel, IonBadge, IonList, IonItem, IonText } from '@ionic/react'
+import { CallNumber } from '@ionic-native/call-number'
+import { platformIsMobile } from 'utils'
+
+import { IonContent, IonPage, IonLabel, IonBadge, IonList, IonItem, IonText, IonButton } from '@ionic/react'
 import { Header } from 'components'
 import { MapContainer } from 'containers'
 
 import { ItemRequest as ItemRequestInterface } from 'types'
-import { userIsNotClientUser } from 'utils/role'
+import { userIsNotClientUser, userIsCourier } from 'utils/role'
 
 type Props = {
   location: { state?: { request: ItemRequestInterface } }
 }
 
+const callCourierButtonStyle = {
+  position: 'absolute',
+  top: 0,
+  left: 0
+}
+
 class Component extends React.Component<Props> {
+
+  requestPresent = () => {
+    const { location: { state } } = this.props
+    return (
+      state !== undefined &&
+      state.request !== undefined
+    )
+  }
+
+  callAction = () => {
+    const { location: { state } } = this.props
+    if (
+      state === undefined ||
+      state.request === undefined
+    ) return null
+
+    const { courier, user } = state.request
+
+    return userIsCourier()
+      ? `Call Client - ${user.name || user.phone}`
+      : (
+        courier ? `Call Courier - ${courier.name || courier.phones[0] || ''}` : ''
+      )
+  }
+
+  onCall = () => {
+    const { location: { state } } = this.props
+    if (
+      state === undefined ||
+      state.request === undefined
+    ) return null
+
+    const { courier, user } = state.request
+
+    const phone = userIsCourier() ? user.phone : (
+      courier ? courier.phones[0] : ''
+    )
+    CallNumber.callNumber(`+${phone}`, true)
+  }
 
   render() {
     const { location: { state } } = this.props
@@ -30,6 +78,7 @@ class Component extends React.Component<Props> {
     }</p>
 
     const userCanViewRequestClient = userIsNotClientUser()
+    const userCanViewCallButton = platformIsMobile && requestState === 'in transit'
 
     return (
       <IonPage>
@@ -56,11 +105,19 @@ class Component extends React.Component<Props> {
                 {userCanViewRequestClient
                   ? <p>Client - {user.name || user.phone}</p>
                   : null}
-                {courier ? <p>Courier - {`${courier.name}`}</p> : null}
               </IonLabel>
             </IonItem>
-            <IonItem lines="none" className="fill-height ion-no-padding" style={{ '--inner-padding-end': 0 }}>
-              <MapContainer setLocation={() => { }} />
+            <IonItem lines="none" className="fill-height ion-no-padding" style={{
+              '--inner-padding-end': 0,
+              position: 'relative'
+            }}>
+              <MapContainer mapCenter={{ lat, lon }} />
+              {courier && userCanViewCallButton ? <IonButton onClick={this.onCall}
+                style={callCourierButtonStyle}
+                className="ion-margin"
+              >
+                {this.callAction()}
+              </IonButton> : null}
             </IonItem>
           </IonList>
         </IonContent>

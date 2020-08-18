@@ -43,7 +43,7 @@ class Component extends React.Component<Props> {
 
     const activeRequestsPresent = (
       userIsClientUser() && getActiveRequestsPresence()
-    ) && false
+    )
 
     if (activeRequestsPresent)
       this.props.history.push(Routes.requests.path)
