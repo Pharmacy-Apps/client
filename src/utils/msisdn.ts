@@ -12,7 +12,7 @@ export function parseMTNUGSN(sn: string) {
 }
 
 export function formatUGMSISDN(msisdn: string) {
-  const cc = CCs[2].value
+  const cc = CCs.ug.value
   if (msisdn.startsWith(cc)) {
     return `${
       msisdn.slice(0, cc.length)
@@ -31,10 +31,14 @@ export function formatUGMSISDN(msisdn: string) {
   return msisdn
 }
 
-export const CCs = [{
-  label: '254', value: '254'
-}, {
-  label: '255', value: '255'
-}, {
-  label: '256', value: '256'
-}]
+export const CCs = {
+  ke: {
+    label: '254', value: '254'
+  },
+  tz: {
+    label: '255', value: '255'
+  },
+  ug: {
+    label: '256', value: '256'
+  }
+}

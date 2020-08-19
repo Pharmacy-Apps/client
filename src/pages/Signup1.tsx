@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import Routes from 'routes'
 import { History } from 'history'
 
@@ -7,10 +7,12 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton } from '@ionic/react'
-import { Header } from 'components'
+import { IonContent, IonPage, IonList, IonItem, IonLabel, IonButton, IonItemDivider } from '@ionic/react'
+import { Header, PhoneInput } from 'components'
 
 import Requests, { endPoints } from 'requests'
+
+import { CCs } from 'utils/msisdn'
 
 export type Props = {
   history: History,
@@ -22,9 +24,9 @@ export type Props = {
 
 class Component extends React.Component<Props> {
 
-  state = { phone: null }
+  state = { phone: null, phoneInputFocussed: false }
 
-  onChange = (e: any) => {
+  onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     this.setState({ ...this.state, [name]: value })
   }
@@ -32,10 +34,11 @@ class Component extends React.Component<Props> {
   onSubmit = (e: any) => {
     e.preventDefault()
     const { showLoading, hideLoading, showToast, hideToast, history } = this.props
-    const { phone } = this.state
-    if (phone) {
+    const { phone: partPhone } = this.state
+    if (partPhone) {
       hideToast()
       showLoading()
+      const phone = `${CCs.ug.value}${partPhone}`
       Requests.post(endPoints.signup1, { phone }).then((response: any) => {
         console.info(response)
         history.push({
@@ -49,18 +52,29 @@ class Component extends React.Component<Props> {
     }
   }
 
+  onPhoneInputFocus = () => this.setState({ phoneInputFocussed: true })
+  onPhoneInputBlur = () => this.setState({ phoneInputFocussed: false })
+
   render() {
-    const { phone } = this.state
+    const { phone, phoneInputFocussed } = this.state
+    const color = phoneInputFocussed ? 'primary' : undefined
     return (
       <IonPage>
         <Header omitsBack />
         <IonContent className="ion-padding">
           <form onSubmit={this.onSubmit}>
-            <IonList lines="full" className="ion-no-margin ion-no-padding">
-              <IonItem>
-                <IonLabel position="floating">Phone</IonLabel>
-                <IonInput onIonChange={this.onChange} value={phone} type="tel" name="phone" autocomplete="off" />
+            <IonList className="ion-no-margin ion-no-padding">
+              <IonItem lines="none">
+                <IonLabel position="stacked" color={color}>Phone</IonLabel>
+                {/* <IonInput onIonChange={this.onChange} value={phone} type="tel" name="phone" autocomplete="off" /> */}
+                <PhoneInput
+                  name="phone"
+                  value={phone || ''}
+                  onChange={this.onChange}
+                  onFocus={this.onPhoneInputFocus}
+                  onBlur={this.onPhoneInputBlur} />
               </IonItem>
+              <IonItemDivider style={{ minHeight: 1 }} color={color} />
             </IonList>
             <div className="ion-padding">
               <IonButton expand="block" type="submit" className="ion-no-margin">Submit</IonButton>

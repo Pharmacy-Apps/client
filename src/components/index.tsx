@@ -3,6 +3,7 @@ import Progress from './Progress'
 import Toast from './Toast'
 import ItemSearchResult from './ItemSearchResult'
 import ItemRequest from './ItemRequest'
+import PhoneInput from './PhoneInput'
 import LazyLoad from './LazyLoad'
 
 export {
@@ -11,5 +12,6 @@ export {
   Toast,
   ItemSearchResult,
   ItemRequest,
+  PhoneInput,
   LazyLoad
 }

@@ -5,19 +5,19 @@ import { send } from 'ionicons/icons'
 
 import { CCs, getMSISDNFromCCAndSN, parseMTNUGSN } from 'utils/msisdn'
 
+import { PhoneInput } from 'components'
+
 type Props = {
   open: boolean,
   onDismiss: () => void,
   onSubmit: (a: string) => void
 }
 
-const inputPlaceholder = '773828707'
-
 class Component extends React.Component<Props> {
 
   state: {
     sn: string, cc: string, focussed: boolean, errored: boolean
-  } = { sn: '', cc: CCs[2].value, focussed: false, errored: false }
+  } = { sn: '', cc: CCs.ug.value, focussed: false, errored: false }
 
   onSelectChange = (e: any) => {
     this.setState({ cc: e.detail.value })
@@ -72,7 +72,7 @@ class Component extends React.Component<Props> {
 
   render() {
     const { open, onDismiss } = this.props
-    const { sn, cc } = this.state
+    const { sn } = this.state
     return (
       <IonPopover
         isOpen={open}
@@ -89,19 +89,13 @@ class Component extends React.Component<Props> {
         <IonContent>
           <IonList className="ion-no-padding" lines="none">
             <IonItem style={{ '--min-height': 0 }}>
-              <div className="msisdn-modify-section">
-                <span>{cc}</span>
-                {/* Couldn't use IonInput because it did not work controlled */}
-                <input
-                  ref={e => this.input = e}
-                  value={sn}
-                  onKeyUp={this.onInputKeyUp}
-                  onChange={this.onInputChange}
-                  onFocus={this.onInputFocus}
-                  onBlur={this.onInputBlur}
-                  placeholder={inputPlaceholder}
-                />
-              </div>
+              <PhoneInput
+                refFn={e => this.input = e}
+                value={sn}
+                onKeyUp={this.onInputKeyUp}
+                onChange={this.onInputChange}
+                onFocus={this.onInputFocus}
+                onBlur={this.onInputBlur} />
             </IonItem>
             <IonItemDivider color={this.getItemDividerColor()} style={{ minHeight: 0 }} />
             <IonItem button onClick={this.onSubmit} className="ion-text-center">

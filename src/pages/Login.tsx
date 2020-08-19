@@ -7,11 +7,13 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton } from '@ionic/react'
-import { Header } from 'components'
+import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton, IonItemDivider } from '@ionic/react'
+import { Header, PhoneInput } from 'components'
 
 import Requests, { endPoints } from 'requests'
 import { setSessionToken, setSessionPhone } from 'session'
+
+import { CCs } from 'utils/msisdn'
 
 export type Props = {
   history: History,
@@ -23,26 +25,27 @@ export type Props = {
 
 class Component extends React.Component<Props> {
 
-  // state = { phone: null, password: null }
-  state = { phone: '256773828773', password: '773828773' } // client user
-  // state = { phone: '256773828774', password: '773828773' } // courier
-  // state = { phone: '256773828775', password: '773828773' } // admin
+  // state = { phone: null, phoneInputFocussed: false, password: null }
+  state = { phone: '773828773', phoneInputFocussed: false, password: '773828773' } // client user
+  // state = { phone: '773828774', phoneInputFocussed: false, password: '773828773' } // courier
+  // state = { phone: '773828775', phoneInputFocussed: false, password: '773828773' } // admin
 
   onChange = (e: any) => {
     const { name, value } = e.target
-    this.setState({ ...this.state, [name]: value })
+    this.setState({ [name]: value })
   }
 
   onSubmit = (e: any) => {
     e.preventDefault()
     const { showLoading, hideLoading, showToast, hideToast } = this.props
-    const { phone, password } = this.state
-    if (phone && password) {
+    const { phone: partPhone, password } = this.state
+    if (partPhone && password) {
       hideToast()
       showLoading()
+      const phone = `${CCs.ug.value}${partPhone}`
       Requests.post(endPoints.login, { phone, secret: password }).then(({ token }: any) => {
         setSessionToken(token)
-        setSessionPhone(phone || '')
+        setSessionPhone(phone)
         window.location.replace(getDefaultRoute(token))
       }).catch(err => {
         console.error(err)
@@ -55,20 +58,31 @@ class Component extends React.Component<Props> {
     this.props.history.push(Routes.signup1.path)
   }
 
+  onPhoneInputFocus = () => this.setState({ phoneInputFocussed: true })
+  onPhoneInputBlur = () => this.setState({ phoneInputFocussed: false })
+
   render() {
-    const { phone, password } = this.state
+    const { phone, password, phoneInputFocussed } = this.state
+    const color = phoneInputFocussed ? 'primary' : undefined
     return (
       <IonPage>
         <Header omitsBack />
         <IonContent className="ion-padding">
           <form onSubmit={this.onSubmit}>
             <IonList lines="full" className="ion-no-margin ion-no-padding">
-              <IonItem>
-                <IonLabel position="floating">Phone</IonLabel>
-                <IonInput onIonChange={this.onChange} value={phone} type="tel" name="phone" autocomplete="off" />
+              <IonItem lines="none">
+                <IonLabel position="stacked" color={color}>Phone</IonLabel>
+                {/* <IonInput onIonChange={this.onChange} value={phone} name="phone" /> */}
+                <PhoneInput
+                  name="phone"
+                  value={phone || ''}
+                  onChange={this.onChange}
+                  onFocus={this.onPhoneInputFocus}
+                  onBlur={this.onPhoneInputBlur} />
               </IonItem>
+              <IonItemDivider style={{ minHeight: 1 }} color={color} />
               <IonItem>
-                <IonLabel position="floating">Password</IonLabel>
+                <IonLabel position="stacked">Password</IonLabel>
                 <IonInput onIonChange={this.onChange} value={password} type="password" name="password" autocomplete="off" />
               </IonItem>
             </IonList>
