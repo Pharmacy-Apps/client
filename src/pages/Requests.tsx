@@ -64,8 +64,8 @@ class Component extends React.Component<Props> {
     couriers: undefined
   }
 
-  defaultUpdateRequestBody = () => ({
-    'item-requests': this.state.requestsSelected
+  defaultUpdateRequestBody = (requestsSelected?: Array<String>) => ({
+    'item-requests': requestsSelected || this.state.requestsSelected
   })
 
   toolbarActions = () => {
@@ -128,10 +128,10 @@ class Component extends React.Component<Props> {
 
     const defaultMenuActions: Array<MenuAction> = []
 
-    const updateBackend = (body: Object) => {
+    const updateBackend = (body: Object, requestsSelected?: Array<String>) => {
       showLoading()
       Requests.put(endPoints['item-requests'], {
-        ...this.defaultUpdateRequestBody(),
+        ...this.defaultUpdateRequestBody(requestsSelected),
         update: body
       }).then(this.updateRequests).catch(err => {
         console.error(err)
@@ -139,40 +139,27 @@ class Component extends React.Component<Props> {
       }).finally(hideLoading)
     }
 
-    const defaultHandler = (requestSelected: string, cb: () => void) => {
-      this.setState({ requestsSelected: [requestSelected] }, cb)
-    }
-
     switch (window.location.pathname) {
       case Routes.requests.path: return [{
         text: 'Mark as received',
         handler: (requestSelected: string) => {
-          defaultHandler(requestSelected, () => {
-            updateBackend({ state: 5 }) // received
-          })
+          updateBackend({ state: 5 }, [requestSelected]) // received
         }
       }, {
         text: 'Mark as cancelled',
         handler: (requestSelected: string) => {
-          defaultHandler(requestSelected, () => {
-            updateBackend({ state: 3 }) // cancelled
-          })
+          updateBackend({ state: 3 }, [requestSelected]) // cancelled
         }
       }]
       case Routes.courier.path: return [{
         text: 'Mark as delivered',
         handler: (requestSelected: string) => {
-          defaultHandler(requestSelected, () => {
-            updateBackend({ state: 4 }) // delivered
-          })
+          updateBackend({ state: 4 }, [requestSelected]) // delivered
         }
       }]
       case Routes.admin.path: return [{
         text: 'Assign to courier',
-        handler: (requestSelected: string) =>
-          defaultHandler(requestSelected, () => {
-            this.onAssignCourier()
-          })
+        handler: this.onAssignCourier
       }]
       default: return defaultMenuActions
     }
@@ -353,7 +340,7 @@ class Component extends React.Component<Props> {
             item={item}
             detailed={item._id === requestDetailed}
             selected={requestsSelected.includes(item._id)}
-            selectMode={selectModeOn}
+            selectModeOn={selectModeOn}
             onTap={this.onRequestTapped}
             actions={this.menuActions()} />
         </IonItem>

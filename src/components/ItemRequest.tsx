@@ -29,7 +29,7 @@ type Props = {
   item: ItemRequest,
   detailed: boolean,
   selected: boolean,
-  selectMode: boolean,
+  selectModeOn: boolean,
   onTap: Function,
   actions: Array<MenuAction>
 }
@@ -38,7 +38,7 @@ const Component: React.FC<Props> = ({
   item: { _id, pharmacyItems, state, createdAt, courier, lat, lon, user },
   detailed,
   selected,
-  selectMode,
+  selectModeOn,
   onTap,
   actions
 }) => {
@@ -54,6 +54,8 @@ const Component: React.FC<Props> = ({
   }
 
   const onIonChange = ({ detail: { value } }: any) => {
+    if (value === null) return
+    if (selectRef) selectRef.value = null
     const { handler } = actions.find(({ text }) => value === text) || {}
     handler && handler(_id)
   }
@@ -65,7 +67,7 @@ const Component: React.FC<Props> = ({
       <IonIcon
         color="primary"
         icon={
-          selectMode ? (
+          selectModeOn ? (
             selected ? active : numb
           ) : 'no-icon'
         }
@@ -103,9 +105,9 @@ const Component: React.FC<Props> = ({
           <p style={{ textAlign: "right" }}>{formatDate(createdAt)}</p>
         </IonLabel>
       </IonText>
-      <IonButton onClick={e => onClick(-1, _id, e)} slot="end" fill="clear">
+      {selectModeOn ? null : <IonButton onClick={e => onClick(-1, _id, e)} slot="end" fill="clear">
         <IonIcon icon={more} />
-      </IonButton>
+      </IonButton>}
       <IonSelect
         ref={node => selectRef = node}
         interfaceOptions={{ showBackdrop: false }}
