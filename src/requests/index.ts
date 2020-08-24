@@ -5,7 +5,15 @@ const baseURL = window.location.host === 'localhost' // deployment on mobile
   ? process.env.REACT_APP_BACKEND_URL_REMOTE
   : process.env.REACT_APP_BACKEND_URL
 
-const headers = sessionAvailable() ? { 'Authorization': `Bearer ${getSessionToken()}` } : {}
+const defaultHeaders = {
+  'Response-Language': 'en'
+}
+
+const headers = sessionAvailable() ? {
+  ...defaultHeaders,
+  'Authorization': `Bearer ${getSessionToken()}`
+} : defaultHeaders
+
 const instance = Axios.create({ baseURL, headers })
 
 const NETWORK_ERROR = 'Please check that you have an active internet connection'

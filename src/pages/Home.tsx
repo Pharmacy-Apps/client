@@ -17,14 +17,17 @@ import { userIsClientUser, userIsNotClientUser } from 'utils/role'
 import { getActiveRequestsPresence } from 'session'
 import { getDeliveryLocationForNextOrder } from 'location'
 
-import ItemCategories from 'utils/item-category-map'
-
 import { getAddress } from 'utils'
+
+import ItemCategories from 'utils/item-category-map'
+import getPageText from 'text'
 
 export type Props = {
   history: History,
   location: { pathname: string }
 }
+
+const Text = getPageText('home')
 
 const itemCategories = Object.keys(ItemCategories)
   .filter((k, i) => i)
@@ -80,7 +83,7 @@ class Component extends React.Component<Props> {
           <IonList className="ion-no-padding">
             <IonItem lines="none" onClick={this.onChangeDeliveryLocation}>
               <IonLabel>
-                <p>Delivery to</p>
+                <p>{Text['delivery-to']}</p>
                 <h3>{getAddress(lat, lon)}</h3>
               </IonLabel>
               <IonButton onClick={this.onChangeDeliveryLocation} fill="clear">
