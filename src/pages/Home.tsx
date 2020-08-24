@@ -19,6 +19,8 @@ import { getDeliveryLocationForNextOrder } from 'location'
 
 import ItemCategories from 'utils/item-category-map'
 
+import { getAddress } from 'utils'
+
 export type Props = {
   history: History,
   location: { pathname: string }
@@ -79,7 +81,7 @@ class Component extends React.Component<Props> {
             <IonItem lines="none" onClick={this.onChangeDeliveryLocation}>
               <IonLabel>
                 <p>Delivery to</p>
-                <h3>{lat}, {lon}</h3>
+                <h3>{getAddress(lat, lon)}</h3>
               </IonLabel>
               <IonButton onClick={this.onChangeDeliveryLocation} fill="clear">
                 <IonIcon src="assets/icons/edit.svg" />

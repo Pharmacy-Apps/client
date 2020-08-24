@@ -20,6 +20,7 @@ import { formatUGMSISDN } from 'utils/msisdn'
 import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
 
 import { userIsClientUser } from 'utils/role'
+import { getAddress } from 'utils'
 
 import { locationSharp as location, person } from 'ionicons/icons'
 
@@ -79,7 +80,7 @@ class Component extends React.Component<Props> {
 
     const clientUserItems: Array<Item> = [{
       name: 'Delivery location',
-      value: lat && lon ? `${lat}, ${lon}` : 'Not known yet',
+      value: getAddress(lat, lon),
       action: lat && lon ? 'Update' : 'Set',
       handler: () => history.push(Routes.location.path),
       icon: location

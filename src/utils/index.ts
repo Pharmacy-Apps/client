@@ -19,3 +19,9 @@ export const getArchivedRequests = (requests: Array<ItemRequestInterface>) => (
 export const imageServerUrl = window.location.host === 'localhost' // deployment on mobile
   ? process.env.REACT_APP_IMAGE_SERVER_URL_REMOTE
   : process.env.REACT_APP_IMAGE_SERVER_URL
+
+export const getAddress = (lat: number, lon: number, placeholder: string = 'Not known yet') => {
+  return (
+    lat && lon ? `${lat}, ${lon}` : placeholder
+  )
+}

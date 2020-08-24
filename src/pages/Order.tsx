@@ -19,6 +19,7 @@ import { Header } from 'components'
 import { updateCurrentPosition, getDeliveryLocationForNextOrder } from 'location'
 
 import { ItemSearchResult as ItemSearchResultInterface } from 'types'
+import { getAddress } from 'utils'
 
 type Props = {
   history: History,
@@ -112,7 +113,7 @@ class Component extends React.Component<Props> {
   locationInfo = () => {
     const { lat, lon } = getDeliveryLocationForNextOrder()
 
-    const locationInfo1 = `${lat}, ${lon}`
+    const locationInfo1 = getAddress(lat, lon, 'Not known')
     const locationInfo2 = 'Select Destination'
     const locationInfo3 =
       `We could not find your location\nPlease ensure the following then click the "Tap to update location" button\n- You are connected to internet\n- When asked, you allow access your location`
