@@ -31,7 +31,6 @@ class Component extends React.Component<Props> {
       this.setState({ sn: '' })
     } catch (e) {
       this.setState({ errored: true })
-      this.focusOnInput()
     }
   }
 
@@ -40,11 +39,11 @@ class Component extends React.Component<Props> {
       this.onSubmit()
   }
 
-  input: HTMLInputElement | null = null
+  input: any = null
 
-  focusOnInput = () => {
-    if (this.input)
-      this.input.focus()
+  focusOnInput() {
+    const input: any = document.getElementsByClassName('phone-input')[0]
+    input && input.focus()
   }
 
   onInputChange = (e: any) => {
@@ -90,7 +89,6 @@ class Component extends React.Component<Props> {
           <IonList className="ion-no-padding" lines="none">
             <IonItem style={{ '--min-height': 0 }}>
               <PhoneInput
-                refFn={e => this.input = e}
                 value={sn}
                 onKeyUp={this.onInputKeyUp}
                 onChange={this.onInputChange}
@@ -105,6 +103,10 @@ class Component extends React.Component<Props> {
         </IonContent>
       </IonPopover>
     )
+  }
+
+  componentDidUpdate() {
+    this.focusOnInput()
   }
 
 }
