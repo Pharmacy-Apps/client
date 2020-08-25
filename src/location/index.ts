@@ -1,3 +1,5 @@
+// import Axios from 'axios'
+
 import { Geolocation } from '@ionic-native/geolocation'
 import { setSessionLocation, getLastAttemptedDeliveryLocation, getSessionLocation } from 'session'
 import { platformIsWeb } from 'utils'
@@ -37,3 +39,25 @@ export const CentralLocation = {
 export const getDeliveryLocationForNextOrder = () => (
   getLastAttemptedDeliveryLocation() || getSessionLocation() || {}
 )
+
+export const findPlace = async (search: string) => {
+
+  if (search === null) return []
+  if (search === '') return []
+
+  return []
+
+  // const url =
+  //   `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=${
+  //   getMapKey()
+  //   }&input=${search}&inputtype=textquery`
+
+  // const headers = {
+  //   'Content-Type': 'application/json'
+  // }
+  
+  // return await Axios.get(url, {
+  //   headers
+  // })
+
+}

@@ -28,7 +28,7 @@ const Component: React.FC<Props> = ({ omitsBack, title, size, actions = [] }) =>
           actions.map((
             { icon, text, component: Component, handler },
             i
-          ) => <IonButton
+          ) => Component ? <Component key={i} /> : <IonButton
             key={i}
             onClick={handler}
             style={buttonStyle}
@@ -37,8 +37,6 @@ const Component: React.FC<Props> = ({ omitsBack, title, size, actions = [] }) =>
                 icon ? <IonIcon color="primary" icon={icon} /> : null
               }{
                 text ? text : null
-              }{
-                Component ? <Component /> : null
               }
             </IonButton>
           )
