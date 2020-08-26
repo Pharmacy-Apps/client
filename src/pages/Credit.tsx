@@ -1,5 +1,4 @@
 import React from 'react'
-import Routes from 'routes'
 import { History } from 'history'
 
 import { connect } from 'react-redux'
@@ -7,7 +6,9 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonIcon, IonItemDivider, IonAlert, IonButton } from '@ionic/react'
+import {
+  IonContent, IonPage, IonList, IonItem, IonLabel, IonIcon, IonItemDivider, IonAlert, IonButton
+} from '@ionic/react'
 import { starOutline as numb, star as active } from 'ionicons/icons'
 
 import { Header } from 'components'
@@ -18,6 +19,7 @@ import Requests, { endPoints } from 'requests'
 import decrypt from 'utils/jwt'
 import { formatUGMSISDN } from 'utils/msisdn'
 import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
+import { formatMoney } from 'utils/currency'
 
 type Props = {
   history: History,
@@ -36,13 +38,22 @@ type State = {
     buttonText: string,
     confirmsPayment: boolean
   },
-  msisdnPopoverShown: boolean
+  msisdnPopoverShown: boolean,
+  amount: string,
+  customOfferSelected: false
 }
 
-const message = {
-  default: 'Lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum',
-  fromOrder: 'Lorem order ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum'
-}
+const title = 'Deposit to Wallet'
+const amountInputPlaceholder = 'Type amount'
+
+const minCustomAmount = 999
+
+const message = <>
+  <p>
+    To deposit, please select one of the preset amounts or type your own; minimum {formatMoney(minCustomAmount + 1)}.<br />
+    Then select the payment channel.
+  </p>
+</>
 
 class Component extends React.Component<Props> {
 
@@ -52,7 +63,35 @@ class Component extends React.Component<Props> {
     alert: {
       shown: false, header: '', message: '', buttonText: '', confirmsPayment: false
     },
-    msisdnPopoverShown: false
+    msisdnPopoverShown: false,
+    amount: '',
+    customOfferSelected: false
+  }
+
+  showMSISDNPopover = () => {
+    this.setState({ msisdnPopoverShown: true })
+  }
+
+  hideMSISDNPopover = () => {
+    this.setState({ msisdnPopoverShown: false })
+  }
+
+  showAlert = (alert: AlertState) => {
+    this.setState({ alert: { ...alert, shown: true } })
+  }
+
+  hideAlert = () => {
+    this.setState({ alert: { ...this.state.alert, shown: false } })
+  }
+
+  onAlertConfirm = () => {
+    const { alert } = this.state
+    if (alert.confirmsPayment)
+      this.onConfirmPaymentChannel()
+  }
+
+  onAlertDismiss = () => {
+    this.hideAlert()
   }
 
   componentDidMount() {
@@ -80,52 +119,37 @@ class Component extends React.Component<Props> {
     }
   }
 
+  onOfferSelect = ({ _id }: Offer) => {
+    this.setState({
+      selectedOffer: _id, customOfferSelected: false, amount: ''
+    })
+  }
+
   onConfirmPaymentChannel = () => {
-    const { selectedOffer: offer, offers } = this.state
     const { showLoading, hideLoading, showToast } = this.props
+    const {
+      selectedOffer, offers, customOfferSelected, amount: value
+    } = this.state
+
+    const offer = customOfferSelected ? { value } : selectedOffer
+
     showLoading()
     Requests.post(endPoints['credits'], { offer }).then((response: any) => {
       const errored = false // Payment succeeded
       if (errored) {
         this.showAlert(AlertText['payment-errored']())
       } else {
-        this.showAlert(AlertText['payment-succeded']((
-          offers.find(({ _id }) => _id === offer) || {}
+        this.showAlert(AlertText['payment-succeeded']((
+          customOfferSelected ? { value } : offers.find(({ _id }) => _id === offer) || {}
         ).value))
-        if (this.redirectedFromOrder()) {
-          // Redirect back
-        }
+        this.setState({
+          customOfferSelected: false, amount: ''
+        })
       }
     }).catch(err => {
       console.error(err)
       showToast(err.error || err.toString())
     }).finally(hideLoading)
-  }
-
-  onOfferSelect = ({ _id }: Offer) => {
-    this.setState({ selectedOffer: _id })
-  }
-
-  showMSISDNPopover = () => {
-    this.setState({ msisdnPopoverShown: true })
-  }
-
-  hideMSISDNPopover = () => {
-    this.setState({ msisdnPopoverShown: false })
-  }
-
-  showAlert = (alert: AlertState) => {
-    this.setState({ alert: { ...alert, shown: true } })
-  }
-
-  hideAlert = () => {
-    this.setState({ alert: { ...this.state.alert, shown: false } })
-  }
-
-  onAlertConfirm = () => {
-    const { alert } = this.state
-    if (alert.confirmsPayment)
-      this.onConfirmPaymentChannel()
   }
 
   onSubmitChangeNumber = (msisdn: string) => {
@@ -142,19 +166,20 @@ class Component extends React.Component<Props> {
     }).finally(hideLoading)
   }
 
-  onAlertDismiss = () => {
-    this.hideAlert()
-    const { alert } = this.state
-    if (alert.confirmsPayment) return
-    if (this.redirectedFromOrder()) {
-      const { history: { location: { state } } } = this.props
-      this.props.history.replace(Routes.order.path, state)
-    }
+  onChangeAmountInput = ({ target: { value } }: any) => {
+    try {
+      if (/^[0-9]+$|^$/.test(value) === false) throw new Error('Value error')
+      const amount = parseInt(value) || ''
+      this.setState({
+        amount,
+        ...amount ? { customOfferSelected: amount > minCustomAmount } : {}
+      })
+    } catch (error) { }
   }
 
-  redirectedFromOrder = () => {
-    const { history: { location: { state } } } = this.props
-    return state && state.selectedItems
+  onBlurAmountInput = () => {
+    if (this.state.amount === '')
+      this.setState({ customOfferSelected: false })
   }
 
   getChannels = () => {
@@ -171,35 +196,40 @@ class Component extends React.Component<Props> {
   }
 
   render() {
-    const { offers, alert, selectedOffer, msisdnPopoverShown } = this.state
+    const { offers, alert, selectedOffer, msisdnPopoverShown, amount, customOfferSelected } = this.state
     return offers.length ? (
       <IonPage>
-        <Header title="Purchase credits" />
+        <Header title={title} />
         <IonContent className="ion-padding">
-          <IonLabel>
-            <p>{this.redirectedFromOrder() ? message.fromOrder : message.default}</p>
-          </IonLabel>
-          <IonLabel>
-            <p>Lorem ipsum payment lorem ipsum payment</p>
-          </IonLabel>
+          <IonLabel>{message}</IonLabel>
           <IonList lines="full" className="ion-margin-top ion-no-padding">{
-            offers.map((offer, i, a) => (
+            offers.map(offer => (
               <IonItem
                 key={offer._id}
                 onClick={() => this.onOfferSelect(offer)}
                 button
-                lines={i === a.length - 1 ? 'none' : undefined}
               >
                 <IonIcon color="primary" icon={
-                  offer._id === selectedOffer ? active : numb
+                  offer._id === selectedOffer && !customOfferSelected ? active : numb
                 } slot="start" />
                 <IonLabel>
-                  <h3>{`${offer.value} credits`}</h3>
-                  <p>{`USD ${offer.price}`}</p>
+                  <h3>{formatMoney(offer.value)}</h3>
                 </IonLabel>
               </IonItem>
             ))
-          }</IonList>
+          }
+            <IonItem lines="none">
+              <IonIcon color="primary" icon={customOfferSelected ? active : numb} slot="start" />
+              <input
+                className="custom-input"
+                onChange={this.onChangeAmountInput}
+                onBlur={this.onBlurAmountInput}
+                value={amount}
+                type="text" name="amount"
+                placeholder={amountInputPlaceholder}
+              />
+            </IonItem>
+          </IonList>
           <IonItemDivider className="ion-margin-top">
             <IonLabel>
               Select payment channel
@@ -213,7 +243,6 @@ class Component extends React.Component<Props> {
                 button
                 lines={i === a.length - 1 ? 'none' : undefined}
               >
-                {/* <IonIcon icon={rocket} slot="start" /> */}
                 <IonLabel>
                   <h3>{channel.name}</h3>
                   <p>{channel.description}</p>
@@ -221,7 +250,7 @@ class Component extends React.Component<Props> {
                 {channel.requiresNumber ? <IonButton onClick={e => {
                   e.stopPropagation()
                   this.showMSISDNPopover()
-                }} fill="clear">Change Number</IonButton> : null}
+                }} color="secondary" fill="clear">Change Number</IonButton> : null}
               </IonItem>
             ))
           }</IonList>
@@ -281,7 +310,7 @@ const AlertText: ({
     message: string
   }))
 }) = {
-  'payment-succeded': (credits: number) => ({
+  'payment-succeeded': (credits: number) => ({
     header: 'Lorem ipsum',
     message: `Lorem ipsum ${credits} payment lorem ipsum payment`
   }),

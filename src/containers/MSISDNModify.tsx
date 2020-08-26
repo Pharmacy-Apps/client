@@ -39,8 +39,6 @@ class Component extends React.Component<Props> {
       this.onSubmit()
   }
 
-  input: any = null
-
   focusOnInput() {
     const input: any = document.getElementsByClassName('phone-input')[0]
     input && input.focus()

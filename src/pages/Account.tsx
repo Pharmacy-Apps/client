@@ -7,9 +7,9 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonButton, IonText, IonIcon } from '@ionic/react'
+import { IonContent, IonPage, IonList, IonItem, IonLabel, IonButton, IonIcon } from '@ionic/react'
 
-import { Header } from 'components'
+import { Header, Popover } from 'components'
 import { MSISDNModify as MSISDNModifyPopover } from 'containers'
 
 import Requests, { endPoints } from 'requests'
@@ -21,8 +21,11 @@ import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
 
 import { userIsClientUser } from 'utils/role'
 import { getAddress } from 'utils'
+import { formatMoney } from 'utils/currency'
 
-import { locationSharp as location, person } from 'ionicons/icons'
+import { languages, setLanguage, getLanguage } from 'languages'
+
+import { locationSharp as location, person, pushSharp as deposit, languageSharp as language, star } from 'ionicons/icons'
 
 type Props = {
   history: History,
@@ -35,11 +38,10 @@ type Item = {
   name: string,
   value: any,
   icon: string,
-  action?: string,
+  actionText?: any,
   handler?: () => void,
-  starred?: true,
-  skipsAction?: true
-}
+  starred?: true
+} | null
 
 const { lat, lon } = getDeliveryLocationForNextOrder()
 
@@ -52,52 +54,60 @@ const { lat, lon } = getDeliveryLocationForNextOrder()
 
 class Component extends React.Component<Props> {
 
-  // credits: 0
-  state = { msisdnPopoverShown: false }
+  state = { credits: 0, msisdnPopoverShown: false, languagePopoverShown: false }
 
   getListItems = () => {
     const { history } = this.props
-
-    const defaultItems: Array<Item> = [{
-      name: 'Phone',
-      value: formatUGMSISDN(getSessionPhone() || ''),
-      skipsAction: true,
-      icon: person
-    }]
-
-    // {
-    //   name: 'Credits',
-    //   value: this.state.credits,
-    //   action: 'Purchase Credits',
-    //   handler: () => history.push(Routes.credit.path),
-    //   starred: true
-    // }
 
     const mtnMSISDNKey = 'mtn-msisdn'
     const {
       [mtnMSISDNKey]: msisdn
     } = decrypt(getSessionToken())
 
-    const clientUserItems: Array<Item> = [{
-      name: 'Delivery location',
-      value: getAddress(lat, lon),
-      action: lat && lon ? 'Update' : 'Set',
-      handler: () => history.push(Routes.location.path),
-      icon: location
-    }, {
-      name: 'MTN account to debit',
-      value: formatUGMSISDN(msisdn || getSessionPhone()),
-      action: 'Change',
-      handler: this.showMSISDNPopover,
-      icon: '/assets/icons/mobile-pay.svg'
-    }]
+    const userIsClient = userIsClientUser()
 
-    return userIsClientUser()
-      ? [
-        ...clientUserItems,
-        ...defaultItems
-      ]
-      : defaultItems
+    const currentLanguage = (
+      languages.find(({ value }) => value === getLanguage()) || languages[0]
+    ).label
+
+    const items: Array<Item> = [
+      userIsClient ? {
+        name: 'Wallet',
+        value: formatMoney(this.state.credits),
+        actionText: <IonIcon icon={deposit} />,
+        handler: () => history.push(Routes.credit.path),
+        starred: true,
+        icon: '/assets/icons/wallet.svg'
+      } : null,
+      userIsClient ? {
+        name: 'Delivery location',
+        value: getAddress(lat, lon),
+        actionText: lat && lon ? <IonIcon src="assets/icons/edit.svg" /> : 'Set',
+        handler: () => history.push(Routes.location.path),
+        icon: location
+      } : null,
+      userIsClient ? {
+        name: 'MTN account to debit',
+        value: formatUGMSISDN(msisdn || getSessionPhone()),
+        actionText: <IonIcon src="assets/icons/edit.svg" />,
+        handler: this.showMSISDNPopover,
+        icon: '/assets/icons/mobile-pay.svg'
+      } : null,
+      {
+        name: 'Phone',
+        value: formatUGMSISDN(getSessionPhone() || ''),
+        icon: person
+      },
+      {
+        name: 'Language',
+        value: currentLanguage,
+        actionText: <IonIcon src="assets/icons/edit.svg" />,
+        handler: this.showLanguagePopover,
+        icon: language
+      }
+    ]
+
+    return items
   }
 
   componentDidMount() {
@@ -119,6 +129,14 @@ class Component extends React.Component<Props> {
     this.setState({ msisdnPopoverShown: false })
   }
 
+  showLanguagePopover = () => {
+    this.setState({ languagePopoverShown: true })
+  }
+
+  hideLanguagePopover = () => {
+    this.setState({ languagePopoverShown: false })
+  }
+
   onSubmitChangeNumber = (msisdn: string) => {
     this.hideMSISDNPopover()
     const { showLoading, hideLoading, showToast } = this.props
@@ -133,38 +151,67 @@ class Component extends React.Component<Props> {
     }).finally(hideLoading)
   }
 
+  onSelectLanguage = (language: string) => {
+    setLanguage(language)
+    this.hideLanguagePopover()
+  }
+
   render() {
-    const { msisdnPopoverShown } = this.state
+    const { msisdnPopoverShown, languagePopoverShown } = this.state
     return (
       <IonPage>
         <Header title="Profile" />
         <IonContent>
           <IonList lines="inset" className="ion-no-margin ion-no-padding">{
             this.getListItems().map((item, i, a) => {
-              return <IonItem key={i} {...i + 1 === a.length ? { lines: "none" } : {}}>
+              return item ? <IonItem key={i} {...i + 1 === a.length ? { lines: "none" } : {}}>
                 <IonIcon icon={item.icon} color="primary" slot="start" />
                 <IonLabel>
                   <p>{item.name}</p>
-                  <IonText {...item.starred ? { color: "primary" } : {}}>
-                    <h2>{item.value}</h2>
-                  </IonText>
+                  <h3 style={{
+                    ...item.starred ? { color: 'var(--ion-color-primary)' } : {}
+                  }}>{item.value}</h3>
                 </IonLabel>
-                {item.skipsAction ? null : <IonButton type="button" {...item.starred ? {} : { fill: "clear" }} className="ion-no-margin" slot="end" onClick={item.handler}>{
-                  item.action
-                }</IonButton>}
-              </IonItem>
+                {item.actionText ? <IonButton type="button" {...item.starred ? {} : { fill: "clear" }} className="ion-no-margin" slot="end" onClick={item.handler}>{
+                  item.actionText
+                }</IonButton> : null}
+              </IonItem> : null
             })}</IonList>
-            <MSISDNModifyPopover
-              open={msisdnPopoverShown}
-              onDismiss={this.hideMSISDNPopover}
-              onSubmit={this.onSubmitChangeNumber}
-            />
+          <MSISDNModifyPopover
+            open={msisdnPopoverShown}
+            onDismiss={this.hideMSISDNPopover}
+            onSubmit={this.onSubmitChangeNumber} />
+          <Popover
+            open={languagePopoverShown}
+            onDismiss={this.hideLanguagePopover}
+          >
+            <LanguagesComponent language={getLanguage()} onSelect={this.onSelectLanguage} />
+          </Popover>
         </IonContent>
       </IonPage>
     )
   }
 
 }
+
+const LanguagesComponent: React.FC<{
+  language: string | null,
+  onSelect: (a1: string) => void
+}> = ({
+  language, onSelect
+}) => (
+      <IonList className="ion-no-padding">
+        {
+          languages.map(({ label, value }) =>
+            <IonItem key={value} onClick={() => onSelect(value)} button>
+              <IonIcon icon={
+                language === value ? star : 'no-icon'
+              } size="small" color="primary" slot="start" />
+              {label}
+            </IonItem>)
+        }
+      </IonList>
+    )
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   showLoading: () => ({

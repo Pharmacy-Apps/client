@@ -5,6 +5,7 @@ import ItemSearchResult from './ItemSearchResult'
 import ItemRequest from './ItemRequest'
 import PhoneInput from './PhoneInput'
 import LazyLoad from './LazyLoad'
+import Popover from './Popover'
 
 export {
   Header,
@@ -13,5 +14,6 @@ export {
   ItemSearchResult,
   ItemRequest,
   PhoneInput,
-  LazyLoad
+  LazyLoad,
+  Popover
 }

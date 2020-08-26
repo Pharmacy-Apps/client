@@ -132,7 +132,7 @@ class Component extends React.Component<Props> {
       requiresNumber: true
     }, {
       _id: 'cash',
-      name: 'Pay with Cash',
+      name: 'Pay Cash on delivery',
       description: '',
       icon: '/assets/icons/wallet.svg',
     }] as Array<Channel>
@@ -161,7 +161,7 @@ class Component extends React.Component<Props> {
                   <h3>{channel.name}</h3>
                   <p>{channel.description}</p>
                 </IonLabel>
-                {channel.requiresNumber ? <IonButton color="secondary" onClick={e => {
+                {channel.requiresNumber ? <IonButton fill="clear" color="secondary" onClick={e => {
                   e.stopPropagation()
                   this.showMSISDNPopover()
                 }}>Change Number</IonButton> : null}
