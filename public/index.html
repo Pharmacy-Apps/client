@@ -121,12 +121,15 @@
           rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.04))
     }
 
-    .alert-message p {
-      margin: 5px 0
+    .alert-custom .alert-wrapper {
+      max-width: 90%;
     }
 
-    .alert-message p:first-child,
-    .alert-message p:last-child:not(:nth-child(2)) {
+    .alert-custom .alert-wrapper p {
+      margin: 0 0 7px 0;
+      font-size: 90%
+    }
+    .alert-custom .alert-wrapper .alert-message p:last-child {
       margin: 0
     }
 
@@ -141,8 +144,14 @@
       border-width: 0
     }
 
-    .msisdn-section input:focus {
+    .msisdn-section input:focus,
+    .custom-input:focus {
       outline: none
+    }
+
+    .custom-input {
+      border-width: 0;
+      width: 100%
     }
 
     .fill-height {

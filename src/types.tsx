@@ -58,3 +58,17 @@ export interface Courier {
 }
 
 export interface Location { lat: number, lon: number }
+
+export interface CreditOffer {
+  _id: string,
+  value: number,
+  price: number,
+  starred?: boolean
+}
+
+export interface PaymentChannel {
+  _id: string,
+  name: string,
+  description: string,
+  requiresNumber?: boolean
+}

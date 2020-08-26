@@ -7,19 +7,21 @@ import { bindActionCreators } from 'redux'
 import * as constants from 'reducers/constants'
 
 import {
-  IonContent, IonPage, IonList, IonItem, IonLabel, IonIcon, IonItemDivider, IonAlert, IonButton
+  IonContent, IonPage, IonList, IonItem, IonLabel, IonIcon, IonItemDivider, IonButton
 } from '@ionic/react'
 import { starOutline as numb, star as active } from 'ionicons/icons'
 
-import { Header } from 'components'
+import { Header, Alert } from 'components'
 import { MSISDNModify as MSISDNModifyPopover } from 'containers'
 
 import Requests, { endPoints } from 'requests'
 
 import decrypt from 'utils/jwt'
-import { formatUGMSISDN } from 'utils/msisdn'
+import { formatUGMSISDN, mtnMSISDNStorageKey as mtnMSISDNKey } from 'utils/msisdn'
 import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
 import { formatMoney } from 'utils/currency'
+
+import { CreditOffer as Offer, PaymentChannel as Channel } from 'types'
 
 type Props = {
   history: History,
@@ -28,30 +30,15 @@ type Props = {
   showToast: (e: string) => {},
 }
 
-type State = {
-  offers: Array<Offer>,
-  selectedOffer: string | null,
-  alert: {
-    shown: boolean,
-    header: string,
-    message: string,
-    buttonText: string,
-    confirmsPayment: boolean
-  },
-  msisdnPopoverShown: boolean,
-  amount: string,
-  customOfferSelected: false
-}
-
 const title = 'Deposit to Wallet'
 const amountInputPlaceholder = 'Type amount'
 
-const minCustomAmount = 999
+const minCustomAmount = 1000
 
 const message = <>
   <p>
-    To deposit, please select one of the preset amounts or type your own; minimum {formatMoney(minCustomAmount + 1)}.<br />
-    Then select the payment channel.
+    To deposit, please select one of the preset amounts or type your own; minimum {formatMoney(minCustomAmount)}<br />
+    Then select the payment channel
   </p>
 </>
 
@@ -106,17 +93,11 @@ class Component extends React.Component<Props> {
   }
 
   onPaymentChannelSelect = ({ _id: id }: Channel) => {
-    const { header, message } = AlertText[id]()
-    switch (id) {
-      case 'airtel': {
-        this.showAlert({ header, message, confirmsPayment: true })
-        break
-      }
-      default: {
-        this.showAlert({ header, message, confirmsPayment: true })
-        break
-      }
-    }
+    const {
+      [mtnMSISDNKey]: msisdn
+    } = decrypt(getSessionToken())
+    const { header, message } = AlertText[id](formatUGMSISDN(msisdn || getSessionPhone()))
+    this.showAlert({ header, message, confirmsPayment: true })
   }
 
   onOfferSelect = ({ _id }: Offer) => {
@@ -135,7 +116,7 @@ class Component extends React.Component<Props> {
 
     showLoading()
     Requests.post(endPoints['credits'], { offer }).then((response: any) => {
-      const errored = false // Payment succeeded
+      const errored = true // Payment succeeded
       if (errored) {
         this.showAlert(AlertText['payment-errored']())
       } else {
@@ -172,7 +153,7 @@ class Component extends React.Component<Props> {
       const amount = parseInt(value) || ''
       this.setState({
         amount,
-        ...amount ? { customOfferSelected: amount > minCustomAmount } : {}
+        ...amount ? { customOfferSelected: amount > minCustomAmount - 1 } : {}
       })
     } catch (error) { }
   }
@@ -183,7 +164,6 @@ class Component extends React.Component<Props> {
   }
 
   getChannels = () => {
-    const mtnMSISDNKey = 'mtn-msisdn'
     const {
       [mtnMSISDNKey]: msisdn
     } = decrypt(getSessionToken())
@@ -273,20 +253,6 @@ class Component extends React.Component<Props> {
 
 }
 
-type Offer = {
-  _id: string,
-  value: number,
-  price: number,
-  starred?: boolean
-}
-
-type Channel = {
-  _id: string,
-  name: string,
-  description: string,
-  requiresNumber?: boolean
-}
-
 type AlertState = {
   shown?: boolean,
   header: string,
@@ -295,13 +261,19 @@ type AlertState = {
   confirmsPayment?: boolean
 }
 
-type AlertProps = {
-  open: boolean,
-  header: string,
-  message: string,
-  buttonText?: string,
-  onConfirm: () => void
-  onDismiss: () => void
+type State = {
+  offers: Array<Offer>,
+  selectedOffer: string | null,
+  alert: {
+    shown: boolean,
+    header: string,
+    message: string,
+    buttonText: string,
+    confirmsPayment: boolean
+  },
+  msisdnPopoverShown: boolean,
+  amount: string,
+  customOfferSelected: false
 }
 
 const AlertText: ({
@@ -311,47 +283,35 @@ const AlertText: ({
   }))
 }) = {
   'payment-succeeded': (credits: number) => ({
-    header: 'Lorem ipsum',
-    message: `Lorem ipsum ${credits} payment lorem ipsum payment`
+    header: 'Payment succeeded',
+    message: `<ion-label>
+      <p>${formatMoney(credits)} has been added to your wallet</p>
+    </ion-label>`
   }),
   'payment-errored': () => ({
-    header: 'Lorem ipsum error',
-    message: 'Lorem ipsum payment lorem ipsum payment error'
+    header: 'Payment failed',
+    message: `<ion-label>
+      <p>Please try again</p>
+      <p>Ensure your account is eligible to deduct the desired amount</p>
+    </ion-label>`
   }),
-  'mtn': () => ({
-    header: 'Lorem ipsum MTN',
-    message: `
-      <p>Lorem ipsum payment lorem ipsum payment</p>
-      <p>Lorem ipsum payment</p>
-    `
+  'mtn': (account: string) => ({
+    header: 'MTN Mobile Money',
+    message: `<ion-label>
+      <p>We will charge this account; <b>${account}</b></p>
+      <p>When prompted, approve the transaction with your MTN Mobile Money PIN</p>
+      <p>If you do not receive the prompt, dial MTN Mobile Money, *165# -> My Account -> My Approvals</p>
+    </ion-label>`
   }),
   'airtel': () => ({
-    header: 'Lorem ipsum Airtel',
-    message: 'Lorem ipsum payment lorem ipsum payment error'
+    header: 'Airtel Money',
+    message: `<ion-label>
+      <p>Dial Airtel Money, *185# -> Payments</p>
+    </ion-label>`
   })
 }
 
-const Alert: React.FC<AlertProps> = ({
-  open,
-  header,
-  message,
-  buttonText,
-  onConfirm,
-  onDismiss
-}) => (
-    <IonAlert
-      isOpen={open}
-      onWillDismiss={onDismiss}
-      header={header || ''}
-      message={message || ''}
-      buttons={[
-        {
-          text: buttonText || 'Okay',
-          handler: onConfirm
-        }
-      ]}
-    />
-  )
+
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   showLoading: () => ({

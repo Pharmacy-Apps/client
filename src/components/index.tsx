@@ -6,6 +6,7 @@ import ItemRequest from './ItemRequest'
 import PhoneInput from './PhoneInput'
 import LazyLoad from './LazyLoad'
 import Popover from './Popover'
+import Alert from './Alert'
 
 export {
   Header,
@@ -15,5 +16,6 @@ export {
   ItemRequest,
   PhoneInput,
   LazyLoad,
-  Popover
+  Popover,
+  Alert
 }

@@ -42,3 +42,5 @@ export const CCs = {
     label: '256', value: '256'
   }
 }
+
+export const mtnMSISDNStorageKey = 'mtn-msisdn'
