@@ -267,6 +267,9 @@ class Component extends React.Component<Props> {
     if (animate) showLoading()
     Requests.get(endPoints['item-requests']).then((response: any) => {
       setItemRequests(response)
+      setActiveRequestsPresence(
+        response.length > getArchivedRequests(response).length
+      )
     }).catch(err => {
       console.error(err)
       showToast(err.error || err.toString())

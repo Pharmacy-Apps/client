@@ -5,14 +5,17 @@ import {
 
 import { platformIsMobile, platformIsAndroid } from 'utils'
 
+import Routes from 'routes'
 import Requests, { endPoints } from 'requests'
+import { getActiveRequestsPresence } from 'session'
 import eventsInstance, { syncData } from '../events'
 
-const { Network, PushNotifications } = Plugins
+const { App, Network, PushNotifications } = Plugins
 
 platformIsMobile && (function () {
   setPushNotificationListener()
   setNetworkListener()
+  setBackButtonListener()
 })()
 
 async function sendPushNotificationTokenToServer(token: string) {
@@ -55,5 +58,22 @@ function setNetworkListener() {
     } else {
       i = 0
     }
+  })
+}
+
+function setBackButtonListener() {
+  document.addEventListener('ionBackButton', (ev: any) => {
+    ev.detail.register(-1, () => {
+      const path = window.location.pathname
+      if (path === Routes.requests.path) {
+        const activeRequestsPresent = getActiveRequestsPresence()
+        if (activeRequestsPresent) {
+          App.exitApp()
+        } else {
+          window.location.href = Routes.home.path
+        }
+      } else if (path === Routes.home.path)
+        App.exitApp()
+    })
   })
 }
