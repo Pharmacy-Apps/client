@@ -87,10 +87,19 @@ class Component extends React.Component<Props> {
               </IonItem>
             </IonList>
             <div className="ion-padding">
-              <IonButton expand="block" type="submit" className="ion-no-margin">Submit</IonButton>
+              <IonButton
+                expand="block"
+                type="submit"
+                className="ion-no-margin ion-action-primary">Submit</IonButton>
             </div>
             <div className="ion-padding">
-              <IonButton onClick={this.onCreateAccount} expand="block" type="button" className="ion-no-margin" fill="clear">Create account</IonButton>
+              <IonButton
+                onClick={this.onCreateAccount}
+                expand="block"
+                type="button"
+                color="secondary"
+                className="ion-no-margin"
+                fill="clear">Create account</IonButton>
             </div>
           </form>
         </IonContent>

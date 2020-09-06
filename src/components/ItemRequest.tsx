@@ -65,17 +65,14 @@ const Component: React.FC<Props> = ({
   return (
     <>
       <IonIcon
-        color="primary"
         icon={
           selectModeOn ? (
             selected ? active : numb
           ) : 'no-icon'
         }
         slot="start"
-        onClick={e => onClick(
-          userIsNotClientUser() ? 0 : 1,
-          _id, e)}
-        className="ion-no-margin" />
+        onClick={e => onClick(userIsNotClientUser() ? 0 : 1, _id, e)}
+        className="ion-no-margin ion-icon-primary" />
       <IonText className="ion-padding-vertical ellipses" onClick={e => onClick(1, _id, e)}>
         <IonLabel className="ion-no-margin spaced">
           <h2 className={
@@ -106,7 +103,7 @@ const Component: React.FC<Props> = ({
         </IonLabel>
       </IonText>
       {selectModeOn ? null : <IonButton onClick={e => onClick(-1, _id, e)} slot="end" fill="clear">
-        <IonIcon icon={more} />
+        <IonIcon className="ion-icon-primary" icon={more} />
       </IonButton>}
       <IonSelect
         ref={node => selectRef = node}
