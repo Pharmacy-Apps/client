@@ -72,7 +72,7 @@ class Component extends React.Component<Props> {
         mapCenter
           ? null
           : <IonIcon
-            color="primary"
+            className="ion-icon-primary"
             style={{ ...markerStyle, ...floatedMarkerStyle }}
             icon={locationIcon}
           />

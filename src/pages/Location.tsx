@@ -14,7 +14,7 @@ import { search, closeCircleSharp } from 'ionicons/icons'
 import { Location as LocationInterface } from 'types'
 
 const title = 'Deliver to'
-const primaryAction = 'Select this location'
+const primaryAction = 'Select location'
 
 const actionButtonStyle = {
   position: 'absolute',
@@ -100,7 +100,7 @@ class Component extends React.Component<{ history: History }> {
           <MapContainer setLocation={this.setLocation} />
           <IonButton
             onClick={this.onPrimaryAction}
-            className="ion-margin"
+            className="ion-margin ion-action-primary"
             style={actionButtonStyle}
           >{primaryAction}</IonButton>
           <div style={{

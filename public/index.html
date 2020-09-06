@@ -121,6 +121,10 @@
           rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.04))
     }
 
+    .popover-wide .popover-wrapper {
+      --width: 300px
+    }
+
     .alert-custom .alert-wrapper {
       max-width: 90%;
     }
@@ -129,8 +133,17 @@
       margin: 0 0 7px 0;
       font-size: 90%
     }
+
     .alert-custom .alert-wrapper .alert-message p:last-child {
       margin: 0
+    }
+
+    .alert-custom button.alert-button {
+      color: var(--ion-color-action-primary)
+    }
+
+    .alert-custom .alert-head * {
+      color: var(--ion-color-primary)
     }
 
     .msisdn-section * {
@@ -158,6 +171,26 @@
       --min-height: 100% !important;
       min-height: 100% !important;
       height: 100% !important
+    }
+
+    .ion-icon-primary {
+      color: var(--ion-color-icon-primary) !important
+    }
+
+    .ion-icon-secondary {
+      color: var(--ion-color-icon-secondary) !important
+    }
+
+    .ion-action-primary {
+      --background: var(--ion-color-action-primary) !important
+    }
+
+    .ion-label-primary {
+      color: var(--ion-color-label-primary) !important
+    }
+
+    .ion-label-secondary {
+      color: var(--ion-color-label-secondary) !important
     }
   </style>
 

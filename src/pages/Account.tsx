@@ -165,16 +165,20 @@ class Component extends React.Component<Props> {
           <IonList lines="inset" className="ion-no-margin ion-no-padding">{
             this.getListItems().map((item, i, a) => {
               return item ? <IonItem key={i} {...i + 1 === a.length ? { lines: "none" } : {}}>
-                <IonIcon icon={item.icon} color="primary" slot="start" />
+                <IonIcon icon={item.icon} className="ion-icon-secondary" slot="start" />
                 <IonLabel>
                   <p>{item.name}</p>
                   <h3 style={{
                     ...item.starred ? { color: 'var(--ion-color-primary)' } : {}
                   }}>{item.value}</h3>
                 </IonLabel>
-                {item.actionText ? <IonButton type="button" {...item.starred ? {} : { fill: "clear" }} className="ion-no-margin" slot="end" onClick={item.handler}>{
-                  item.actionText
-                }</IonButton> : null}
+                {item.actionText ? <IonButton
+                  type="button"
+                  slot="end"
+                  onClick={item.handler}
+                  {...item.starred ? {} : { fill: "clear" }}
+                  className={item.starred ? 'ion-no-margin ion-action-primary' : 'ion-no-margin'}
+                >{item.actionText}</IonButton> : null}
               </IonItem> : null
             })}</IonList>
           <MSISDNModifyPopover
@@ -206,7 +210,7 @@ const LanguagesComponent: React.FC<{
             <IonItem key={value} onClick={() => onSelect(value)} button>
               <IonIcon icon={
                 language === value ? star : 'no-icon'
-              } size="small" color="primary" slot="start" />
+              } size="small" className="ion-icon-secondary" slot="start" />
               {label}
             </IonItem>)
         }

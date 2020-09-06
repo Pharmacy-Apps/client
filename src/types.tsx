@@ -69,6 +69,7 @@ export interface CreditOffer {
 export interface PaymentChannel {
   _id: string,
   name: string,
-  description: string,
-  requiresNumber?: boolean
+  description: string | any,
+  icon?: string,
+  requiresNumber?: true
 }

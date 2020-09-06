@@ -3,11 +3,14 @@ import Routes, { getDefaultRoute } from 'routes'
 import { History } from 'history'
 
 import {
-  IonContent, IonPage, IonButton, IonList, IonItem, IonLabel, IonIcon
+  IonContent, IonPage, IonList,
+  IonItem, IonLabel, IonIcon,
+  IonListHeader
 } from '@ionic/react'
 import {
   person,
-  bicycle as requestsIcon
+  bicycle as requestsIcon,
+  locationSharp as locationIcon
 } from 'ionicons/icons'
 
 import { Header } from 'components'
@@ -81,15 +84,16 @@ class Component extends React.Component<Props> {
         <Header omitsBack actions={this.toolbarActions()} />
         <IonContent>
           <IonList className="ion-no-padding">
-            <IonItem lines="none" onClick={this.onChangeDeliveryLocation}>
+            <IonItem className="ion-margin-bottom" lines="none" onClick={this.onChangeDeliveryLocation} button>
+              <IonIcon slot="start" icon={locationIcon} className="ion-icon-secondary" size="large" />
               <IonLabel>
                 <p>{Text['delivery-to']}</p>
                 <h3>{getAddress(lat, lon)}</h3>
               </IonLabel>
-              <IonButton onClick={this.onChangeDeliveryLocation} fill="clear">
-                <IonIcon src="assets/icons/edit.svg" />
-              </IonButton>
-            </IonItem>{
+            </IonItem>
+            <IonListHeader lines="full">
+              <IonLabel><h3>{Text['category-header']}</h3></IonLabel>
+            </IonListHeader>{
               itemCategories.map(({ icon, label, description, value }, i, a) => (
                 <CategoryComponent
                   key={i}
@@ -116,7 +120,7 @@ const CategoryComponent: React.FC<{
   onSelect: () => void
 }> = ({ lines, label, description, icon, onSelect }) => (
   <IonItem button onClick={onSelect} lines={lines}>
-    <IonIcon color="primary" slot="start" icon={icon} size="large" />
+    <IonIcon slot="start" icon={icon} size="large" />
     <IonLabel>
       <h3>{label}</h3>
       <p>{description}</p>

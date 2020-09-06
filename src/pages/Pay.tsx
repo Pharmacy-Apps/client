@@ -7,9 +7,9 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonAlert, IonButton, IonIcon } from '@ionic/react'
+import { IonContent, IonPage, IonList, IonItem, IonLabel, IonButton, IonIcon } from '@ionic/react'
 
-import { Header } from 'components'
+import { Header, Alert } from 'components'
 import { MSISDNModify as MSISDNModifyPopover } from 'containers'
 
 import Requests, { endPoints } from 'requests'
@@ -21,6 +21,7 @@ import { getSessionToken, setSessionToken, getSessionPhone, setActiveRequestsPre
 import { getDeliveryLocationForNextOrder as getDeliveryLocationForOrder } from 'location'
 
 import { ItemSearchResult as ItemSearchResultInterface } from 'types'
+import { formatMoney } from 'utils/currency'
 
 type Props = {
   history: History,
@@ -127,7 +128,9 @@ class Component extends React.Component<Props> {
     return [{
       _id: 'mtn',
       name: 'MTN Mobile Money',
-      description: formatUGMSISDN(msisdn || getSessionPhone()),
+      description: <span className="ion-label-primary">{
+        formatUGMSISDN(msisdn || getSessionPhone())
+      }</span>,
       icon: '/assets/icons/mobile-pay.svg',
       requiresNumber: true
     }, {
@@ -161,10 +164,12 @@ class Component extends React.Component<Props> {
                   <h3>{channel.name}</h3>
                   <p>{channel.description}</p>
                 </IonLabel>
-                {channel.requiresNumber ? <IonButton fill="clear" color="secondary" onClick={e => {
+                {channel.requiresNumber ? <IonButton fill="clear" onClick={e => {
                   e.stopPropagation()
                   this.showMSISDNPopover()
-                }}>Change Number</IonButton> : null}
+                }}>
+                  <IonIcon icon="/assets/icons/edit-secondary.svg" />
+                </IonButton> : null}
               </IonItem>
             ))
             }</IonList>
@@ -203,28 +208,24 @@ type AlertState = {
   confirmsPayment?: boolean
 }
 
-type AlertProps = {
-  open: boolean,
-  header: string,
-  message: string,
-  buttonText?: string,
-  onConfirm: () => void
-  onDismiss: () => void
-}
-
 const AlertText: ({
   [key: string]: ((e?: any) => ({
     header: string,
     message: string
   }))
 }) = {
-  'payment-succeded': (credits: number) => ({
-    header: 'Lorem ipsum',
-    message: `Lorem ipsum ${credits} payment lorem ipsum payment`
+  'payment-succeeded': (credits: number) => ({
+    header: 'Payment succeeded',
+    message: `<ion-label>
+      <p>${formatMoney(credits)} has been added to your wallet</p>
+    </ion-label>`
   }),
   'payment-errored': () => ({
-    header: 'Lorem ipsum error',
-    message: 'Lorem ipsum payment lorem ipsum payment error'
+    header: 'Payment failed',
+    message: `<ion-label>
+      <p>Please try again</p>
+      <p>Ensure your account is eligible to deduct the desired amount</p>
+    </ion-label>`
   }),
   'confirmation': () => ({
     header: 'Lorem ipsum confirm action',
@@ -234,28 +235,6 @@ const AlertText: ({
     `
   })
 }
-
-const Alert: React.FC<AlertProps> = ({
-  open,
-  header,
-  message,
-  buttonText,
-  onConfirm,
-  onDismiss
-}) => (
-    <IonAlert
-      isOpen={open}
-      onWillDismiss={onDismiss}
-      header={header || ''}
-      message={message || ''}
-      buttons={[
-        {
-          text: buttonText || 'Okay',
-          handler: onConfirm
-        }
-      ]}
-    />
-  )
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   showLoading: () => ({

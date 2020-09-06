@@ -170,7 +170,9 @@ class Component extends React.Component<Props> {
     return [{
       _id: 'mtn',
       name: 'MTN Mobile Money',
-      description: formatUGMSISDN(msisdn || getSessionPhone()),
+      description: <span className="ion-label-primary">{
+        formatUGMSISDN(msisdn || getSessionPhone())
+      }</span>,
       requiresNumber: true
     }] as Array<Channel>
   }
@@ -189,7 +191,7 @@ class Component extends React.Component<Props> {
                 onClick={() => this.onOfferSelect(offer)}
                 button
               >
-                <IonIcon color="primary" icon={
+                <IonIcon className="ion-icon-secondary" icon={
                   offer._id === selectedOffer && !customOfferSelected ? active : numb
                 } slot="start" />
                 <IonLabel>
@@ -199,7 +201,7 @@ class Component extends React.Component<Props> {
             ))
           }
             <IonItem lines="none">
-              <IonIcon color="primary" icon={customOfferSelected ? active : numb} slot="start" />
+              <IonIcon className="ion-icon-secondary" icon={customOfferSelected ? active : numb} slot="start" />
               <input
                 className="custom-input"
                 onChange={this.onChangeAmountInput}
@@ -230,7 +232,9 @@ class Component extends React.Component<Props> {
                 {channel.requiresNumber ? <IonButton onClick={e => {
                   e.stopPropagation()
                   this.showMSISDNPopover()
-                }} color="secondary" fill="clear">Change Number</IonButton> : null}
+                }} fill="clear">
+                  <IonIcon icon="/assets/icons/edit-secondary.svg" />
+                </IonButton> : null}
               </IonItem>
             ))
           }</IonList>
@@ -298,7 +302,7 @@ const AlertText: ({
   'mtn': (account: string) => ({
     header: 'MTN Mobile Money',
     message: `<ion-label>
-      <p>We will charge this account; <b>${account}</b></p>
+      <p>We will charge this account; <b class="ion-label-secondary">${account}</b></p>
       <p>When prompted, approve the transaction with your MTN Mobile Money PIN</p>
       <p>If you do not receive the prompt, dial MTN Mobile Money, *165# -> My Account -> My Approvals</p>
     </ion-label>`

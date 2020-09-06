@@ -1,23 +1,32 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react'
+import { IonIcon } from '@ionic/react'
 
 type Props = { src: string, selected: boolean, alt?: string, item: string }
 
 const placeholder = '/assets/icons/no-icon.svg'
 
-const elementStyle = {
+const wrapperStyle = {
   height: '100px',
   width: '100px',
   padding: '5px 25px',
   margin: 0
 }
 
+const contentStyle = {
+  height: '100%',
+  width: '100%'
+}
+
 const Component: React.FC<Props> = ({ item, src, selected }) => {
-  const [imageSrc, setImageSrc] = useState(placeholder)
+  const [imageSrc, setImageSrc]: [
+    string | undefined, Dispatch<SetStateAction<string | undefined>>
+  ] = useState()
   const [imageRef, setImageRef]: [
     Element | undefined, Dispatch<SetStateAction<Element | undefined>>
   ]
     = useState()
   const [observerSet, setObserverSet] = useState(false)
+  const [errored, setImageErrored] = useState(false)
 
   const setRef = (node: any) => {
     setImageRef(node)
@@ -25,7 +34,7 @@ const Component: React.FC<Props> = ({ item, src, selected }) => {
 
   const onError = function () {
     setObserverSet(true)
-    setImageSrc(placeholder)
+    setImageErrored(true)
   }
 
   useEffect(() => {
@@ -64,9 +73,21 @@ const Component: React.FC<Props> = ({ item, src, selected }) => {
     }
   }, [imageRef, imageSrc, src, observerSet])
 
-  return <img style={elementStyle} ref={setRef} src={
-    selected ? '/assets/icons/checked.svg' : imageSrc
-  } alt="" onError={onError} />
+  return <div style={wrapperStyle}>{
+    imageSrc
+      ? (
+        selected
+          ? <IonIcon style={contentStyle} ref={setRef} src={placeholder} />
+          : (
+            errored
+              ? <IonIcon style={contentStyle} ref={setRef} src={placeholder} />
+              : <img style={contentStyle} ref={setRef} src={imageSrc} onError={onError} alt="" />
+          )
+      )
+      : (
+        <IonIcon style={contentStyle} ref={setRef} src="/assets/icons/checked.svg" />
+      )
+  }</div>
 
 }
 

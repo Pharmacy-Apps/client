@@ -78,8 +78,12 @@ class Component extends React.Component<Props> {
         cssClass="popover-wide"
       >
         <IonContent className="ion-padding">
+          <h2 style={{
+            color: 'var(--ion-color-primary)',
+            margin: '0 0 20px 0',
+            fontSize: '20px'
+          }}>Type new phone number</h2>
           <IonLabel>
-            <h2>Type new phone number</h2>
             <p style={{ margin: 0 }}>We will use the new phone number for following charges</p>
           </IonLabel>
         </IonContent>
@@ -95,7 +99,7 @@ class Component extends React.Component<Props> {
             </IonItem>
             <IonItemDivider color={this.getItemDividerColor()} style={{ minHeight: 0 }} />
             <IonItem button onClick={this.onSubmit} className="ion-text-center">
-              <IonIcon color="primary" icon={send}></IonIcon>
+              <IonIcon className="ion-icon-primary" icon={send}></IonIcon>
             </IonItem>
           </IonList>
         </IonContent>

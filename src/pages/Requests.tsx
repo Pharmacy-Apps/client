@@ -368,7 +368,7 @@ class Component extends React.Component<Props> {
                 lines="none"
               >
                 <IonLabel className="ion-no-margin ion-text-center">
-                  <p>Archived</p>
+                  <p className="ion-label-secondary">Archived</p>
                 </IonLabel>
                 <IonIcon className="ion-no-margin" icon={
                   archivedRequestsShown ? up : down
@@ -380,7 +380,7 @@ class Component extends React.Component<Props> {
             }</div>
           }
           {userIsClientUser() && requestsReturned ? <div className="ion-padding">
-            <IonButton onClick={this.onPrimaryAction} className="ion-no-margin">{primaryAction}</IonButton>
+            <IonButton onClick={this.onPrimaryAction} className="ion-no-margin ion-action-primary">{primaryAction}</IonButton>
           </div> : null}
           <SelectPopover
             open={courierPopoverShown}

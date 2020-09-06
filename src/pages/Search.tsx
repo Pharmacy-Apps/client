@@ -191,7 +191,7 @@ class Component extends React.Component<Props> {
           }</IonList>
           {this.state.selectedItems.length ? (
             <IonFab className="ion-margin" vertical="bottom" horizontal="end" slot="fixed">
-              <IonFabButton color="primary" onClick={this.onSubmit}>
+              <IonFabButton className="ion-action-primary" onClick={this.onSubmit}>
                 <IonIcon icon={send} />
               </IonFabButton>
             </IonFab>
