@@ -61,6 +61,11 @@ function setNetworkListener() {
   })
 }
 
+const deadPaths = [
+  Routes.login.path,
+  Routes.home.path
+]
+
 function setBackButtonListener() {
   document.addEventListener('ionBackButton', (ev: any) => {
     ev.detail.register(-1, () => {
@@ -72,7 +77,7 @@ function setBackButtonListener() {
         } else {
           window.location.href = Routes.home.path
         }
-      } else if (path === Routes.home.path)
+      } else if (deadPaths.includes(path))
         App.exitApp()
     })
   })
