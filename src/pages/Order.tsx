@@ -152,13 +152,13 @@ class Component extends React.Component<Props> {
                       <IonText slot="start"><h4>{item.name}</h4></IonText>
                       {/* ion-grid, ion-toolbar don't work, try table */}
                       <IonButton onClick={() => this.handleRemoveItem(_id)} slot="end" fill="clear" style={ionButtonStyle}>
-                        <IonIcon className="ion-icon-primary" slot="icon-only" icon={removeCircleOutline} />
+                        <IonIcon className="ion-icon-secondary" slot="icon-only" icon={removeCircleOutline} />
                       </IonButton>
                     </IonItem>
                   ))
                 }<IonItem lines="none" className="ion-no-padding mini-list-item">
                     <IonButton onClick={this.handleAddItem} slot="end" fill="clear" style={ionButtonStyle}>
-                      <IonIcon className="ion-icon-primary" slot="icon-only" icon={addCircleOutline} />
+                      <IonIcon className="ion-icon-secondary" slot="icon-only" icon={addCircleOutline} />
                     </IonButton>
                   </IonItem>
                 </IonList>
@@ -185,9 +185,9 @@ class Component extends React.Component<Props> {
                 <h4>{this.locationInfo().locationInfo2}</h4>
               </IonLabel> : <IonLabel className="ion-text-wrap">
                   <p>Delivery to</p>
-                  <IonText color="secondary"><h4>{
+                  <h4 className="ion-label-primary">{
                     this.locationInfo().locationInfo1
-                  }</h4></IonText>
+                  }</h4>
                 </IonLabel>
             }</IonItem>
             <IonItem lines="none">

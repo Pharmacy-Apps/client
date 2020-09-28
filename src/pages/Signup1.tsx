@@ -9,6 +9,7 @@ import * as constants from 'reducers/constants'
 
 import { IonContent, IonPage, IonList, IonItem, IonLabel, IonButton, IonItemDivider } from '@ionic/react'
 import { Header, PhoneInput } from 'components'
+import { HeadComponent } from './Login'
 
 import Requests, { endPoints } from 'requests'
 
@@ -22,9 +23,12 @@ export type Props = {
   hideToast: Function
 }
 
+const header = 'Let\'s start'
+const subHeader = 'Enter your phone number to receive a verification code'
+
 class Component extends React.Component<Props> {
 
-  state = { phone: null, phoneInputFocussed: false }
+  state = { phone: null, inputFocussed: null }
 
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -52,35 +56,52 @@ class Component extends React.Component<Props> {
     }
   }
 
-  onPhoneInputFocus = () => this.setState({ phoneInputFocussed: true })
-  onPhoneInputBlur = () => this.setState({ phoneInputFocussed: false })
+  onInputFocus = (e: any) => {
+    if (e)
+      this.setState({ inputFocussed: e.target.name })
+  }
+  
+  onInputBlur = () => this.setState({ inputFocussed: null })
+
+  getIonLabelStyle = (name: string) => {
+    return this.state.inputFocussed === name
+      ? { color: 'var(--ion-color-action-primary)' }
+      : {}
+  }
+
+  getIonItemDividerStyle = (name: string) => {
+    const o = { minHeight: 1 }
+    return this.state.inputFocussed === name
+      ? { ...o, '--background': 'var(--ion-color-action-primary)' }
+      : o
+  }
 
   render() {
-    const { phone, phoneInputFocussed } = this.state
-    const color = phoneInputFocussed ? 'primary' : undefined
+    const { phone } = this.state
     return (
       <IonPage>
         <Header omitsBack />
         <IonContent className="ion-padding">
+          <HeadComponent header={header} subHeader={subHeader} />
           <form onSubmit={this.onSubmit}>
             <IonList className="ion-no-margin ion-no-padding">
               <IonItem lines="none">
-                <IonLabel position="stacked" color={color}>Phone</IonLabel>
+                <IonLabel position="stacked" style={this.getIonLabelStyle('phone')}>Phone</IonLabel>
                 {/* <IonInput onIonChange={this.onChange} value={phone} type="tel" name="phone" autocomplete="off" /> */}
                 <PhoneInput
                   name="phone"
                   value={phone || ''}
                   onChange={this.onChange}
-                  onFocus={this.onPhoneInputFocus}
-                  onBlur={this.onPhoneInputBlur} />
+                  onFocus={this.onInputFocus}
+                  onBlur={this.onInputBlur} />
               </IonItem>
-              <IonItemDivider style={{ minHeight: 1 }} color={color} />
+              <IonItemDivider style={this.getIonItemDividerStyle('phone')} />
             </IonList>
             <div className="ion-padding">
               <IonButton
                 expand="block"
                 type="submit"
-                className="ion-no-margin ion-action-primary">Submit</IonButton>
+                className="ion-no-margin ion-action-primary">Next</IonButton>
             </div>
           </form>
         </IonContent>

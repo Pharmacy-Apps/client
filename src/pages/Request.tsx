@@ -86,18 +86,14 @@ class Component extends React.Component<Props> {
         <IonContent className="ion-no-padding">
           <IonList lines="full" className="fill-height ion-no-padding">
             <IonItem>
-              <IonText>
-                <IonLabel>
-                  <p style={{
-                    marginBottom: 'unset', lineHeight: 'unset'
-                  }}><IonBadge style={{
-                    background: mapRequestStateToBadgeBackground(requestState)
-                  }}>{requestState}</IonBadge></p>
-                </IonLabel>
-              </IonText>
-              <IonText slot="end">
-                <IonLabel><p>Made {formatDate(createdAt)} ago</p></IonLabel>
-              </IonText>
+              <IonLabel>
+                <p style={{
+                  marginBottom: 'unset', lineHeight: 'unset'
+                }}><IonBadge style={{
+                  background: mapRequestStateToBadgeBackground(requestState)
+                }}>{requestState}</IonBadge></p>
+              </IonLabel>
+              <IonLabel><p className="ion-text-end">Made {formatDate(createdAt)} ago</p></IonLabel>
             </IonItem>
             <IonItem lines="none">
               <IonLabel>

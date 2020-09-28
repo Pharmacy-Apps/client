@@ -23,10 +23,13 @@ export type Props = {
   hideToast: Function
 }
 
+const header = 'Welcome!'
+const subHeader = 'Provide your phone and password to sign in'
+
 class Component extends React.Component<Props> {
 
   // state = { phone: null, phoneInputFocussed: false, password: null }
-  state = { phone: '773828773', phoneInputFocussed: false, password: '773828773' } // client user
+  state = { phone: '773828773', inputFocussed: null, password: '773828773' } // client user
   // state = { phone: '773828774', phoneInputFocussed: false, password: '773828773' } // courier
   // state = { phone: '773828775', phoneInputFocussed: false, password: '773828773' } // admin
 
@@ -58,33 +61,53 @@ class Component extends React.Component<Props> {
     this.props.history.push(Routes.signup1.path)
   }
 
-  onPhoneInputFocus = () => this.setState({ phoneInputFocussed: true })
-  onPhoneInputBlur = () => this.setState({ phoneInputFocussed: false })
+  onInputFocus = (e: any) => {
+    if (e)
+      this.setState({ inputFocussed: e.target.name })
+  }
+
+  onInputBlur = () => this.setState({ inputFocussed: null })
+
+  getIonLabelStyle = (name: string) => {
+    return this.state.inputFocussed === name
+      ? { color: 'var(--ion-color-action-primary)' }
+      : {}
+  }
+
+  getIonItemDividerStyle = (name: string) => {
+    const o = { minHeight: .1 }
+    return this.state.inputFocussed === name
+      ? { ...o, '--background': 'var(--ion-color-action-primary)' }
+      : o
+  }
 
   render() {
-    const { phone, password, phoneInputFocussed } = this.state
-    const color = phoneInputFocussed ? 'primary' : undefined
+    const { phone, password } = this.state
     return (
       <IonPage>
         <Header omitsBack />
         <IonContent className="ion-padding">
+          <HeadComponent header={header} subHeader={subHeader} />
           <form onSubmit={this.onSubmit}>
-            <IonList lines="full" className="ion-no-margin ion-no-padding">
+            <IonList className="ion-no-margin ion-no-padding">
               <IonItem lines="none">
-                <IonLabel position="stacked" color={color}>Phone</IonLabel>
-                {/* <IonInput onIonChange={this.onChange} value={phone} name="phone" /> */}
+                <IonLabel style={this.getIonLabelStyle('phone')} position="stacked">Phone</IonLabel>
                 <PhoneInput
                   name="phone"
                   value={phone || ''}
                   onChange={this.onChange}
-                  onFocus={this.onPhoneInputFocus}
-                  onBlur={this.onPhoneInputBlur} />
+                  onFocus={this.onInputFocus}
+                  onBlur={this.onInputBlur} />
               </IonItem>
-              <IonItemDivider style={{ minHeight: 1 }} color={color} />
-              <IonItem>
-                <IonLabel position="stacked">Password</IonLabel>
-                <IonInput onIonChange={this.onChange} value={password} type="password" name="password" autocomplete="off" />
+              <IonItemDivider style={this.getIonItemDividerStyle('phone')} />
+              <IonItem lines="none">
+                <IonLabel style={this.getIonLabelStyle('password')} position="stacked">Password</IonLabel>
+                <IonInput
+                  onIonChange={this.onChange}
+                  onIonFocus={this.onInputFocus}
+                  onIonBlur={this.onInputBlur} value={password} type="password" name="password" autocomplete="off" />
               </IonItem>
+              <IonItemDivider style={this.getIonItemDividerStyle('password')} />
             </IonList>
             <div className="ion-padding">
               <IonButton
@@ -126,3 +149,22 @@ const mapDispatchToProps = (dispatch: any) => bindActionCreators({
 }, dispatch)
 
 export default connect(null, mapDispatchToProps)(Component)
+
+export const HeadComponent: React.FC<{
+  header: string,
+  subHeader: string
+}> = ({
+  header,
+  subHeader
+}) => (<>
+  <IonItem lines="none" className="ion-margin-bottom">
+    <IonLabel className="ion-text-wrap ion-head">
+      {/* <h1>{header}</h1> */}
+      <p>{subHeader}</p>
+    </IonLabel>
+  </IonItem>
+  {/* <IonItemDivider className="ion-margin-vertical" style={{
+    minHeight: .4,
+    '--background': 'var(--ion-color-label-secondary)'
+  }} /> */}
+</>)

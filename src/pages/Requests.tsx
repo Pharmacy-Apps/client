@@ -60,7 +60,7 @@ class Component extends React.Component<Props> {
     courierPopoverShown: false,
     requestDetailed: null,
     requestsSelected: [] as Array<String>,
-    archivedRequestsShown: false,
+    archivedRequestsShown: true,
     couriers: undefined
   }
 
@@ -373,7 +373,7 @@ class Component extends React.Component<Props> {
                 <IonLabel className="ion-no-margin ion-text-center">
                   <p className="ion-label-secondary">Archived</p>
                 </IonLabel>
-                <IonIcon className="ion-no-margin" icon={
+                <IonIcon className="ion-no-margin ion-icon-secondary" icon={
                   archivedRequestsShown ? up : down
                 } slot="end"></IonIcon>
               </IonItem> : null}

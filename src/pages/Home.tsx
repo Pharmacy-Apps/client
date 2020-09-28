@@ -85,10 +85,10 @@ class Component extends React.Component<Props> {
         <IonContent>
           <IonList className="ion-no-padding">
             <IonItem className="ion-margin-bottom" lines="none" onClick={this.onChangeDeliveryLocation} button>
-              <IonIcon slot="start" icon={locationIcon} className="ion-icon-secondary" size="large" />
+              <IonIcon slot="start" icon={locationIcon} className="ion-icon-primary" size="large" />
               <IonLabel>
                 <p>{Text['delivery-to']}</p>
-                <h3>{getAddress(lat, lon)}</h3>
+                <h3 className="ion-label-primary">{getAddress(lat, lon)}</h3>
               </IonLabel>
             </IonItem>
             <IonListHeader lines="full">
@@ -120,9 +120,9 @@ const CategoryComponent: React.FC<{
   onSelect: () => void
 }> = ({ lines, label, description, icon, onSelect }) => (
   <IonItem button onClick={onSelect} lines={lines}>
-    <IonIcon slot="start" icon={icon} size="large" />
+    <IonIcon className="ion-icon-primary" slot="start" icon={icon} size="large" />
     <IonLabel>
-      <h3>{label}</h3>
+      <h3 className="ion-label-primary">{label}</h3>
       <p>{description}</p>
     </IonLabel>
   </IonItem>

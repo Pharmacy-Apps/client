@@ -39,8 +39,7 @@ type Item = {
   value: any,
   icon: string,
   actionText?: any,
-  handler?: () => void,
-  starred?: true
+  handler?: () => void
 } | null
 
 const { lat, lon } = getDeliveryLocationForNextOrder()
@@ -51,6 +50,10 @@ const { lat, lon } = getDeliveryLocationForNextOrder()
  * https://maps.googleapis.com/maps/api/geocode/json?key=GEOCODE_API_KEY&latlng=44.4647452,7.3553838&sensor=true
  * 
  */
+
+const userIsClient = userIsClientUser()
+
+let currentLanguage: string | null = null
 
 class Component extends React.Component<Props> {
 
@@ -64,9 +67,7 @@ class Component extends React.Component<Props> {
       [mtnMSISDNKey]: msisdn
     } = decrypt(getSessionToken())
 
-    const userIsClient = userIsClientUser()
-
-    const currentLanguage = (
+    currentLanguage = (
       languages.find(({ value }) => value === getLanguage()) || languages[0]
     ).label
 
@@ -76,20 +77,18 @@ class Component extends React.Component<Props> {
         value: formatMoney(this.state.credits),
         actionText: <IonIcon icon={deposit} />,
         handler: () => history.push(Routes.credit.path),
-        starred: true,
         icon: '/assets/icons/wallet.svg'
       } : null,
       userIsClient ? {
         name: 'Delivery location',
         value: getAddress(lat, lon),
-        actionText: lat && lon ? <IonIcon src="assets/icons/edit.svg" /> : 'Set',
+        actionText: lat && lon ? null : 'Set',
         handler: () => history.push(Routes.location.path),
         icon: location
       } : null,
       userIsClient ? {
         name: 'MTN account to debit',
         value: formatUGMSISDN(msisdn || getSessionPhone()),
-        actionText: <IonIcon src="assets/icons/edit.svg" />,
         handler: this.showMSISDNPopover,
         icon: '/assets/icons/mobile-pay.svg'
       } : null,
@@ -101,7 +100,6 @@ class Component extends React.Component<Props> {
       {
         name: 'Language',
         value: currentLanguage,
-        actionText: <IonIcon src="assets/icons/edit.svg" />,
         handler: this.showLanguagePopover,
         icon: language
       }
@@ -164,20 +162,24 @@ class Component extends React.Component<Props> {
         <IonContent>
           <IonList lines="inset" className="ion-no-margin ion-no-padding">{
             this.getListItems().map((item, i, a) => {
-              return item ? <IonItem key={i} {...i + 1 === a.length ? { lines: "none" } : {}}>
-                <IonIcon icon={item.icon} className="ion-icon-secondary" slot="start" />
+              return item ? <IonItem
+                {...i + 1 === a.length ? { lines: "none" } : {}}
+                key={i}
+                button={Boolean(item.handler)}
+                onClick={item.handler}
+              >
+                <IonIcon icon={item.icon} className="ion-icon-primary" slot="start" />
                 <IonLabel>
                   <p>{item.name}</p>
                   <h3 style={{
-                    ...item.starred ? { color: 'var(--ion-color-primary)' } : {}
+                    ...item.handler ? { color: 'var(--ion-color-primary)' } : {}
                   }}>{item.value}</h3>
                 </IonLabel>
                 {item.actionText ? <IonButton
+                  {...item.handler ? {} : { fill: "clear" }}
                   type="button"
                   slot="end"
-                  onClick={item.handler}
-                  {...item.starred ? {} : { fill: "clear" }}
-                  className={item.starred ? 'ion-no-margin ion-action-primary' : 'ion-no-margin'}
+                  className={item.handler ? 'ion-no-margin ion-action-secondary' : 'ion-no-margin'}
                 >{item.actionText}</IonButton> : null}
               </IonItem> : null
             })}</IonList>
@@ -189,7 +191,7 @@ class Component extends React.Component<Props> {
             open={languagePopoverShown}
             onDismiss={this.hideLanguagePopover}
           >
-            <LanguagesComponent language={getLanguage()} onSelect={this.onSelectLanguage} />
+            <LanguagesComponent language={currentLanguage} onSelect={this.onSelectLanguage} />
           </Popover>
         </IonContent>
       </IonPage>
@@ -209,8 +211,8 @@ const LanguagesComponent: React.FC<{
           languages.map(({ label, value }) =>
             <IonItem key={value} onClick={() => onSelect(value)} button>
               <IonIcon icon={
-                language === value ? star : 'no-icon'
-              } size="small" className="ion-icon-secondary" slot="start" />
+                language === label ? star : 'no-icon'
+              } size="small" className="ion-icon-primary" slot="start" />
               {label}
             </IonItem>)
         }

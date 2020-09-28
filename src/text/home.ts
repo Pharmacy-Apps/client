@@ -11,7 +11,7 @@ const text: Type = {
     "en": "All items"
   },
   "category-pharmacy": {
-    "en": "Pharmacy"
+    "en": "Pharmacy items"
   },
   "category-pharmacy-description": {
     "en": "Lorem ipsum tabs, medicine loren ipsum"

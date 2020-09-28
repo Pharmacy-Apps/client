@@ -168,7 +168,7 @@ class Component extends React.Component<Props> {
                   e.stopPropagation()
                   this.showMSISDNPopover()
                 }}>
-                  <IonIcon icon="/assets/icons/edit-secondary.svg" />
+                  <IonIcon className="ion-icon-secondary" icon="/assets/icons/edit-secondary.svg" />
                 </IonButton> : null}
               </IonItem>
             ))

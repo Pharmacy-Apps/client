@@ -73,35 +73,42 @@ const Component: React.FC<Props> = ({
         slot="start"
         onClick={e => onClick(userIsNotClientUser() ? 0 : 1, _id, e)}
         className="ion-no-margin ion-icon-primary" />
-      <IonText className="ion-padding-vertical ellipses" onClick={e => onClick(1, _id, e)}>
-        <IonLabel className="ion-no-margin spaced">
-          <h2 className={
-            detailed ? 'ion-text-wrap' : 'ellipses'
-          }>
-            {
-              pharmacyItems.map((o, i) => (i > 0 ? ', ' : '') + (
-                o.item['common-name'] || o.item['scientific-name']
-              ))
-            }
-          </h2>
-          <p>{state}</p>
-          {(
-            lat !== undefined &&
-            lon !== undefined
-          ) ? <p>Delivery at {`${lat}, ${lon}`}</p> : null}
-          {detailed ? <>
-            {userCanViewRequestClient
-              ? <p>Client - {user.name || user.phone}</p>
-              : null}
-            {courier ? <p>Courier - {`${courier.name}`}</p> : null}
-          </> : null}
-        </IonLabel>
-      </IonText>
-      <IonText slot="end" onClick={e => onClick(2, _id, e)}>
-        <IonLabel className="one-line">
-          <p style={{ textAlign: "right" }}>{formatDate(createdAt)}</p>
-        </IonLabel>
-      </IonText>
+      <IonLabel
+        className="ion-padding-vertical ion-no-margin spaced"
+        onClick={e => onClick(1, _id, e)}
+      >
+        <h2 className={
+          detailed ? 'ion-text-wrap' : 'ellipses'
+        }>
+          {
+            pharmacyItems.map((o, i) => (i > 0 ? ', ' : '') + (
+              o.item['common-name'] || o.item['scientific-name']
+            ))
+          }
+        </h2>
+        <p>{state}</p>
+        {(
+          lat !== undefined &&
+          lon !== undefined
+        ) ? <p>Delivery at {`${lat}, ${lon}`}</p> : null}
+        {detailed ? <>
+          {userCanViewRequestClient
+            ? <p>Client - {user.name || user.phone}</p>
+            : null}
+          {courier ? <p>Courier - {`${courier.name}`}</p> : null}
+        </> : null}
+      </IonLabel>
+      <IonLabel
+        className="one-line"
+        style={{
+          minWidth: 'fit-content',
+          maxWidth: 'fit-content'
+        }}
+        slot="end"
+        onClick={e => onClick(2, _id, e)}
+      >
+        <p className="ion-text-end">{formatDate(createdAt)}</p>
+      </IonLabel>
       {selectModeOn ? null : <IonButton onClick={e => onClick(-1, _id, e)} slot="end" fill="clear">
         <IonIcon className="ion-icon-primary" icon={more} />
       </IonButton>}

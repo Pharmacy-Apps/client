@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, FocusEvent } from 'react'
 
 import { CCs } from 'utils/msisdn'
 
@@ -10,7 +10,7 @@ type Props = {
   value: string,
   onKeyUp?: (e: { keyCode: number }) => void,
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void,
-  onFocus?: () => void,
+  onFocus?: (e: FocusEvent<HTMLInputElement>) => void,
   onBlur?: () => void
 }
 

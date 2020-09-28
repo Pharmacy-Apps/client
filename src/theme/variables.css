@@ -3,17 +3,8 @@ http://ionicframework.com/docs/theming/ */
 
 /** Ionic CSS Variables **/
 :root {
-  --ion-color-label-primary: #c51162;
-  --ion-color-label-secondary: #018786;
-
-  --ion-color-action-primary: #c51162;
-  --ion-color-action-secondary: #c51162;
-
-  --ion-color-icon-primary: #c51162;
-  --ion-color-icon-secondary: #018786;
-
-  --ion-color-primary: #01579B; /* #3880ff; */
-  --ion-color-secondary: #018786; /* rgb(255, 166, 0) */
+  --ion-color-primary: #018786; /* #01579B, #3880ff; */
+  --ion-color-secondary: rgb(167, 5, 118); /* rgb(255, 166, 0) */
 
   --ion-color-cancelled: #a70707f8; /* #3880ff */
   --ion-color-transit: #328602;

@@ -56,7 +56,7 @@
 
     .select-menu,
     ion-radio::part(container) {
-      visibility: hidden
+      display: none;
     }
 
     .button-select-menu::part(native) {
@@ -139,11 +139,15 @@
     }
 
     .alert-custom button.alert-button {
-      color: var(--ion-color-action-primary)
+      color: var(--ion-color-primary)
     }
 
     .alert-custom .alert-head * {
       color: var(--ion-color-primary)
+    }
+
+    .msisdn-section {
+      width: 100%
     }
 
     .msisdn-section * {
@@ -174,23 +178,41 @@
     }
 
     .ion-icon-primary {
-      color: var(--ion-color-icon-primary) !important
+      color: var(--ion-color-primary) !important
     }
 
     .ion-icon-secondary {
-      color: var(--ion-color-icon-secondary) !important
+      color: var(--ion-color-secondary) !important
     }
 
     .ion-action-primary {
-      --background: var(--ion-color-action-primary) !important
+      --background: var(--ion-color-primary) !important
+    }
+
+    .ion-action-secondary {
+      --background: var(--ion-color-secondary) !important
     }
 
     .ion-label-primary {
-      color: var(--ion-color-label-primary) !important
+      color: var(--ion-color-primary) !important
     }
 
     .ion-label-secondary {
-      color: var(--ion-color-label-secondary) !important
+      color: var(--ion-color-secondary) !important
+    }
+
+    .ion-head h1,
+    .ion-head p {
+      color: var(--ion-color-primary)
+    }
+
+    .ion-head h1 {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    * {
+      --background: #fdffff
     }
   </style>
 

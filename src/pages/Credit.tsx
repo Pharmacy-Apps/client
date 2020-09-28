@@ -191,7 +191,7 @@ class Component extends React.Component<Props> {
                 onClick={() => this.onOfferSelect(offer)}
                 button
               >
-                <IonIcon className="ion-icon-secondary" icon={
+                <IonIcon className="ion-icon-primary" icon={
                   offer._id === selectedOffer && !customOfferSelected ? active : numb
                 } slot="start" />
                 <IonLabel>
@@ -201,7 +201,7 @@ class Component extends React.Component<Props> {
             ))
           }
             <IonItem lines="none">
-              <IonIcon className="ion-icon-secondary" icon={customOfferSelected ? active : numb} slot="start" />
+              <IonIcon className="ion-icon-primary" icon={customOfferSelected ? active : numb} slot="start" />
               <input
                 className="custom-input"
                 onChange={this.onChangeAmountInput}
@@ -227,13 +227,13 @@ class Component extends React.Component<Props> {
               >
                 <IonLabel>
                   <h3>{channel.name}</h3>
-                  <p>{channel.description}</p>
+                  <p className="ion-label-primary">{channel.description}</p>
                 </IonLabel>
                 {channel.requiresNumber ? <IonButton onClick={e => {
                   e.stopPropagation()
                   this.showMSISDNPopover()
                 }} fill="clear">
-                  <IonIcon icon="/assets/icons/edit-secondary.svg" />
+                  <IonIcon className="ion-icon-secondary" icon="/assets/icons/edit-secondary.svg" />
                 </IonButton> : null}
               </IonItem>
             ))
