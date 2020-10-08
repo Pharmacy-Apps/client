@@ -3,7 +3,7 @@ import { IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton, 
 
 import { ToolbarAction } from 'types'
 
-const appName = 'App'
+const appName = 'MediStore'
 
 export type Props = {
   omitsBack?: boolean

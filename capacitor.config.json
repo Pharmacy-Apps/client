@@ -1,6 +1,6 @@
 {
-  "appId": "io.ionic.pharmacy",
-  "appName": "App",
+  "appId": "io.medistore",
+  "appName": "MediStore",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "build",
