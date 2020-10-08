@@ -72,7 +72,7 @@ class Component extends React.Component<Props> {
         mapCenter
           ? null
           : <IonIcon
-            className="ion-icon-primary"
+            className="ion-icon-secondary"
             style={{ ...markerStyle, ...floatedMarkerStyle }}
             icon={locationIcon}
           />
@@ -83,7 +83,7 @@ class Component extends React.Component<Props> {
 }
 
 const Marker: React.FC<{ lat: number, lng: number }> = ({ lat, lng }) => (
-  <IonIcon className="ion-icon-primary" icon={locationIcon} style={markerStyle} />
+  <IonIcon className="ion-icon-secondary" icon={locationIcon} style={markerStyle} />
 )
 
 export default Component
