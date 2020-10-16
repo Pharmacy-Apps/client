@@ -10,19 +10,20 @@ import * as constants from 'reducers/constants'
 import {
   IonContent,
   IonPage,
-  IonList, IonItem, IonLabel, IonButton, IonText, IonItemDivider, IonIcon
+  IonList, IonItem, IonLabel, IonButton, IonIcon, IonInput
 } from '@ionic/react'
 
-import { addCircleOutline, removeCircleOutline } from 'ionicons/icons';
+import { addCircleOutline, removeCircleOutline, pencilOutline, close } from 'ionicons/icons';
 
-import { Header } from 'components'
+import { Header, Popover } from 'components'
 import { updateCurrentPosition, getDeliveryLocationForNextOrder } from 'location'
 
 import { ItemSearchResult as ItemSearchResultInterface } from 'types'
 import { getAddress } from 'utils'
+import { deliveryCost, computeOrderCostAndDistance } from 'utils/charges'
 
 type Props = {
-  history: History,
+  history: History | any,
   location: {
     state: { selectedItems: Array<ItemSearchResultInterface> }
   },
@@ -33,7 +34,7 @@ type Props = {
 }
 
 type State = {
-  orderConfirmationShown: boolean,
+  quantityModifyItem: string | null,
   selectedItems: Array<ItemSearchResultInterface>,
   cost: number,
   distance: number
@@ -42,34 +43,42 @@ type State = {
 const ionButtonStyle = {
   'width': '20px',
   'height': '20px',
-  '--padding-start': '1px',
-  '--padding-end': '1px',
-  '--padding-top': '1px',
-  '--padding-bottom': '1px'
+  'marginInlineStart': '2px',
+  'marginInlineEnd': 0,
+  '--padding-start': '2px',
+  '--padding-end': 0,
+  '--padding-top': '2px',
+  '--padding-bottom': '2px'
+}
+
+const costTextStyle = {
+  'marginInlineStart': 0,
+  'marginInlineEnd': '10px'
 }
 
 const primaryAction = 'Action'
 
-function computeOrderCostAndDistance(items: Array<ItemSearchResultInterface>) {
-  return items.reduce((acc, { price, distanceRaw = 0 }) => {
-    acc.cost = acc.cost + parseInt(price)
-    acc.distance = acc.distance + distanceRaw / 2
-    return acc
-  }, { cost: 0, distance: 0 })
-}
-
 class Component extends React.Component<Props> {
-  selectedItems = this.props.location.state
-    ? this.props.location.state.selectedItems || []
-    : []
+
+  getInitialSelectedItems = () => {
+    const selectedItems = this.props.location.state
+      ? this.props.location.state.selectedItems || []
+      : []
+    return selectedItems.map(e => {
+      if (e.quantity) return e
+      return { ...e, quantity: 1 }
+    })
+  }
+
+  selectedItems = this.getInitialSelectedItems()
 
   state: State = {
-    orderConfirmationShown: false,
+    quantityModifyItem: null,
     selectedItems: this.selectedItems,
     ...computeOrderCostAndDistance(this.selectedItems)
   }
 
-  handleRemoveItem = (id: string) => {
+  onRemoveItem = (id: string) => {
     const { selectedItems } = this.state
     const index = selectedItems.findIndex(item => item._id === id)
     selectedItems.splice(index, 1)
@@ -79,7 +88,7 @@ class Component extends React.Component<Props> {
     })
   }
 
-  handleAddItem = () => {
+  onAddItem = () => {
     const { selectedItems } = this.state
     this.props.history.replace(Routes.search.path, { selectedItems })
   }
@@ -130,13 +139,48 @@ class Component extends React.Component<Props> {
     this.props.history.push(Routes.pay.path, { selectedItems })
   }
 
+  onQtyPopoverPresented = () => {
+    const e: HTMLIonInputElement | null = document.querySelector('ion-popover ion-input')
+    e && e.setFocus()
+  }
+
+  onQtyPopoverDismissed = () => {
+    this.setState({ quantityModifyItem: { searchResultId: null } })
+  }
+
+  onQtyInputChange = (quantity: string) => {
+    if (Number(quantity) > Number.MAX_SAFE_INTEGER) return
+    const { quantityModifyItem, selectedItems } = this.state
+    const newSelectedItems = selectedItems.map(e => {
+      if (e._id === quantityModifyItem && parseInt(quantity))
+        e.quantity = parseInt(quantity)
+      return e
+    })
+    this.setState({
+      selectedItems: newSelectedItems,
+      ...computeOrderCostAndDistance(newSelectedItems)
+    }, () => {
+      this.props.history.location.state = { selectedItems: newSelectedItems }
+    })
+  }
+
+  onQtyModify = (searchResultId: string) => {
+    this.setState({ quantityModifyItem: searchResultId })
+  }
+
   render() {
     const {
       cost,
-      distance
+      distance,
+      quantityModifyItem,
+      selectedItems
     } = this.state
 
     const locationNotAvailable = this.locationNotAvailable()
+
+    const { item: { name: item }, quantity = null } =
+      selectedItems.find(({ _id }) => _id === quantityModifyItem) ||
+      { item: { name: null } }
 
     return (
       <IonPage className="order">
@@ -147,36 +191,45 @@ class Component extends React.Component<Props> {
               <IonLabel>
                 <p>Items</p>
                 <IonList className="ion-no-margin ion-no-padding">{
-                  this.state.selectedItems.map(({ _id, item }) => (
+                  this.state.selectedItems.map(({ _id, item, price, quantity }) => (
                     <IonItem key={_id} lines="none" className="ion-no-padding mini-list-item">
-                      <IonText slot="start"><h4>{item.name}</h4></IonText>
+                      <h4>{item.name}</h4>
                       {/* ion-grid, ion-toolbar don't work, try table */}
-                      <IonButton onClick={() => this.handleRemoveItem(_id)} slot="end" fill="clear" style={ionButtonStyle}>
-                        <IonIcon className="ion-icon-secondary" slot="icon-only" icon={removeCircleOutline} />
+                      <h4 slot="end" style={costTextStyle} className="flex ion-align-items-center">
+                        {quantity}&nbsp;
+                        <IonIcon style={{ fontSize: 12 }} icon={close} />&nbsp;
+                        UGX {price}
+                      </h4>
+                      <IonButton onClick={() => this.onQtyModify(_id)} slot="end" fill="clear" style={ionButtonStyle}>
+                        <IonIcon className="ion-icon-secondary" icon={pencilOutline} />
+                      </IonButton>
+                      <IonButton onClick={() => this.onRemoveItem(_id)} slot="end" fill="clear" style={ionButtonStyle}>
+                        <IonIcon className="ion-icon-secondary" icon={removeCircleOutline} />
                       </IonButton>
                     </IonItem>
                   ))
                 }<IonItem lines="none" className="ion-no-padding mini-list-item">
-                    <IonButton onClick={this.handleAddItem} slot="end" fill="clear" style={ionButtonStyle}>
-                      <IonIcon className="ion-icon-secondary" slot="icon-only" icon={addCircleOutline} />
+                    <IonButton onClick={this.onAddItem} slot="end" fill="clear" style={ionButtonStyle}>
+                      <IonIcon className="ion-icon-secondary" icon={addCircleOutline} />
                     </IonButton>
                   </IonItem>
                 </IonList>
-                <Divider />
                 <IonList className="ion-no-margin ion-no-padding">
-                  <IonItem lines="none" className="ion-no-margin ion-no-padding"
+                  {distance
+                    ? <IonItem lines="none" className="ion-no-padding mini-list-item"
+                      style={{ '--min-height': '15px' }}>
+                      <IonLabel className="ion-no-margin" slot="start">
+                        <p>Delivery fee</p></IonLabel>
+                        <h4 slot="end">UGX {deliveryCost}</h4>
+                    </IonItem>
+                    : null}
+                  <IonItem lines="none" className="ion-no-margin ion-no-padding mini-list-item"
                     style={{ '--min-height': '25px' }}>
-                    <IonLabel className="ion-no-margin" slot="start"><p>Cost</p></IonLabel>
-                    <IonText slot="end"><h4>UGX {cost}</h4></IonText>
-                  </IonItem>{
-                    distance
-                      ? <IonItem lines="none" className="ion-no-padding"
-                        style={{ '--min-height': '15px' }}>
-                        <IonLabel className="ion-no-margin" slot="start"><p>Travel Distance</p></IonLabel>
-                        <IonText slot="end"><h4>{`${distance}m`}</h4></IonText>
-                      </IonItem>
-                      : null
-                  }</IonList>
+                    <IonLabel className="ion-no-margin ion-text-uppercase ion-label-primary">
+                      <h4>Total</h4>
+                    </IonLabel>
+                    <h4 className="ion-label-primary" slot="end">UGX {cost}</h4>
+                  </IonItem></IonList>
               </IonLabel>
             </IonItem>
             {/* Location change option */}
@@ -195,9 +248,49 @@ class Component extends React.Component<Props> {
             </IonItem>
           </IonList>
         </IonContent>
+        <Popover
+          open={Boolean(quantityModifyItem)}
+          onPresent={this.onQtyPopoverPresented}
+          onDismiss={this.onQtyPopoverDismissed}
+          cssClass="popover-wide"
+        >
+          <ItemQuantity item={item} quantity={quantity} onChange={this.onQtyInputChange} />
+        </Popover>
       </IonPage>
     )
   }
+}
+
+type ItemQuantityProps = {
+  item: string | null,
+  quantity: number | null,
+  onChange: (e: any) => void
+}
+
+const ItemQuantity: React.FC<ItemQuantityProps> = ({
+  item,
+  quantity,
+  onChange
+}) => {
+  return (
+    <IonList className="ion-no-padding">
+      <IonItem lines="none">
+        <IonLabel>
+          <h2 className="ion-text-wrap ion-label-primary">Type new quantity for {item}</h2>
+        </IonLabel>
+      </IonItem>
+      <IonItem>
+        <IonInput
+          placeholder="for example 2"
+          onIonChange={e => onChange(e.detail.value)}
+          value={quantity} type="number" name="quantity" min="1"
+        />
+      </IonItem>
+      {/* <IonItem button onClick={() => { }} className="ion-text-center">
+        <IonIcon className="ion-icon-primary" icon={submit}></IonIcon>
+      </IonItem> */}
+    </IonList>
+  )
 }
 
 // export type OrderConfirmationProps = {
@@ -226,13 +319,6 @@ class Component extends React.Component<Props> {
 //       ]}
 //     />
 //   )
-
-type DividerProps = {
-  text?: string
-}
-const Divider: React.FC<DividerProps> = ({ text }) => (
-  <IonItemDivider className="mini-divider">{text}</IonItemDivider>
-)
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   showLoading: () => ({

@@ -63,7 +63,9 @@ class Component extends React.Component<Props> {
     const { lat, lon } = getDeliveryLocationForOrder()
     if (location.state && location.state.selectedItems) {
       const payload = {
-        'pharmacy-items': location.state.selectedItems.map(o => o._id),
+        'pharmacy-items': location.state.selectedItems.map(o => ({
+          item: o._id, quantity: o.quantity
+        })),
         'notes': '',
         lat,
         lon

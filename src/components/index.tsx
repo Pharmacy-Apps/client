@@ -7,6 +7,7 @@ import PhoneInput from './PhoneInput'
 import LazyLoad from './LazyLoad'
 import Popover from './Popover'
 import Alert from './Alert'
+import Divider from './Divider'
 
 export {
   Header,
@@ -17,5 +18,6 @@ export {
   PhoneInput,
   LazyLoad,
   Popover,
-  Alert
+  Alert,
+  Divider
 }

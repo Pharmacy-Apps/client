@@ -27,17 +27,23 @@ export interface ItemSearchResult {
     _id: string, name: string
   },
   price: string,
-  distance: string | undefined,
-  distanceRaw: number | undefined,
+  quantity?: number,
+  distance?: string,
+  distanceRaw?: number,
   unit: object
+}
+
+export interface PharmacyItem {
+  item: { _id: string, 'common-name': string, 'scientific-name': string },
+  pharmacy: { _id: string, 'name': string },
+  price: number,
+  quantity: number,
+  distanceRaw?: number
 }
 
 export interface ItemRequest {
   _id: string,
-  pharmacyItems: Array<{
-    item: { _id: string, 'common-name': string, 'scientific-name': string },
-    pharmacy: { _id: string, 'name': string },
-  }>,
+  pharmacyItems: Array<PharmacyItem>,
   notes: string,
   state: string,
   createdAt: number,

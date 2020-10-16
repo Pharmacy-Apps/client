@@ -1,6 +1,6 @@
 import React from 'react'
 import Moment from 'moment'
-import { IonLabel, IonIcon, IonText, IonButton, IonSelect, IonSelectOption } from '@ionic/react'
+import { IonLabel, IonIcon, IonButton, IonSelect, IonSelectOption } from '@ionic/react'
 
 import { squareOutline as numb, checkbox as active, ellipsisHorizontal as more } from 'ionicons/icons'
 

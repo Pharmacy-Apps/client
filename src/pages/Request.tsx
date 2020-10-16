@@ -4,12 +4,15 @@ import Moment from 'moment'
 import { CallNumber } from '@ionic-native/call-number'
 import { platformIsMobile } from 'utils'
 
-import { IonContent, IonPage, IonLabel, IonBadge, IonList, IonItem, IonText, IonButton } from '@ionic/react'
-import { Header } from 'components'
+import { IonContent, IonPage, IonLabel, IonBadge, IonList, IonItem, IonButton, IonIcon, IonText } from '@ionic/react'
+import { close } from 'ionicons/icons';
+
+import { Header, Divider } from 'components'
 import { MapContainer } from 'containers'
 
 import { ItemRequest as ItemRequestInterface } from 'types'
 import { userIsNotClientUser, userIsCourier } from 'utils/role'
+import { deliveryCost, computeOrderCostAndDistance } from 'utils/charges'
 
 type Props = {
   location: { state?: { request: ItemRequestInterface } }
@@ -62,6 +65,12 @@ class Component extends React.Component<Props> {
     CallNumber.callNumber(`+${phone}`, true)
   }
 
+  requestCost = this.props.location.state && this.props.location.state.request
+    ? computeOrderCostAndDistance(
+      this.props.location.state.request.pharmacyItems
+    ).cost
+    : 0
+
   render() {
     const { location: { state } } = this.props
     if (
@@ -72,40 +81,84 @@ class Component extends React.Component<Props> {
     const { pharmacyItems, state: requestState, createdAt, courier, lat, lon, user } = state.request
 
     const title = <p className="ion-text-wrap">{
-      pharmacyItems.map((o, i) => (i > 0 ? ', ' : '') + (
-        o.item['common-name'] || o.item['scientific-name']
-      ))
+      pharmacyItems.map((o, i) => <span key={i} className="flex-inline ion-align-items-center">
+        {i > 0 ? <span>,&nbsp;&nbsp;</span> : null}
+        {o.item['common-name'] || o.item['scientific-name']}
+        {false ? <>
+          <span>&nbsp;</span>
+          <IonIcon icon={close} />
+          <span>&nbsp;</span>
+          {o.quantity}
+        </> : null}
+      </span>)
     }</p>
 
     const userCanViewRequestClient = userIsNotClientUser()
     const userCanViewCallButton = platformIsMobile && requestState === 'in transit'
 
     return (
-      <IonPage>
+      <IonPage className="request-detail">
         <Header size="small" title={title} />
         <IonContent className="ion-no-padding">
-          <IonList lines="full" className="fill-height ion-no-padding">
+          <IonLabel>
+            <IonList lines="full" className="ion-no-padding">
+              <IonItem>
+                <IonLabel>
+                  <p style={{
+                    marginBottom: 'unset', lineHeight: 'unset'
+                  }}><IonBadge style={{
+                    background: mapRequestStateToBadgeBackground(requestState)
+                  }}>{requestState}</IonBadge></p>
+                </IonLabel>
+                <IonLabel><p className="ion-text-end">Made {formatDate(createdAt)} ago</p></IonLabel>
+              </IonItem>
+            </IonList>
+            <IonList lines="none" className="ion-padding">{
+              pharmacyItems.map(({ item, price, quantity }, i) => (
+                <IonItem
+                  key={i}
+                  lines="none"
+                  className="ion-no-padding mini-list-item"
+                >
+                  <h4>{item['common-name'] || item['scientific-name']}</h4>
+                  <h4 slot="end">
+                    {quantity}&nbsp;
+                    <IonIcon style={{ fontSize: 12 }} icon={close} />&nbsp;
+                    UGX {price}
+                  </h4>
+                </IonItem>))
+            }
+              <IonItem
+                lines="none"
+                className="ion-no-padding mini-list-item"
+              >
+                <IonText><IonLabel><p>Delivery fee</p></IonLabel></IonText>
+                <h4 slot="end" className="flex ion-align-items-center">UGX {deliveryCost}</h4>
+              </IonItem>
+              <IonItem
+                lines="none"
+                className="ion-no-padding mini-list-item"
+              >
+                <h4 className="ion-text-uppercase ion-label-primary">Total</h4>
+                <h4 slot="end" className="flex ion-align-items-center ion-label-primary">
+                  <b>UGX {this.requestCost}</b>
+                </h4>
+              </IonItem>
+            </IonList>
+          </IonLabel>
+          <Divider />
+          <IonList lines="none" className="fill-height ion-no-padding">
             <IonItem>
               <IonLabel>
-                <p style={{
-                  marginBottom: 'unset', lineHeight: 'unset'
-                }}><IonBadge style={{
-                  background: mapRequestStateToBadgeBackground(requestState)
-                }}>{requestState}</IonBadge></p>
-              </IonLabel>
-              <IonLabel><p className="ion-text-end">Made {formatDate(createdAt)} ago</p></IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>
-                <p>Delivery at <b>{`${lat}, ${lon}`}</b></p>
+                <p className="ion-label-primary">Delivery at <b>{`${lat}, ${lon}`}</b></p>
                 {userCanViewRequestClient
                   ? <p>Client - {user.name || user.phone}</p>
                   : null}
               </IonLabel>
             </IonItem>
-            <IonItem lines="none" className="fill-height ion-no-padding" style={{
-              '--inner-padding-end': 0,
-              position: 'relative'
+            <IonItem className="fill-height ion-no-padding" style={{
+              position: 'relative',
+              '--inner-padding-end': 0
             }}>
               <MapContainer mapCenter={{ lat, lon }} />
               {courier && userCanViewCallButton ? <IonButton onClick={this.onCall}
@@ -117,7 +170,7 @@ class Component extends React.Component<Props> {
             </IonItem>
           </IonList>
         </IonContent>
-      </IonPage>
+      </IonPage >
     )
   }
 
