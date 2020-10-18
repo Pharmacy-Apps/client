@@ -171,7 +171,6 @@ class Component extends React.Component<Props> {
   render() {
     const {
       cost,
-      distance,
       quantityModifyItem,
       selectedItems
     } = this.state
@@ -215,14 +214,13 @@ class Component extends React.Component<Props> {
                   </IonItem>
                 </IonList>
                 <IonList className="ion-no-margin ion-no-padding">
-                  {distance
-                    ? <IonItem lines="none" className="ion-no-padding mini-list-item"
-                      style={{ '--min-height': '15px' }}>
-                      <IonLabel className="ion-no-margin" slot="start">
-                        <p>Delivery fee</p></IonLabel>
-                        <h4 slot="end">UGX {deliveryCost}</h4>
-                    </IonItem>
-                    : null}
+                  <IonItem lines="none" className="ion-no-padding mini-list-item"
+                    style={{ '--min-height': '15px' }}>
+                    <IonLabel className="ion-no-margin" slot="start">
+                      <p>Delivery fee</p>
+                    </IonLabel>
+                    <h4 slot="end">UGX {deliveryCost}</h4>
+                  </IonItem>
                   <IonItem lines="none" className="ion-no-margin ion-no-padding mini-list-item"
                     style={{ '--min-height': '25px' }}>
                     <IonLabel className="ion-no-margin ion-text-uppercase ion-label-primary">
