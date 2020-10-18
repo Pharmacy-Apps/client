@@ -76,8 +76,9 @@ class Component extends React.Component<Props> {
 
   getIonItemDividerStyle = (name: string) => {
     const o = { minHeight: .1 }
+    console.info(this.state.inputFocussed, name)
     return this.state.inputFocussed === name
-      ? { ...o, '--background': 'var(--ion-color-action-primary)' }
+      ? { ...o, '--background': 'var(--ion-color-primary)' }
       : o
   }
 
