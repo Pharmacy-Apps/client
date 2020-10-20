@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
-import { IState } from 'reducers'
+import { State as ReducerState } from 'reducers'
 
 export type Props = {
   open: boolean,
@@ -23,7 +23,7 @@ const Component: React.FC<Props> = ({ open, message, hideLoading }) => (
 
 Component.defaultProps = { message: 'Please wait' }
 
-const mapStateToProps = (state: IState) => ({
+const mapStateToProps = (state: ReducerState) => ({
   open: state.App.loading
 })
 

@@ -1,6 +1,6 @@
-### UI for clients
+### UI for client
 
-Build this with Ionic for now <br>
-Later we'll use native mobile frameworks
+Built with [Ionic React](https://ionicframework.com/react) to have both Web and Mobile interfaces for the client app <br>
+Runs on [Capacitor](https://capacitorjs.com) <br>
 
-Wireframes should show more detail
+<img src="/public/assets/logo/ionic-react-capacitor.webp" height="70" />

@@ -1,0 +1,17 @@
+{
+  "fb-configuration": {
+    "apiKey": "AIzaSyDnny3-W-367Qe_5xtYiBmy55iZ-8Z2yOg",
+    "authDomain": "pharmacy-01.firebaseapp.com",
+    "databaseURL": "https://pharmacy-01.firebaseio.com",
+    "projectId": "pharmacy-01",
+    "storageBucket": "pharmacy-01.appspot.com",
+    "messagingSenderId": "421375446521",
+    "appId": "1:421375446521:web:e9156e00dd58630cf34128",
+    "measurementId": "G-Z11N7HMXVZ"
+  },
+  "fcm-vapid-key": "BLsJ1vi0Sq6mwzNX_Rn9hF81W1sL96umm0NiIjvErwcimWoJbnzo_N7OucPEXwxM9mXSdaQxzwfFm2v87GnWLCQ",
+  "local-server-url": "http://localhost:3015/api",
+  "remote-server-url": "https://pharmacy-demo-server.herokuapp.com/api",
+  "server-auth-token-key": "auth-token",
+  "push-notification-token-send-state-key": "push-notification-token-sent-web"
+}

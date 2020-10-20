@@ -1,52 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>App</title>
 
-    <base href="/" />
+<head>
+  <meta charset="utf-8" />
+  <title>MediStore</title>
 
-    <meta
-      name="viewport"
-      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
+  <base href="/" />
 
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <meta name="viewport"
+    content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
 
-    <link rel="shortcut icon" type="image/png" href="%PUBLIC_URL%/assets/icon/favicon.png" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-    <!-- add to homescreen for ios -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Ionic App" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="shortcut icon" type="image/png" href="%PUBLIC_URL%/assets/icons/favicon.png" />
 
-    <style>
-      .popover-search-results .popover-content {
-        max-width: unset !important;
-        width: 95vw !important;
-        left: 2.5vw !important;
-        max-height: unset !important;
-        height: 95vh !important;
-        top: 2.5vh !important;
-      }
+  <!-- add to homescreen for ios -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="MediStore" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
-      .order .mini-list-item {
-        --min-height: 25px;
-        height: 25px;
-      }
+  <style>
+    .flex {
+      display: flex
+    }
 
-      .order .mini-divider {
-        min-height: 0px;
-        --padding-bottom: 5px;
-      }
-    </style>
+    .flex-inline {
+      display: inline-flex
+    }
 
-  </head>
+    .popover-search-results .popover-content {
+      max-width: unset !important;
+      /* width: 95vw !important;
+        left: 2.5vw !important; */
+      width: 100vw !important;
+      left: 0vw !important;
+      max-height: unset !important;
+      /* height: 95vh !important;
+        top: 2.5vh !important; */
+      height: 100vh !important;
+      top: 0vh !important;
+    }
 
-  <body>
-    <div id="root"></div>
-  </body>
+    .popover-search-results .popover-content .search-result ion-grid {
+      padding: calc(var(--ion-padding, 15px) * 0.6);
+      padding-left: 0
+    }
+
+    .item-category {
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 10px 5px rgba(var(--ion-color-primary-rgb), .2) !important;
+      border-radius: 0 !important;
+      cursor: pointer;
+      text-align: center
+    }
+
+    .item-category:hover {
+      background-color: rgba(var(--ion-color-primary-rgb), .05) !important
+    }
+
+    .item-category ion-icon {
+      font-size: 50px
+    }
+
+    /* .searchbar {
+      --icon-color: var(--ion-color-primary);
+      --clear-button-color: var(--ion-color-primary);
+      --cancel-button-color: var(--ion-color-primary)
+    } */
+
+    .in-toolbar ion-select {
+      color: var(--ion-color-primary) !important
+    }
+
+    ion-select-popover ion-list {
+      padding: 0 !important
+    }
+
+    .select-menu,
+    ion-radio::part(container) {
+      display: none;
+    }
+
+    .button-select-menu::part(native) {
+      padding: 0;
+      --ripple-color: transparent;
+      --background-hover: transparent;
+      --background-focused: transparent;
+      --background-activated: transparent
+    }
+
+    .select-interface-option.last::part(open) ::part(native) .item-native .item-inner {
+      --border: none
+    }
+
+    .searchbar input {
+      box-shadow: 0 0 0 0 rgba(0, 0, 0, .16) !important;
+      border-radius: 0 !important
+    }
+
+    .search ion-title {
+      padding-inline-start: 0;
+      padding-inline-end: 0
+    }
+
+    .order .mini-list-item,
+    .request-detail .mini-list-item {
+      --min-height: 25px;
+      height: 25px;
+      position: 'relative';
+      --inner-padding-end: 0
+    }
+
+    .mini-divider {
+      min-height: 0px;
+      --padding-bottom: 5px;
+    }
+
+    .ellipses {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .one-line {
+      overflow: visible !important;
+    }
+
+    .request ion-label.spaced>* {
+      line-height: 1.5rem;
+    }
+
+    .request ion-icon {
+      height: 3.5em
+    }
+
+    .request.select-mode ion-icon {
+      padding: 0 calc(var(--ion-padding, 15px) * 1.5)
+    }
+
+    .ion-item-archive {
+      --min-height: 0;
+      --padding-top: calc(var(--ion-padding, 15px) / 4);
+      --padding-bottom: calc(var(--ion-padding, 15px) / 4);
+      --background: var(--ion-item-background-hover,
+          rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.04))
+    }
+
+    .popover-wide .popover-wrapper {
+      --width: 300px
+    }
+
+    .alert-custom .alert-wrapper {
+      max-width: 90%;
+    }
+
+    .alert-custom .alert-wrapper p {
+      margin: 0 0 7px 0;
+      font-size: 90%
+    }
+
+    .alert-custom .alert-wrapper .alert-message p:last-child {
+      margin: 0
+    }
+
+    .alert-custom button.alert-button {
+      color: var(--ion-color-primary)
+    }
+
+    .alert-custom .alert-head * {
+      color: var(--ion-color-primary)
+    }
+
+    .msisdn-section {
+      width: 100%
+    }
+
+    .msisdn-section * {
+      font-size: 18px;
+      letter-spacing: 3px
+    }
+
+    .msisdn-section input {
+      padding: 10px;
+      width: calc(100% - 40px);
+      border-width: 0
+    }
+
+    .msisdn-section input:focus,
+    .custom-input:focus {
+      outline: none
+    }
+
+    .custom-input {
+      border-width: 0;
+      width: 100%
+    }
+
+    .fill-height {
+      --min-height: 100% !important;
+      min-height: 100% !important;
+      height: 100% !important
+    }
+
+    .ion-icon-primary {
+      color: var(--ion-color-primary) !important
+    }
+
+    .ion-icon-secondary {
+      color: var(--ion-color-secondary) !important
+    }
+
+    .ion-action-primary {
+      --background: var(--ion-color-primary) !important
+    }
+
+    .ion-action-secondary {
+      --background: var(--ion-color-secondary) !important
+    }
+
+    .ion-label-primary {
+      color: var(--ion-color-primary) !important
+    }
+
+    .ion-label-secondary {
+      color: var(--ion-color-secondary) !important
+    }
+
+    .ion-head h1,
+    .ion-head p {
+      color: var(--ion-color-primary)
+    }
+
+    .ion-head h1 {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    * {
+      --background: #fdffff
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <!-- FIREBASE CONFIGURATION -->
+  <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>
+
+  <script src="/firebase/fns.js"></script>
+  <script src="/firebase/index.js"></script>
+
+</body>
 
 </html>

@@ -3,16 +3,28 @@ http://ionicframework.com/docs/theming/ */
 
 /** Ionic CSS Variables **/
 :root {
+  --ion-color-primary: #3f1a69; /* #018786, #01579B, #3880ff; */
+  --ion-color-secondary: rgb(167, 5, 118); /* rgb(255, 166, 0) */
+
+  --ion-color-cancelled: #a70707f8; /* #3880ff */
+  --ion-color-transit: #328602;
+  --ion-color-out-of-stock: #757373;
+
+  --radio-md-icon-width: 0;
+  --radio-md-icon-height:0;
+  --radio-md-icon-border-width:0;
+  --radio-md-icon-border-radius:0;
+  
   /** primary **/
-  --ion-color-primary: #3880ff;
-  --ion-color-primary-rgb: 56, 128, 255;
+  /* --ion-color-primary: #3880ff; */
+  --ion-color-primary-rgb: 63, 26, 105;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
   --ion-color-primary-shade: #3171e0;
   --ion-color-primary-tint: #4c8dff;
 
   /** secondary **/
-  --ion-color-secondary: #0cd1e8;
+  /* --ion-color-secondary: rgb(255, 166, 0) */
   --ion-color-secondary-rgb: 12, 209, 232;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;

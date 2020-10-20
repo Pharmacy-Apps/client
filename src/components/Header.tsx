@@ -1,34 +1,51 @@
 import React from 'react'
-import { IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton } from '@ionic/react'
+import { IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton, IonIcon } from '@ionic/react'
 
 import { ToolbarAction } from 'types'
 
-const appName = 'App'
+const appName = 'MediStore'
 
 export type Props = {
   omitsBack?: boolean
-  title?: string | any
-  actions?: ToolbarAction []
+  title?: any
+  size?: 'small' | 'large'
+  actions?: Array<ToolbarAction>
 }
 
-const Component: React.FC<Props> = ({ omitsBack, title, actions = [] }) => {
+const buttonStyle = {
+  textTransform: 'unset'
+}
+
+const Component: React.FC<Props> = ({ omitsBack, title, size, actions = [] }) => {
   return (
     <IonHeader>
-      <IonToolbar>
+      <IonToolbar /* color="primary" */>
         {omitsBack ? null : <IonButtons slot="start">
-          <IonBackButton defaultHref="/" />
+          <IonBackButton color="primary" defaultHref="/" />
         </IonButtons>}
-        <IonTitle>{title}</IonTitle>
+        <IonTitle size={size} color="primary">{title}</IonTitle>
         <IonButtons slot="secondary">{
-          actions.map((action, i) => <IonButton key={i} onClick={e => action.handler(e)}>
-            {action.component}
-          </IonButton>)
+          actions.map((
+            { icon, text, component: Component, handler },
+            i
+          ) => Component ? <Component key={i} /> : <IonButton
+            key={i}
+            onClick={handler}
+            style={buttonStyle}
+          >
+              {
+                icon ? <IonIcon color="primary" icon={icon} /> : null
+              }{
+                text ? text : null
+              }
+            </IonButton>
+          )
         }</IonButtons>
       </IonToolbar>
     </IonHeader>
   )
 }
 
-Component.defaultProps = { title: appName }
+Component.defaultProps = { title: appName, size: 'large' }
 
 export default Component

@@ -1,5 +1,4 @@
 import React from 'react'
-import Routes from 'routes'
 import { History } from 'history'
 
 import { connect } from 'react-redux'
@@ -7,53 +6,61 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonIcon, IonItemDivider, IonAlert } from '@ionic/react'
-import { star, rocket } from 'ionicons/icons';
+import {
+  IonContent, IonPage, IonList, IonItem, IonLabel, IonIcon, IonItemDivider, IonButton
+} from '@ionic/react'
+import { starOutline as numb, star as active } from 'ionicons/icons'
 
-import { Header } from 'components'
+import { Header, Alert } from 'components'
+import { MSISDNModify as MSISDNModifyPopover } from 'containers'
 
-export type Props = {
+import Requests, { endPoints } from 'requests'
+
+import decrypt from 'utils/jwt'
+import { formatUGMSISDN, mtnMSISDNStorageKey as mtnMSISDNKey } from 'utils/msisdn'
+import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
+import { formatMoney } from 'utils/currency'
+
+import { CreditOffer as Offer, PaymentChannel as Channel } from 'types'
+
+type Props = {
   history: History,
-  showLoading: Function,
-  hideLoading: Function,
+  showLoading: () => {},
+  hideLoading: () => {},
+  showToast: (e: string) => {},
 }
 
-const message = {
-  default: 'Lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum',
-  fromOrder: 'Lorem order ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum'
-}
+const title = 'Deposit to Wallet'
+const amountInputPlaceholder = 'Type amount'
+
+const minCustomAmount = 1000
+
+const message = <>
+  <p>
+    To deposit, please select one of the preset amounts or type your own; minimum {formatMoney(minCustomAmount)}<br />
+    Then select the payment channel
+  </p>
+</>
 
 class Component extends React.Component<Props> {
 
-  state = {
-    selectedOffer: offers[0]._id,
-    alert: { shown: false, errored: 0 }
+  state: State = {
+    offers: [],
+    selectedOffer: null,
+    alert: {
+      shown: false, header: '', message: '', buttonText: '', confirmsPayment: false
+    },
+    msisdnPopoverShown: false,
+    amount: '',
+    customOfferSelected: false
   }
 
-  onPaymentChannelSelect = (channel: Channel) => {
-    console.info(channel)
-    this.fakeRequest((hideLoading: Function) => {
-      hideLoading()
-      const errored = false
-
-      if (errored) {
-        this.showAlert({ errored: 1 })
-      } else if (this.redirectedFromOrder()) {
-        this.showAlert({ errored: 0 })
-      } else {
-        this.showAlert({ errored: 0 })
-      }
-    })
+  showMSISDNPopover = () => {
+    this.setState({ msisdnPopoverShown: true })
   }
 
-  fakeRequest(cb: Function) {
-    const { showLoading, hideLoading } = this.props
-    showLoading()
-    setTimeout(() => cb(hideLoading), 1500)
-  }
-  
-  onOfferSelect = ({ _id }: Offer) => {
-    this.setState({ selectedOffer: _id })
+  hideMSISDNPopover = () => {
+    this.setState({ msisdnPopoverShown: false })
   }
 
   showAlert = (alert: AlertState) => {
@@ -64,145 +71,251 @@ class Component extends React.Component<Props> {
     this.setState({ alert: { ...this.state.alert, shown: false } })
   }
 
-  onAlertDismiss = () => {
-    this.hideAlert()
-    if (this.redirectedFromOrder()) {
-      const { history: { location: { state } } } = this.props
-      console.info('state.selectedMeds', state)
-      this.props.history.replace(Routes.order.path, state)
-    }
+  onAlertConfirm = () => {
+    const { alert } = this.state
+    if (alert.confirmsPayment)
+      this.onConfirmPaymentChannel()
   }
 
-  redirectedFromOrder = () => {
-    const { history: { location: { state } } } = this.props
-    return state && state.selectedMeds
+  onAlertDismiss = () => {
+    this.hideAlert()
+  }
+
+  componentDidMount() {
+    const { showLoading, hideLoading, showToast } = this.props
+    showLoading()
+    Requests.get(endPoints['credit-offers']).then((response: any) => {
+      this.setState({ offers: response, selectedOffer: response[0]._id })
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    }).finally(hideLoading)
+  }
+
+  onPaymentChannelSelect = ({ _id: id }: Channel) => {
+    const {
+      [mtnMSISDNKey]: msisdn
+    } = decrypt(getSessionToken())
+    const { header, message } = AlertText[id](formatUGMSISDN(msisdn || getSessionPhone()))
+    this.showAlert({ header, message, confirmsPayment: true })
+  }
+
+  onOfferSelect = ({ _id }: Offer) => {
+    this.setState({
+      selectedOffer: _id, customOfferSelected: false, amount: ''
+    })
+  }
+
+  onConfirmPaymentChannel = () => {
+    const { showLoading, hideLoading, showToast } = this.props
+    const {
+      selectedOffer, offers, customOfferSelected, amount: value
+    } = this.state
+
+    const offer = customOfferSelected ? { value } : selectedOffer
+
+    showLoading()
+    Requests.post(endPoints['credits'], { offer }).then((response: any) => {
+      const errored = true // Payment succeeded
+      if (errored) {
+        this.showAlert(AlertText['payment-errored']())
+      } else {
+        this.showAlert(AlertText['payment-succeeded']((
+          customOfferSelected ? { value } : offers.find(({ _id }) => _id === offer) || {}
+        ).value))
+        this.setState({
+          customOfferSelected: false, amount: ''
+        })
+      }
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    }).finally(hideLoading)
+  }
+
+  onSubmitChangeNumber = (msisdn: string) => {
+    this.hideMSISDNPopover()
+    const { showLoading, hideLoading, showToast } = this.props
+    showLoading()
+    Requests.post(
+      endPoints['mtn-msisdn'], { msisdn }
+    ).then((response: any) => {
+      setSessionToken(response)
+    }).catch(err => {
+      console.error(err)
+      showToast(err.error || err.toString())
+    }).finally(hideLoading)
+  }
+
+  onChangeAmountInput = ({ target: { value } }: any) => {
+    try {
+      if (/^[0-9]+$|^$/.test(value) === false) throw new Error('Value error')
+      const amount = parseInt(value) || ''
+      this.setState({
+        amount,
+        ...amount ? { customOfferSelected: amount > minCustomAmount - 1 } : {}
+      })
+    } catch (error) { }
+  }
+
+  onBlurAmountInput = () => {
+    if (this.state.amount === '')
+      this.setState({ customOfferSelected: false })
+  }
+
+  getChannels = () => {
+    const {
+      [mtnMSISDNKey]: msisdn
+    } = decrypt(getSessionToken())
+    return [{
+      _id: 'mtn',
+      name: 'MTN Mobile Money',
+      description: <span className="ion-label-primary">{
+        formatUGMSISDN(msisdn || getSessionPhone())
+      }</span>,
+      requiresNumber: true
+    }] as Array<Channel>
   }
 
   render() {
-    const { alert, selectedOffer } = this.state
-    return (
+    const { offers, alert, selectedOffer, msisdnPopoverShown, amount, customOfferSelected } = this.state
+    return offers.length ? (
       <IonPage>
-        <Header title="Purchase credits" />
+        <Header title={title} />
         <IonContent className="ion-padding">
-          <IonLabel>
-            <p>{this.redirectedFromOrder() ? message.fromOrder : message.default}</p>
-          </IonLabel>
-          <IonLabel>
-            <p>Lorem ipsum payment lorem ipsum payment</p>
-          </IonLabel>
+          <IonLabel>{message}</IonLabel>
           <IonList lines="full" className="ion-margin-top ion-no-padding">{
-            offers.map((offer, i, a) => (
+            offers.map(offer => (
               <IonItem
                 key={offer._id}
                 onClick={() => this.onOfferSelect(offer)}
                 button
-                lines={i === a.length-1 ? 'none' : undefined}
               >
-                <IonIcon color={offer._id === selectedOffer ? 'primary' : undefined} icon={star} slot="start" />
+                <IonIcon className="ion-icon-primary" icon={
+                  offer._id === selectedOffer && !customOfferSelected ? active : numb
+                } slot="start" />
                 <IonLabel>
-                  <h3>{`${offer.value} credits`}</h3>
-                  <p>{`USD ${offer.price}`}</p>
+                  <h3>{formatMoney(offer.value)}</h3>
                 </IonLabel>
               </IonItem>
             ))
-          }</IonList>
+          }
+            <IonItem lines="none">
+              <IonIcon className="ion-icon-primary" icon={customOfferSelected ? active : numb} slot="start" />
+              <input
+                className="custom-input"
+                onChange={this.onChangeAmountInput}
+                onBlur={this.onBlurAmountInput}
+                value={amount}
+                type="text" name="amount"
+                placeholder={amountInputPlaceholder}
+              />
+            </IonItem>
+          </IonList>
           <IonItemDivider className="ion-margin-top">
             <IonLabel>
               Select payment channel
             </IonLabel>
           </IonItemDivider>
           <IonList lines="full" className="ion-no-padding">{
-            channels.map((channel, i, a) => (
+            this.getChannels().map((channel, i, a) => (
               <IonItem
                 key={channel._id}
                 onClick={() => this.onPaymentChannelSelect(channel)}
                 button
-                lines={i === a.length-1 ? 'none' : undefined}
+                lines={i === a.length - 1 ? 'none' : undefined}
               >
-                <IonIcon icon={rocket} slot="start" />
                 <IonLabel>
                   <h3>{channel.name}</h3>
-                  <p>{channel.description}</p>
+                  <p className="ion-label-primary">{channel.description}</p>
                 </IonLabel>
+                {channel.requiresNumber ? <IonButton onClick={e => {
+                  e.stopPropagation()
+                  this.showMSISDNPopover()
+                }} fill="clear">
+                  <IonIcon className="ion-icon-secondary" icon="/assets/icons/edit-secondary.svg" />
+                </IonButton> : null}
               </IonItem>
             ))
           }</IonList>
           <Alert
             open={alert.shown}
-            errored={alert.errored}
-            onConfirm={() => {}}
-            afterDismiss={this.onAlertDismiss}
+            header={alert.header}
+            message={alert.message}
+            onConfirm={this.onAlertConfirm}
+            onDismiss={this.onAlertDismiss}
+          />
+          <MSISDNModifyPopover
+            open={msisdnPopoverShown}
+            onDismiss={this.hideMSISDNPopover}
+            onSubmit={this.onSubmitChangeNumber}
           />
         </IonContent>
       </IonPage>
-    )
+    ) : null
   }
 
 }
 
-type Offer = {
-  _id: string,
-  value: number,
-  price: number,
-  starred?: boolean
+type AlertState = {
+  shown?: boolean,
+  header: string,
+  message: string,
+  buttonText?: string,
+  confirmsPayment?: boolean
 }
-const offers: Array<Offer> = [{
-  _id: '1',
-  value: 500,
-  price: 2,
-  starred: true
-}, {
-  _id: '2',
-  value: 5000,
-  price: 15
-}, {
-  _id: '3',
-  value: 20000,
-  price: 40
-}]
 
-type Channel = {
-  _id: string,
-  name: string,
-  description: string,
+type State = {
+  offers: Array<Offer>,
+  selectedOffer: string | null,
+  alert: {
+    shown: boolean,
+    header: string,
+    message: string,
+    buttonText: string,
+    confirmsPayment: boolean
+  },
+  msisdnPopoverShown: boolean,
+  amount: string,
+  customOfferSelected: false
 }
-const channels: Array<Channel> = [{
-  _id: '1', name: 'MTN Mobile Money', description: '+256 783 324449'
-}, {
-  _id: '2', name: 'Airtel Money', description: ''
-}]
 
-const AlertText = [
-  { header: 'Lorem ipsum', message: 'Lorem ipsum payment lorem ipsum payment' },
-  { header: 'Lorem ipsum error', message: 'Lorem ipsum payment lorem ipsum payment error' }
-]
-
-type AlertState = { errored: number, shown?: boolean }
-type AlertProps = {
-  open: boolean,
-  errored: number,
-  onConfirm: () => void
-  afterDismiss: () => void
+const AlertText: ({
+  [key: string]: ((e?: any) => ({
+    header: string,
+    message: string
+  }))
+}) = {
+  'payment-succeeded': (credits: number) => ({
+    header: 'Payment succeeded',
+    message: `<ion-label>
+      <p>${formatMoney(credits)} has been added to your wallet</p>
+    </ion-label>`
+  }),
+  'payment-errored': () => ({
+    header: 'Payment failed',
+    message: `<ion-label>
+      <p>Please try again</p>
+      <p>Ensure your account is eligible to deduct the desired amount</p>
+    </ion-label>`
+  }),
+  'mtn': (account: string) => ({
+    header: 'MTN Mobile Money',
+    message: `<ion-label>
+      <p>We will charge this account; <b class="ion-label-secondary">${account}</b></p>
+      <p>When prompted, approve the transaction with your MTN Mobile Money PIN</p>
+      <p>If you do not receive the prompt, dial MTN Mobile Money, *165# -> My Account -> My Approvals</p>
+    </ion-label>`
+  }),
+  'airtel': () => ({
+    header: 'Airtel Money',
+    message: `<ion-label>
+      <p>Dial Airtel Money, *185# -> Payments</p>
+    </ion-label>`
+  })
 }
-const Alert: React.FC<AlertProps> = ({
-  open,
-  errored: textIndex,
-  onConfirm,
-  afterDismiss
-}) => (
-  <IonAlert
-    isOpen={open}
-    onDidDismiss={afterDismiss}
-    header={AlertText[textIndex].header}
-    message={AlertText[textIndex].message}
-    buttons={[
-      {
-        text: 'Okay',
-        handler: onConfirm
-      }
-    ]}
-  />
-)
+
+
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   showLoading: () => ({
@@ -210,6 +323,10 @@ const mapDispatchToProps = (dispatch: any) => bindActionCreators({
   }),
   hideLoading: () => ({
     type: constants.HIDE_LOADING
+  }),
+  showToast: (payload: string) => ({
+    type: constants.SHOW_TOAST,
+    payload
   }),
 }, dispatch)
 

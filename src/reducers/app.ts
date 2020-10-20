@@ -1,19 +1,23 @@
 import produce from 'immer'
-import { Action } from 'types'
+import { Action, ItemRequest, ItemSearchResult } from 'types'
 
 import * as constants from './constants'
 
-export interface IState {
+export interface State {
   loading: boolean,
-  toast: string | null
+  toast: string | null,
+  requests: Array<ItemRequest> | null,
+  items: Array<ItemSearchResult> | null
 }
 
-const initialState: IState = {
+const initialState: State = {
   loading: false,
-  toast: null
+  toast: null,
+  requests: null,
+  items: null
 }
 
-export default (state = initialState, action: Action) => produce(state, (draft: IState) => {
+export default (state = initialState, action: Action) => produce(state, (draft: State) => {
   switch (action.type) {
     case constants.SHOW_LOADING: {
       draft.loading = true
@@ -29,6 +33,14 @@ export default (state = initialState, action: Action) => produce(state, (draft: 
     }
     case constants.HIDE_TOAST: {
       draft.toast = null
+      break
+    }
+    case constants.SET_ITEM_REQUESTS: {
+      draft.requests = action.payload
+      break
+    }
+    case constants.SET_ITEMS: {
+      draft.items = action.payload
       break
     }
     default: break

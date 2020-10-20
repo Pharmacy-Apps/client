@@ -1,5 +1,5 @@
 import React from 'react'
-import Routes from 'routes'
+import Routes, { getDefaultRoute } from 'routes'
 import { History } from 'history'
 
 import { connect } from 'react-redux'
@@ -7,11 +7,13 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton} from '@ionic/react'
-import { Header } from 'components'
+import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton, IonItemDivider } from '@ionic/react'
+import { Header, PhoneInput } from 'components'
 
 import Requests, { endPoints } from 'requests'
-import { setSessionToken } from 'session'
+import { setSessionToken, setSessionPhone } from 'session'
+
+import { CCs } from 'utils/msisdn'
 
 export type Props = {
   history: History,
@@ -21,26 +23,33 @@ export type Props = {
   hideToast: Function
 }
 
+const header = 'Welcome!'
+const subHeader = 'Provide your phone and password to sign in'
+
 class Component extends React.Component<Props> {
 
-  state = { phone: null, password: null }
+  // state = { phone: null, phoneInputFocussed: false, password: null }
+  state = { phone: '773828773', inputFocussed: null, password: '773828773' } // client user
+  // state = { phone: '773828774', phoneInputFocussed: false, password: '773828773' } // courier
+  // state = { phone: '773828775', phoneInputFocussed: false, password: '773828773' } // admin
 
   onChange = (e: any) => {
     const { name, value } = e.target
-    this.setState({ ...this.state, [name]: value })
+    this.setState({ [name]: value })
   }
 
   onSubmit = (e: any) => {
     e.preventDefault()
-    const { showLoading, hideLoading, showToast, hideToast, history } = this.props
-    const { phone, password } = this.state
-    if (phone && password) {
+    const { showLoading, hideLoading, showToast, hideToast } = this.props
+    const { phone: partPhone, password } = this.state
+    if (partPhone && password) {
       hideToast()
       showLoading()
-      Requests.post(endPoints.login, { phone, secret: password }).then((response: any) => {
-        console.info(response)
-        setSessionToken(response.token)
-        history.replace(Routes.home.path)
+      const phone = `${CCs.ug.value}${partPhone}`
+      Requests.post(endPoints.login, { phone, secret: password }).then(({ token }: any) => {
+        setSessionToken(token)
+        setSessionPhone(phone)
+        window.location.replace(getDefaultRoute(token))
       }).catch(err => {
         console.error(err)
         showToast(err.error || err.toString())
@@ -52,28 +61,69 @@ class Component extends React.Component<Props> {
     this.props.history.push(Routes.signup1.path)
   }
 
+  onInputFocus = (e: any) => {
+    if (e)
+      this.setState({ inputFocussed: e.target.name })
+  }
+
+  onInputBlur = () => this.setState({ inputFocussed: null })
+
+  getIonLabelStyle = (name: string) => {
+    return this.state.inputFocussed === name
+      ? { color: 'var(--ion-color-action-primary)' }
+      : {}
+  }
+
+  getIonItemDividerStyle = (name: string) => {
+    const o = { minHeight: .1 }
+    console.info(this.state.inputFocussed, name)
+    return this.state.inputFocussed === name
+      ? { ...o, '--background': 'var(--ion-color-primary)' }
+      : o
+  }
+
   render() {
     const { phone, password } = this.state
     return (
       <IonPage>
         <Header omitsBack />
         <IonContent className="ion-padding">
+          <HeadComponent header={header} subHeader={subHeader} />
           <form onSubmit={this.onSubmit}>
-            <IonList lines="full" className="ion-no-margin ion-no-padding">
-              <IonItem>
-                <IonLabel position="floating">Phone</IonLabel>
-                <IonInput onIonChange={this.onChange} value={phone} type="tel" name="phone" autocomplete="off" />
+            <IonList className="ion-no-margin ion-no-padding">
+              <IonItem lines="none">
+                <IonLabel style={this.getIonLabelStyle('phone')} position="stacked">Phone</IonLabel>
+                <PhoneInput
+                  name="phone"
+                  value={phone || ''}
+                  onChange={this.onChange}
+                  onFocus={this.onInputFocus}
+                  onBlur={this.onInputBlur} />
               </IonItem>
-              <IonItem>
-                <IonLabel position="floating">Password</IonLabel>
-                <IonInput onIonChange={this.onChange} value={password} type="password" name="password" autocomplete="off" />
+              <IonItemDivider style={this.getIonItemDividerStyle('phone')} />
+              <IonItem lines="none">
+                <IonLabel style={this.getIonLabelStyle('password')} position="stacked">Password</IonLabel>
+                <IonInput
+                  onIonChange={this.onChange}
+                  onIonFocus={this.onInputFocus}
+                  onIonBlur={this.onInputBlur} value={password} type="password" name="password" autocomplete="off" />
               </IonItem>
+              <IonItemDivider style={this.getIonItemDividerStyle('password')} />
             </IonList>
             <div className="ion-padding">
-              <IonButton expand="block" type="submit" className="ion-no-margin">Submit</IonButton>
+              <IonButton
+                expand="block"
+                type="submit"
+                className="ion-no-margin ion-action-primary">Submit</IonButton>
             </div>
             <div className="ion-padding">
-              <IonButton onClick={this.onCreateAccount} expand="block" type="button" className="ion-no-margin" fill="clear">Create account</IonButton>
+              <IonButton
+                onClick={this.onCreateAccount}
+                expand="block"
+                type="button"
+                color="secondary"
+                className="ion-no-margin"
+                fill="clear">Create account</IonButton>
             </div>
           </form>
         </IonContent>
@@ -100,3 +150,22 @@ const mapDispatchToProps = (dispatch: any) => bindActionCreators({
 }, dispatch)
 
 export default connect(null, mapDispatchToProps)(Component)
+
+export const HeadComponent: React.FC<{
+  header: string,
+  subHeader: string
+}> = ({
+  header,
+  subHeader
+}) => (<>
+  <IonItem lines="none" className="ion-margin-bottom">
+    <IonLabel className="ion-text-wrap ion-head">
+      {/* <h1>{header}</h1> */}
+      <p>{subHeader}</p>
+    </IonLabel>
+  </IonItem>
+  {/* <IonItemDivider className="ion-margin-vertical" style={{
+    minHeight: .4,
+    '--background': 'var(--ion-color-label-secondary)'
+  }} /> */}
+</>)

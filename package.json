@@ -1,14 +1,18 @@
 {
-  "name": "app",
+  "name": "client-medistore",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@capacitor/android": "^1.4.0",
-    "@capacitor/core": "1.4.0",
+    "@capacitor/android": "^2.3.0",
+    "@capacitor/core": "^2.3.0",
+    "@ionic-native/call-number": "^5.28.0",
+    "@ionic-native/core": "^5.27.0",
     "@ionic-native/geolocation": "^5.19.1",
-    "@ionic/react": "^4.11.0",
-    "@ionic/react-router": "^4.11.0",
+    "@ionic/react": "^5.2.3",
+    "@ionic/react-router": "^5.2.3",
+    "@types/google-map-react": "^1.1.8",
     "@types/jest": "^24.0.18",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^12.7.12",
     "@types/react": "^16.9.5",
     "@types/react-dom": "^16.9.1",
@@ -16,8 +20,14 @@
     "@types/react-router": "^5.1.1",
     "@types/react-router-dom": "^5.1.0",
     "@types/react-router-redux": "^5.0.18",
+    "@types/sharedworker": "0.0.29",
     "axios": "^0.19.0",
-    "ionicons": "^4.6.3",
+    "call-number": "^1.0.1",
+    "events": "^3.1.0",
+    "google-map-react": "^2.0.8",
+    "ionicons": "^5.1.2",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.26.0",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-redux": "^7.1.1",
@@ -49,7 +59,6 @@
       "last 1 safari version"
     ]
   },
-  "description": "An Ionic project",
   "devDependencies": {
     "@capacitor/cli": "1.4.0"
   }

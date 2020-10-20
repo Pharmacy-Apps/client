@@ -5,31 +5,46 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
-import { IState } from 'reducers'
+import { State as ReducerState } from 'reducers'
 
 export type Props = {
   open: boolean,
   message: string | null,
-  hideToast: Function
+  hideToast: () => void
 }
 
-const Component: React.FC<Props> = ({ open, message, hideToast }) => (
-  <IonToast
-    isOpen={open}
-    onDidDismiss={() => hideToast()}
-    message={message || ''}
-    position="top"
-    buttons={[
-      {
-        text: 'Close',
-        role: 'cancel',
-        handler: () => hideToast()
-      }
-    ]}
-  />
-)
+const toastTimeout = 7000
 
-const mapStateToProps = (state: IState) => ({
+class Component extends React.Component<Props> {
+
+  render() {
+    const { open, message, hideToast } = this.props
+    return (
+      <IonToast
+        isOpen={open}
+        onDidDismiss={hideToast}
+        message={message || ''}
+        position="bottom"
+        buttons={[
+          {
+            text: 'Close',
+            role: 'cancel',
+            handler: hideToast
+          }
+        ]}
+        color="primary"
+      />
+    )
+  }
+
+  componentDidUpdate({ open, hideToast }: Props) { // previous props
+    if (open) return
+    setTimeout(hideToast, toastTimeout)
+  }
+
+}
+
+const mapStateToProps = (state: ReducerState) => ({
   open: Boolean(state.App.toast),
   message: state.App.toast
 })
