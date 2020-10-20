@@ -5,7 +5,11 @@ import { History } from 'history'
 import {
   IonContent, IonPage, IonList,
   IonItem, IonLabel, IonIcon,
-  IonListHeader
+  IonListHeader,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonRippleEffect
 } from '@ionic/react'
 import {
   person,
@@ -13,7 +17,7 @@ import {
   locationSharp as locationIcon
 } from 'ionicons/icons'
 
-import { Header } from 'components'
+import { Header, Divider } from 'components'
 
 import { userIsClientUser, userIsNotClientUser } from 'utils/role'
 
@@ -93,18 +97,27 @@ class Component extends React.Component<Props> {
             </IonItem>
             <IonListHeader lines="full">
               <IonLabel><h3>{Text['category-header']}</h3></IonLabel>
-            </IonListHeader>{
-              itemCategories.map(({ icon, label, description, value }, i, a) => (
-                <CategoryComponent
-                  key={i}
-                  lines={i < a.length - 1 ? 'inset' : 'none'}
-                  label={label}
-                  description={description}
-                  icon={icon}
-                  onSelect={() => this.onSelectCategory(value)}
-                />
-              ))
-            }</IonList>
+            </IonListHeader>
+            <IonGrid>
+              <IonRow>
+                {
+                  itemCategories.map(({ icon, label, description, value }, i, a) => (
+                    <IonCol className="ion-no-padding" size="6">
+                      <div className="fill-height ion-padding">
+                        <CategoryComponent
+                          key={i}
+                          label={label}
+                          description={description}
+                          icon={icon}
+                          onSelect={() => this.onSelectCategory(value)}
+                        />
+                      </div>
+                    </IonCol>
+                  ))
+                }
+              </IonRow>
+            </IonGrid>
+          </IonList>
         </IonContent>
       </IonPage> : null
     )
@@ -113,19 +126,22 @@ class Component extends React.Component<Props> {
 }
 
 const CategoryComponent: React.FC<{
-  lines: 'inset' | 'none',
   label: string,
   description: string,
   icon: string,
   onSelect: () => void
-}> = ({ lines, label, description, icon, onSelect }) => (
-  <IonItem button onClick={onSelect} lines={lines}>
-    <IonIcon className="ion-icon-primary" slot="start" icon={icon} size="large" />
-    <IonLabel>
-      <h3 className="ion-label-primary">{label}</h3>
-      <p>{description}</p>
-    </IonLabel>
-  </IonItem>
+}> = ({ label, description, icon, onSelect }) => (
+  <div onClick={onSelect} className="item-category fill-height ion-padding ion-activatable">
+    <IonIcon className="ion-icon-primary ion-margin-bottom" icon={icon} />
+    <Divider cssClass="mini-divider ion-no-padding" />
+    <div className="ion-margin-top">
+      <IonLabel>
+        <h3 className="ion-label-primary">{label}</h3>
+        {/* <p>{description}</p> */}
+      </IonLabel>
+    </div>
+    <IonRippleEffect />
+  </div>
 )
 
 export default Component

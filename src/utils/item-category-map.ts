@@ -21,22 +21,22 @@ const map: {
     description: Text['category-pharmacy-description']
   },
   'medical-devices': {
-    icon: '/assets/icons/equipment.svg',
+    icon: '/assets/icons/medical-devices.svg',
     label: Text['category-medical-devices'],
     description: Text['category-medical-devices-description']
   },
   'lab-equipment': {
-    icon: '/assets/icons/equipment.svg',
+    icon: '/assets/icons/lab-equipment.svg',
     label: Text['category-lab-equipment'],
     description: Text['category-lab-equipment-description']
   },
   'medical-supplies': {
-    icon: '/assets/icons/equipment.svg',
+    icon: '/assets/icons/medical-supplies.svg',
     label: Text['category-medical-supplies'],
     description: Text['category-medical-supplies-description']
   },
   'health-services': {
-    icon: '/assets/icons/equipment.svg',
+    icon: '/assets/icons/health-services.svg',
     label: Text['category-health-services'],
     description: Text['category-health-services-description']
   }
