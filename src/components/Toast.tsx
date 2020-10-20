@@ -32,6 +32,7 @@ class Component extends React.Component<Props> {
             handler: hideToast
           }
         ]}
+        color="primary"
       />
     )
   }
