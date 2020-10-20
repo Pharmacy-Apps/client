@@ -11,15 +11,33 @@ const text: Type = {
     "en": "All items"
   },
   "category-pharmacy": {
-    "en": "Pharmacy items"
+    "en": "Pharmacy"
   },
   "category-pharmacy-description": {
     "en": "Lorem ipsum tabs, medicine loren ipsum"
   },
-  "category-equipment": {
-    "en": "Medical equipment"
+  "category-medical-devices": {
+    "en": "Medical devices"
   },
-  "category-equipment-description": {
+  "category-medical-devices-description": {
+    "en": "Lorem ipsum labs loren ipsum"
+  },
+  "category-lab-equipment": {
+    "en": "Laboratory equipment"
+  },
+  "category-lab-equipment-description": {
+    "en": "Lorem ipsum labs loren ipsum"
+  },
+  "category-medical-supplies": {
+    "en": "Other medical supplies"
+  },
+  "category-medical-supplies-description": {
+    "en": "Lorem ipsum labs loren ipsum"
+  },
+  "category-health-services": {
+    "en": "Health services"
+  },
+  "category-health-services-description": {
     "en": "Lorem ipsum labs loren ipsum"
   }
 }
