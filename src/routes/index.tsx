@@ -4,7 +4,8 @@ import { getSessionToken, clearSession } from 'session'
 import {
   Signup1, Signup2, Login, Home,
   Search, Order, Pay, Location,
-  Requests, Request, Credit, Account
+  Requests, Request, Credit, Account,
+  About, TCs
 } from 'pages'
 
 interface Routes {
@@ -27,6 +28,14 @@ const Routes: Routes = {
   home: {
     path: '/',
     component: Home
+  },
+  about: {
+    path: '/about',
+    component: About
+  },
+  tcs: {
+    path: '/terms-conditions',
+    component: TCs
   },
   account: {
     path: '/account',

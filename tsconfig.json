@@ -23,6 +23,7 @@
     "isolatedModules": true
   },
   "include": [
-    "src"
+    "src",
+    "package.json"
   ]
 }
