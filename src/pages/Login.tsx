@@ -7,8 +7,14 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton, IonItemDivider } from '@ionic/react'
-import { Header, PhoneInput } from 'components'
+import {
+  IonContent, IonPage, IonList, IonItem, IonLabel,
+  IonInput, IonButton, IonItemDivider
+} from '@ionic/react'
+
+import { ellipsisVertical as more } from 'ionicons/icons'
+
+import { Header, PhoneInput, Menu } from 'components'
 
 import Requests, { endPoints } from 'requests'
 import { setSessionToken, setSessionPhone } from 'session'
@@ -82,11 +88,34 @@ class Component extends React.Component<Props> {
       : o
   }
 
+  toolbarActions = () => [{
+    icon: more,
+    handler: (event: any) => this.menuRef.open({ target: event.target })
+  }]
+
+  menuRef: any
+
+  menuActions = () => [
+    {
+      text: 'About Us',
+      handler: () => this.props.history.push(Routes.about.path)
+    },
+    /* How it works, FAQs, Contacts */
+    { text: 'Key Partners', handler: () => null },
+    /* List partners with some description */
+    { text: 'Terms & Conditions', handler: () => this.props.history.push(Routes.tcs.path) }
+    /* Terms of operation, Privacy policy */
+  ]
+
   render() {
     const { phone, password } = this.state
     return (
       <IonPage>
-        <Header omitsBack />
+        <Header omitsBack actions={this.toolbarActions()} />
+        <Menu
+          setRef={(node: any) => this.menuRef = node}
+          actions={this.menuActions()}
+        />
         <IonContent className="ion-padding">
           <HeadComponent header={header} subHeader={subHeader} />
           <form onSubmit={this.onSubmit}>

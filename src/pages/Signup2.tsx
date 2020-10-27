@@ -7,12 +7,20 @@ import { bindActionCreators } from 'redux'
 
 import * as constants from 'reducers/constants'
 
-import { IonContent, IonPage, IonList, IonItem, IonLabel, IonInput, IonButton, IonItemDivider } from '@ionic/react'
+import {
+  IonContent, IonPage, IonList, IonItem, IonLabel,
+  IonInput, IonButton, IonItemDivider
+} from '@ionic/react'
+
+import { Link } from 'react-router-dom'
+
 import { Header } from 'components'
 import { HeadComponent } from './Login'
 
 import Requests, { endPoints } from 'requests'
 import { setSessionToken, setSessionPhone } from 'session'
+
+import { APP_NAME } from 'utils'
 
 export type Props = {
   history: History,
@@ -84,8 +92,8 @@ class Component extends React.Component<Props> {
         <IonContent className="ion-padding">
           <HeadComponent header={header} subHeader={subHeader} />
           <form onSubmit={this.onSubmit}>
-            <IonList className="ion-no-margin ion-no-padding">
-              <IonItem lines="none">
+            <IonList className="ion-no-margin ion-no-padding" lines="none">
+              <IonItem>
                 <IonLabel position="floating" style={this.getIonLabelStyle('code')}>Verification code</IonLabel>
                 <IonInput
                   onIonChange={this.onChange}
@@ -93,7 +101,7 @@ class Component extends React.Component<Props> {
                   onIonBlur={this.onInputBlur} value={code} type="text" name="code" autocomplete="off" />
               </IonItem>
               <IonItemDivider style={this.getIonItemDividerStyle('code')} />
-              <IonItem lines="none">
+              <IonItem>
                 <IonLabel position="floating" style={this.getIonLabelStyle('password')}>Password you will use</IonLabel>
                 <IonInput
                   onIonChange={this.onChange}
@@ -101,7 +109,7 @@ class Component extends React.Component<Props> {
                   onIonBlur={this.onInputBlur} value={password} type="text" name="password" autocomplete="off" />
               </IonItem>
               <IonItemDivider style={this.getIonItemDividerStyle('password')} />
-              <IonItem lines="none">
+              <IonItem>
                 <IonLabel position="floating" style={this.getIonLabelStyle('name')}>Your name</IonLabel>
                 <IonInput
                   onIonChange={this.onChange}
@@ -109,6 +117,14 @@ class Component extends React.Component<Props> {
                   onIonBlur={this.onInputBlur} value={name} type="text" name="name" autocomplete="off" />
               </IonItem>
               <IonItemDivider style={this.getIonItemDividerStyle('name')} />
+
+              <IonItem className="ion-margin-top">
+                <IonLabel><h3 className="ion-label-primary">
+                  By completing signup and using {APP_NAME}, you are bound by the terms, conditions and privacy policy stated&nbsp;
+                  <Link to={Routes.tcs.path}>here</Link>
+                </h3></IonLabel>
+              </IonItem>
+
             </IonList>
             <div className="ion-padding">
               <IonButton
