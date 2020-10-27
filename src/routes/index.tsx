@@ -12,7 +12,8 @@ interface Routes {
   [key: string]: {
     path: string,
     component: Function,
-    isPublic?: boolean
+    isPublic?: boolean,
+    preventRedirect?: true
   }
 }
 
@@ -32,12 +33,14 @@ const Routes: Routes = {
   about: {
     path: '/about',
     component: About,
-    isPublic: true
+    isPublic: true,
+    preventRedirect: true
   },
   tcs: {
     path: '/terms-conditions',
     component: TCs,
-    isPublic: true
+    isPublic: true,
+    preventRedirect: true
   },
   account: {
     path: '/account',

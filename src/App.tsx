@@ -16,9 +16,10 @@ import 'tasks/index'
 import 'styles'
 
 // For public pages, redirect to  default home if session available
-const fn1 = (Component: Function, props: any) => sessionAvailable()
-  ? <Redirect to={getDefaultRoute()} />
-  : <Component {...props} />
+const fn1 = (Component: Function, props: any, preventRedirect = false) =>
+  sessionAvailable() && preventRedirect === false
+    ? <Redirect to={getDefaultRoute()} />
+    : <Component {...props} />
 
 // For protected pages, redirect to /login if session not available
 const fn2 = (Component: Function, props: any) => sessionAvailable()
@@ -46,9 +47,9 @@ export default class App extends React.Component {
       <IonApp>
         <IonReactRouter>
           <IonRouterOutlet>{
-            routeValues.map(({ path, component: Component, isPublic }, i) => (
+            routeValues.map(({ path, component: Component, isPublic, preventRedirect }, i) => (
               <Route exact key={i} path={path} render={
-                props => isPublic ? fn1(Component, props) : fn2(Component, props)
+                props => isPublic ? fn1(Component, props, preventRedirect) : fn2(Component, props)
               } />
             ))
           }</IonRouterOutlet>
