@@ -44,11 +44,12 @@ async function sendFCMTokenToServer(token) {
   } = await readJSONFile('/firebase/vars.json')
 
   const url = platformIsLocal() ? localUrl : remoteUrl
+  const sessionAvailable = localStorage.getItem(key) != undefined
   const pushNotificationTokenNotSent = localStorage.getItem(pushNotificationTokenSendStateKey) == undefined ||
     localStorage.getItem(pushNotificationTokenSendStateKey) == '0'
 
   let result = null
-  if (pushNotificationTokenNotSent) {
+  if (sessionAvailable && pushNotificationTokenNotSent) {
     const { data } = await axios({
       url: url + '/push-notification-token',
       method: 'PUT',

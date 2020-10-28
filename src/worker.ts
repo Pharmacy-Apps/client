@@ -5,20 +5,28 @@ import { getSessionToken } from './session'
 
 // Use window.SharedWorker
 
-if (window.Worker) try {
+(function () {
 
-  const worker = new Worker('worker.js')
-  const { id } = decrypt(getSessionToken())
+  if (window.Worker) try {
 
-  worker.postMessage({ token: id })
+    const worker = new Worker('worker.js')
+    const token = getSessionToken()
 
-  worker.onmessage = function (e) {
-    const { action, result } = e.data
-    eventsInstance.emit(action, result)
+    if (token === null) return
+
+    const { id } = decrypt(token)
+
+    worker.postMessage({ token: id })
+
+    worker.onmessage = function (e) {
+      const { action, result } = e.data
+      eventsInstance.emit(action, result)
+    }
+
+  } catch (error) {
+    console.error('Worker script failed', error)
+  } else {
+    console.error('Worker not supported')
   }
 
-} catch (error) {
-  console.error('Worker script failed', error)
-} else {
-  console.error('Worker not supported')
-}
+})()
