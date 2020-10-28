@@ -113,7 +113,7 @@ class Component extends React.Component {
           <IonLabel>
             <IonList lines="none" className="ion-no-padding">
               <IonItem className="ion-no-padding" style={ionItemStyle}>
-                <h3>MediStore securely fast delivers medical items right to where you choose</h3>
+                <h3>{APP_NAME} securely fast delivers medical items right to where you choose</h3>
               </IonItem>
               <IonItem className="ion-no-padding ion-margin-vertical" style={ionItemStyle}>
                 <h3>{

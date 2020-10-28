@@ -26,6 +26,6 @@ export const getAddress = (lat: number, lon: number, placeholder: string = 'Not 
   )
 }
 
-export const APP_NAME = 'MediStore'
+export const APP_NAME = 'MediMall'
 
 export const APP_VERSION = require('../../package.json').version
