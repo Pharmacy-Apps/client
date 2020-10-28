@@ -77,10 +77,10 @@ const Component: React.FC<Props> = ({ item, src, selected }) => {
     imageSrc
       ? (
         selected
-          ? <IonIcon style={contentStyle} ref={setRef} src="/assets/icons/checked.svg" />
+          ? <IonIcon style={contentStyle} ref={setRef} className="ion-icon-primary" icon="/assets/icons/checked.svg" />
           : (
             errored
-              ? <IonIcon style={contentStyle} ref={setRef} src={placeholder} />
+              ? <IonIcon style={contentStyle} ref={setRef} className="ion-icon-primary" icon={placeholder} />
               : <img style={contentStyle} ref={setRef} src={imageSrc} onError={onError} alt="" />
           )
       )

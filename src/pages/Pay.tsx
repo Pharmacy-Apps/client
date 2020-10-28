@@ -161,7 +161,7 @@ class Component extends React.Component<Props> {
                 button
                 lines={i === a.length - 1 ? 'none' : undefined}
               >
-                <IonIcon icon={channel.icon} slot="start" />
+                <IonIcon className="ion-icon-primary" icon={channel.icon} slot="start" />
                 <IonLabel>
                   <h3>{channel.name}</h3>
                   <p>{channel.description}</p>
