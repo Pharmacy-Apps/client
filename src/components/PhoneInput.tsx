@@ -14,7 +14,7 @@ type Props = {
   onBlur?: () => void
 }
 
-const Component: React.FC<Props> = (props) => (
+const Component: React.FC<Props> = props => (
   <div className="msisdn-section">
     <span>{cc}</span>
     {/* Couldn't use IonInput because it did not work controlled */}
