@@ -39,7 +39,8 @@ export type Props = {
 
 type State = {
   selectedItems: Array<ItemSearchResultInterface>,
-  selectedCategory: string
+  selectedCategory: string,
+  search: string | undefined
 }
 
 const searchPlaceholder = 'search'
@@ -60,7 +61,8 @@ class Component extends React.Component<Props> {
 
   state: State = {
     selectedItems: this.selectedItems,
-    selectedCategory: this.selectedCategory || itemCategories[0].value
+    selectedCategory: this.selectedCategory || itemCategories[0].value,
+    search: undefined
   }
 
   componentDidMount() {
@@ -89,9 +91,7 @@ class Component extends React.Component<Props> {
   }
 
   onSearch = ({ detail: { value } }: CustomEvent) => {
-    // this.fetchItems(e.target.value)
-    // this.props.onSearch(e.target.value)
-    console.info('Search', value)
+    this.setState({ search: value.toLowerCase() })
   }
 
   onSelect = (result: ItemSearchResultInterface) => {
@@ -158,12 +158,13 @@ class Component extends React.Component<Props> {
 
   computeItemsShown = () => {
     const { items = [] } = this.props
-    const { selectedCategory } = this.state
+    const { selectedCategory, search = '' } = this.state
     return selectedCategory !== itemCategories[0].value
-      ? items.filter(({ item: { category } }) => (
-        category === selectedCategory
+      ? items.filter(({ item: { name, category } }) => (
+        category === selectedCategory &&
+        name.toLowerCase().includes(search)
       ))
-      : items
+      : items.filter(({ item: { name } }) => name.toLowerCase().includes(search))
   }
 
   render() {
