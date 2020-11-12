@@ -116,7 +116,7 @@ class Component extends React.Component<Props> {
           setRef={(node: any) => this.menuRef = node}
           actions={this.menuActions()}
         />
-        <IonContent className="ion-padding">
+        <IonContent>
           <HeadComponent header={header} subHeader={subHeader} />
           <form onSubmit={this.onSubmit}>
             <IonList className="ion-no-margin ion-no-padding">

@@ -87,5 +87,6 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
 
-  --ion-margin: 16px
+  --ion-margin: 16px;
+  --ion-padding: 16px
 }

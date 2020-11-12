@@ -81,7 +81,7 @@ class Component extends React.Component<Props> {
     return (
       <IonPage>
         <Header omitsBack />
-        <IonContent className="ion-padding">
+        <IonContent>
           <HeadComponent header={header} subHeader={subHeader} />
           <form onSubmit={this.onSubmit}>
             <IonList className="ion-no-margin ion-no-padding">
