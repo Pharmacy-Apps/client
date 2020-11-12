@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { IonIcon } from '@ionic/react'
 
-type Props = { src: string, selected: boolean, alt?: string, item: string }
+type Props = { src: string, alt?: string, item: string }
 
 const placeholder = '/assets/icons/no-icon.svg'
 
@@ -17,7 +17,8 @@ const contentStyle = {
   width: '100%'
 }
 
-const Component: React.FC<Props> = ({ item, src, selected }) => {
+const Component: React.FC<Props> = ({ item, src }) => {
+  const selected = false
   const [imageSrc, setImageSrc]: [
     string | undefined, Dispatch<SetStateAction<string | undefined>>
   ] = useState()
