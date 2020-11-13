@@ -1,6 +1,11 @@
 import React from 'react'
 import Moment from 'moment'
 
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
+import * as constants from 'reducers/constants'
+
 import { CallNumber } from '@ionic-native/call-number'
 import { platformIsMobile } from 'utils'
 
@@ -14,8 +19,11 @@ import { ItemRequest as ItemRequestInterface } from 'types'
 import { userIsNotClientUser, userIsCourier } from 'utils/role'
 import { deliveryCost, computeOrderCostAndDistance } from 'utils/charges'
 
+import Requests, { endPoints } from 'requests'
+
 type Props = {
-  location: { state?: { request: ItemRequestInterface } }
+  location: { state?: { request: ItemRequestInterface } },
+  setItemRequest: (a: ItemRequestInterface) => {},
 }
 
 const callCourierButtonStyle = {
@@ -25,6 +33,72 @@ const callCourierButtonStyle = {
 }
 
 class Component extends React.Component<Props> {
+
+  state = {
+    distance: (
+      this.props.location.state !== undefined &&
+      this.props.location.state.request !== undefined
+    )
+      ? this.props.location.state.request.aDistance
+      : null
+  }
+
+  saveComputedDistance(distance: number) {
+    const { location: { state }, setItemRequest } = this.props
+    if (
+      state === undefined ||
+      state.request === undefined
+    ) return null
+
+    this.setState(
+      { distance },
+      () => setItemRequest({ ...state.request, aDistance: distance })
+    )
+
+    Requests.put(endPoints['item-requests'], {
+      'item-requests': [state.request._id],
+      update: { aDistance: distance }
+    }).catch(console.error)
+
+  }
+
+  onMapApiLoaded = ({ map, maps }: any) => {
+
+    const { distance = null } = this.state
+
+    if (distance !== null) return // Directions Service already computed distance
+
+    let directionsService = new maps.DirectionsService()
+    let directionsRenderer = new maps.DirectionsRenderer()
+    directionsRenderer.setMap(map)
+
+    const origin = { lat: 40.7767644, lng: -73.9761399 }
+    const destination = { lat: 40.771209, lng: -73.9673991 }
+
+    const route = {
+      origin,
+      destination,
+      travelMode: 'DRIVING'
+    }
+
+    directionsService.route(route, (response: any, status: any) => {
+      if (status !== 'OK') {
+        console.error('Directions request, status', status)
+        return
+      }
+
+      // directionsRenderer.setDirections(response) // Render route on map
+
+      const data = response.routes[0].legs[0] // Get first of possible routes
+
+      if (data) {
+        const { value: distanceInMetres, /* text */ } = data.distance
+        this.saveComputedDistance(distanceInMetres)
+      } else
+        console.error('Directions data not returned', data)
+    })
+
+  }
 
   requestPresent = () => {
     const { location: { state } } = this.props
@@ -79,6 +153,7 @@ class Component extends React.Component<Props> {
     ) return null
 
     const { pharmacyItems, state: requestState, createdAt, courier, lat, lon, user } = state.request
+    const { distance = null } = this.state
 
     const title = <p className="ion-text-wrap">{
       pharmacyItems.map((o, i) => <span key={i} className="flex-inline ion-align-items-center">
@@ -151,6 +226,10 @@ class Component extends React.Component<Props> {
             <IonItem>
               <IonLabel>
                 <p className="ion-label-primary">Delivery at <b>{`${lat}, ${lon}`}</b></p>
+                {distance !== null
+                  ? <p className="ion-label-primary">~ <b>{distance}m</b></p>
+                  : null
+                }
                 {userCanViewRequestClient
                   ? <p>Client - {user.name || user.phone}</p>
                   : null}
@@ -160,7 +239,7 @@ class Component extends React.Component<Props> {
               position: 'relative',
               '--inner-padding-end': 0
             }}>
-              <MapContainer mapCenter={{ lat, lon }} />
+              <MapContainer mapCenter={{ lat, lon }} onMapApiLoaded={this.onMapApiLoaded} />
               {courier && userCanViewCallButton ? <IonButton onClick={this.onCall}
                 style={callCourierButtonStyle}
                 className="ion-margin"
@@ -192,4 +271,15 @@ function formatDate(date: number) {
   return Moment(date).fromNow()
 }
 
-export default Component
+// const mapStateToProps = (state: ReducerState) => ({
+//   requests: state.App.requests || undefined
+// })
+
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+  setItemRequest: payload => ({
+    type: constants.SET_ITEM_REQUEST,
+    payload
+  })
+}, dispatch)
+
+export default connect(null, mapDispatchToProps)(Component)

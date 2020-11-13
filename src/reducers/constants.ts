@@ -6,3 +6,4 @@ export const HIDE_TOAST = 'HIDE_TOAST'
 
 export const SET_ITEM_REQUESTS = 'SET_ITEM_REQUESTS'
 export const SET_ITEMS = 'SET_ITEMS'
+export const SET_ITEM_REQUEST = 'SET_ITEM_REQUEST'
