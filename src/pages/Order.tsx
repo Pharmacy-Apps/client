@@ -215,18 +215,18 @@ class Component extends React.Component<Props> {
                 </IonList>
                 <IonList className="ion-no-margin ion-no-padding">
                   <IonItem lines="none" className="ion-no-padding mini-list-item"
-                    style={{ '--min-height': '15px' }}>
-                    <IonLabel className="ion-no-margin" slot="start">
-                      <p>Delivery fee</p>
-                    </IonLabel>
-                    <h4 slot="end">UGX {deliveryCost}</h4>
-                  </IonItem>
-                  <IonItem lines="none" className="ion-no-margin ion-no-padding mini-list-item"
                     style={{ '--min-height': '25px' }}>
                     <IonLabel className="ion-no-margin ion-text-uppercase ion-label-primary">
                       <h4>Total</h4>
                     </IonLabel>
                     <h4 className="ion-label-primary" slot="end">UGX {cost}</h4>
+                  </IonItem>
+                  <IonItem lines="none" className="ion-no-margin ion-no-padding mini-list-item"
+                    style={{ '--min-height': '15px' }}>
+                    <IonLabel className="ion-no-margin" slot="start">
+                      <p>Delivery fee</p>
+                    </IonLabel>
+                    <h4 slot="end">UGX {deliveryCost}</h4>
                   </IonItem></IonList>
               </IonLabel>
             </IonItem>

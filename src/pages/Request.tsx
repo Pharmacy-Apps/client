@@ -207,17 +207,17 @@ class Component extends React.Component<Props> {
                 lines="none"
                 className="ion-no-padding mini-list-item"
               >
-                <IonText><IonLabel><p>Delivery fee</p></IonLabel></IonText>
-                <h4 slot="end" className="flex ion-align-items-center">UGX {deliveryCost}</h4>
+                <h4 className="ion-text-uppercase ion-label-primary">Total</h4>
+                <h4 slot="end" className="flex ion-align-items-center ion-label-primary">
+                  <b>UGX {this.requestCost}</b>
+                </h4>
               </IonItem>
               <IonItem
                 lines="none"
                 className="ion-no-padding mini-list-item"
               >
-                <h4 className="ion-text-uppercase ion-label-primary">Total</h4>
-                <h4 slot="end" className="flex ion-align-items-center ion-label-primary">
-                  <b>UGX {this.requestCost}</b>
-                </h4>
+                <IonText><IonLabel><p>Delivery fee</p></IonLabel></IonText>
+                <h4 slot="end" className="flex ion-align-items-center">UGX {deliveryCost}</h4>
               </IonItem>
             </IonList>
           </IonLabel>

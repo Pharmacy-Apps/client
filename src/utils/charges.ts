@@ -9,5 +9,5 @@ export const computeOrderCostAndDistance = (
     acc.cost = acc.cost + parseInt(`${price}`) * quantity
     acc.distance = acc.distance + distanceRaw / 2
     return acc
-  }, { cost: deliveryCost, distance: 0 })
+  }, { cost: 0 /* deliveryCost */, distance: 0 })
 }
