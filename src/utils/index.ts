@@ -26,6 +26,17 @@ export const getAddress = (lat: number, lon: number, placeholder: string = 'Not 
   )
 }
 
+export const requestStatesMappedToBadgeBackground: {
+  [key: string]: string
+} = {
+  'awaiting transit': 'var(--ion-color-secondary)',
+  'out of stock': 'var(--ion-color-out-of-stock)',
+  'in transit': 'var(--ion-color-transit)',
+  'cancelled': 'var(--ion-color-cancelled)',
+  'delivered': 'var(--ion-color-primary)',
+  'received': 'var(--ion-color-primary)'
+}
+
 export const APP_NAME = 'MediMall'
 
 export const APP_VERSION = require('../../package.json').version

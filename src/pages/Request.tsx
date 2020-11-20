@@ -16,6 +16,7 @@ import { Header, Divider } from 'components'
 import { MapContainer } from 'containers'
 
 import { ItemRequest as ItemRequestInterface } from 'types'
+import { requestStatesMappedToBadgeBackground } from 'utils'
 import { userIsNotClientUser, userIsCourier } from 'utils/role'
 import { deliveryCost, computeOrderCostAndDistance } from 'utils/charges'
 
@@ -182,7 +183,7 @@ class Component extends React.Component<Props> {
                   <p style={{
                     marginBottom: 'unset', lineHeight: 'unset'
                   }}><IonBadge style={{
-                    background: mapRequestStateToBadgeBackground(requestState)
+                    background: requestStatesMappedToBadgeBackground[requestState]
                   }}>{requestState}</IonBadge></p>
                 </IonLabel>
                 <IonLabel><p className="ion-text-end">Made {formatDate(createdAt)} ago</p></IonLabel>
@@ -253,18 +254,6 @@ class Component extends React.Component<Props> {
     )
   }
 
-}
-
-function mapRequestStateToBadgeBackground(state: string) {
-  switch (window.location.pathname) {
-    // case '5': return 'var(--ion-color-primary)' // received
-    // case '4': return 'var(--ion-color-primary)' // delivered
-    case '3': return 'var(--ion-color-cancelled)' // cancelled
-    case '2': return 'var(--ion-color-transit)' // in transit
-    case '1': return 'var(--ion-color-out-of-stock)' // out of stock
-    // case '0': return 'var(--ion-color-primary)' // awaiting transit
-    default: return 'var(--ion-color-primary)'
-  }
 }
 
 function formatDate(date: number) {
