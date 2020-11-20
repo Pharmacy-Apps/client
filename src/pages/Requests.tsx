@@ -50,8 +50,8 @@ export type Props = {
   hideToast: () => {},
 }
 
-const primaryAction = 'Action' // 'Request for Items'
-const placeholderText = 'Lorem ipsum requests lorem ipsum'
+const primaryAction = 'Make Request'
+const placeholderText = 'Your requests will show here'
 
 class Component extends React.Component<Props> {
 
@@ -60,7 +60,7 @@ class Component extends React.Component<Props> {
     courierPopoverShown: false,
     requestDetailed: null,
     requestsSelected: [] as Array<String>,
-    archivedRequestsShown: true,
+    archivedRequestsShown: false,
     couriers: undefined
   }
 
@@ -378,9 +378,9 @@ class Component extends React.Component<Props> {
                 } slot="end"></IonIcon>
               </IonItem> : null}
               {archivedRequestsShown ? archivedRequests.map(requestComponent) : null}
-            </IonList> : <div className="ion-padding">{
-              placeholderText
-            }</div>
+            </IonList> : <div className="ion-padding">
+              <IonLabel><p>{placeholderText}</p></IonLabel>
+            </div>
           }
           {userIsClientUser() && requestsReturned ? <div className="ion-padding">
             <IonButton onClick={this.onPrimaryAction} className="ion-no-margin ion-action-primary">{primaryAction}</IonButton>
