@@ -15,7 +15,7 @@ import {
 } from '@ionic/react'
 import { send, closeOutline as close } from 'ionicons/icons'
 
-import { Header, ItemSearchResult } from 'components'
+import { Header, ItemSearchResult, Popover, Item as ItemDetail } from 'components'
 
 import Requests, { endPoints } from 'requests'
 import { getDeliveryLocationForNextOrder } from 'location'
@@ -40,7 +40,8 @@ export type Props = {
 type State = {
   selectedItems: Array<ItemSearchResultInterface>,
   selectedCategory: string,
-  search: string | undefined
+  search: string | undefined,
+  popoverResult: ItemSearchResultInterface | null
 }
 
 const searchPlaceholder = 'search'
@@ -62,7 +63,8 @@ class Component extends React.Component<Props> {
   state: State = {
     selectedItems: this.selectedItems,
     selectedCategory: this.selectedCategory || itemCategories[0].value,
-    search: undefined
+    search: undefined,
+    popoverResult: null
   }
 
   componentDidMount() {
@@ -167,7 +169,16 @@ class Component extends React.Component<Props> {
       : items.filter(({ item: { name } }) => name.toLowerCase().includes(search))
   }
 
+  onImageClick = (result: ItemSearchResultInterface) => {
+    this.setState({ popoverResult: result })
+  }
+
+  onDismissItemPopover = () => {
+    this.setState({ popoverResult: null })
+  }
+
   render() {
+    const { popoverResult } = this.state
     const items = this.computeItemsShown()
     const itemsReturned = Boolean(items)
     return (
@@ -181,7 +192,8 @@ class Component extends React.Component<Props> {
                 result={result}
                 lines={i !== a.length - 1}
                 selected={this.isSelected(result)}
-                onSelect={this.onSelect} />
+                onSelect={this.onSelect}
+                onImageClick={() => this.onImageClick(result)} />
             )) : (
                 itemsReturned && items.length === 0
                   ? <IonItem lines="none">
@@ -198,6 +210,9 @@ class Component extends React.Component<Props> {
             </IonFab>
           ) : null}
         </IonContent>
+        <Popover open={Boolean(popoverResult)} onDismiss={this.onDismissItemPopover}>
+          <ItemDetail result={popoverResult}></ItemDetail>
+        </Popover>
       </IonPage>
     )
   }

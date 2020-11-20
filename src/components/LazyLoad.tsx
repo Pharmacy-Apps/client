@@ -1,23 +1,36 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { IonIcon } from '@ionic/react'
 
-type Props = { src: string, alt?: string, item: string }
+type Props = { src: string, alt?: string, item: string, onClick: () => void }
 
 const placeholder = '/assets/icons/no-icon.svg'
 
 const wrapperStyle = {
-  height: '100px',
-  width: '100px',
-  padding: '5px 25px',
-  margin: 0
+  display: 'flex',
+  alignItems: 'center',
+  height: 170,
+  width: 170,
+  padding: 10,
+  margin: '0 calc(var(--ion-margin) - 10px)'
 }
 
-const contentStyle = {
+const iconStyle = {
   height: '100%',
-  width: '100%'
+  width: '100%',
+  margin: '-5px 25px'
 }
 
-const Component: React.FC<Props> = ({ item, src }) => {
+const imageStyle: Object = {
+  height: '100%',
+  width: '100%',
+  borderWidth: 2,
+  borderStyle: 'solid',
+  borderColor: 'rgba(var(--ion-color-primary-rgb), .1)',
+  borderRadius: '50%',
+  objectFit: 'contain'
+}
+
+const Component: React.FC<Props> = ({ item, src, onClick }) => {
   const selected = false
   const [imageSrc, setImageSrc]: [
     string | undefined, Dispatch<SetStateAction<string | undefined>>
@@ -74,18 +87,23 @@ const Component: React.FC<Props> = ({ item, src }) => {
     }
   }, [imageRef, imageSrc, src, observerSet])
 
+  const onClickLocal = (e: any) => {
+    e.stopPropagation()
+    onClick()
+  }
+
   return <div style={wrapperStyle}>{
     imageSrc
       ? (
         selected
-          ? <IonIcon style={contentStyle} ref={setRef} className="ion-icon-primary" icon="/assets/icons/checked.svg" />
+          ? <IonIcon style={iconStyle} ref={setRef} className="ion-icon-primary" icon="/assets/icons/checked.svg" />
           : (
             errored
-              ? <IonIcon style={contentStyle} ref={setRef} className="ion-icon-primary" icon={placeholder} />
-              : <img style={contentStyle} ref={setRef} src={imageSrc} onError={onError} alt="" />
+              ? <IonIcon style={iconStyle} ref={setRef} className="ion-icon-primary" icon={placeholder} />
+              : <img onClick={onClickLocal} style={imageStyle} ref={setRef} src={imageSrc} onError={onError} alt="" />
           )
       )
-      : <IonIcon style={contentStyle} ref={setRef} />
+      : <div style={iconStyle} ref={setRef} />
   }</div>
 
 }

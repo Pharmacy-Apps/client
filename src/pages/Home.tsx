@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Routes, { getDefaultRoute } from 'routes'
 import { History } from 'history'
 
@@ -147,14 +147,28 @@ class Component extends React.Component<Props> {
 
 }
 
+const categoryImageStyle: Object = {
+  width: '200px',
+  height: '200px',
+  objectFit: 'cover',
+  marginBottom: 'var(--ion-margin)',
+  borderRadius: '5px'
+}
+
+const placeholderImageUrl = '/assets/icons/no-icon.svg'
+
 const CategoryComponent: React.FC<{
   label: string,
   description: string,
   icon: string,
   onSelect: () => void
-}> = ({ label, description, icon, onSelect }) => (
-  <div onClick={onSelect} className="item-category fill-height ion-padding ion-activatable">
-    <IonIcon className="ion-icon-primary ion-margin-bottom" icon={icon} />
+}> = ({ label, description, icon, onSelect }) => {
+
+  const [imageUrl, setUrl] = useState(icon)
+  const onError = () => setUrl(placeholderImageUrl)
+
+  return <div onClick={onSelect} className="item-category fill-height ion-padding ion-activatable">
+    <img style={categoryImageStyle} src={imageUrl} onError={onError} alt="" />
     <Divider cssClass="mini-divider ion-no-padding" />
     <div className="ion-margin-top">
       <IonLabel>
@@ -164,6 +178,7 @@ const CategoryComponent: React.FC<{
     </div>
     <IonRippleEffect />
   </div>
-)
+
+}
 
 export default Component
