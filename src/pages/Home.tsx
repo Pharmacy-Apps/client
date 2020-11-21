@@ -18,7 +18,7 @@ import {
   ellipsisVertical as more
 } from 'ionicons/icons'
 
-import { Header, Divider, Menu } from 'components'
+import { Header, Menu } from 'components'
 
 import { userIsClientUser, userIsNotClientUser } from 'utils/role'
 
@@ -124,7 +124,14 @@ class Component extends React.Component<Props> {
               <IonRow>
                 {
                   itemCategories.map(({ icon, label, description, value }) => (
-                    <IonCol key={value} className="ion-no-padding" size="6">
+                    <IonCol
+                      key={value}
+                      className="ion-no-padding"
+                      sizeXs="12"
+                      sizeSm="12"
+                      sizeMd="6"
+                      sizeLg="4"
+                    >
                       <div className="fill-height ion-padding">
                         <CategoryComponent
                           key={value}
@@ -148,11 +155,9 @@ class Component extends React.Component<Props> {
 }
 
 const categoryImageStyle: Object = {
-  width: '200px',
-  height: '200px',
-  objectFit: 'cover',
-  marginBottom: 'var(--ion-margin)',
-  borderRadius: '5px'
+  width: '100%',
+  height: '250px',
+  objectFit: 'cover'
 }
 
 const placeholderImageUrl = '/assets/icons/no-icon.svg'
@@ -167,10 +172,16 @@ const CategoryComponent: React.FC<{
   const [imageUrl, setUrl] = useState(icon)
   const onError = () => setUrl(placeholderImageUrl)
 
-  return <div onClick={onSelect} className="item-category fill-height ion-padding ion-activatable">
-    <img style={categoryImageStyle} src={imageUrl} onError={onError} alt="" />
-    <Divider cssClass="mini-divider ion-no-padding" />
-    <div className="ion-margin-top">
+  const [loaded, setLoaded] = useState(false)
+  const onLoad = () => setLoaded(true)
+
+  return <div onClick={onSelect} className="item-category fill-height ion-activatable">
+    <img style={{
+      ...categoryImageStyle,
+      opacity: loaded ? 1 : 0,
+      transition: 'opacity 1s'
+    }} src={imageUrl} onLoad={onLoad} onError={onError} alt="" />
+    <div className="ion-padding">
       <IonLabel>
         <h3 className="ion-label-primary">{label}</h3>
         {/* <p>{description}</p> */}

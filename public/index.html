@@ -61,9 +61,9 @@
       background-color: rgba(var(--ion-color-primary-rgb), .05) !important
     }
 
-    .item-category ion-icon {
+    /* .item-category ion-icon {
       font-size: 50px
-    }
+    } */
 
     /* .searchbar {
       --icon-color: var(--ion-color-primary);
@@ -164,8 +164,18 @@
           rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.04))
     }
 
-    .popover-wide .popover-wrapper {
-      --width: 300px
+    .popover-wide {
+      --min-width: 50vw
+    }
+
+    .popover-item-detail {
+      --width: unset;
+      --height: unset;
+      --max-width: 90vw
+    }
+
+    .popover-item-detail .popover-content {
+      left: 5vw
     }
 
     .alert-custom .alert-wrapper {

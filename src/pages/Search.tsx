@@ -210,7 +210,11 @@ class Component extends React.Component<Props> {
             </IonFab>
           ) : null}
         </IonContent>
-        <Popover open={Boolean(popoverResult)} onDismiss={this.onDismissItemPopover}>
+        <Popover
+          open={Boolean(popoverResult)}
+          onDismiss={this.onDismissItemPopover}
+          cssClass="popover-item-detail"
+        >
           <ItemDetail result={popoverResult}></ItemDetail>
         </Popover>
       </IonPage>
