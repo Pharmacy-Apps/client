@@ -8,11 +8,17 @@ const placeholder = '/assets/icons/no-icon.svg'
 const wrapperStyle = {
   display: 'flex',
   alignItems: 'center',
-  height: 170,
-  width: 170,
+  height: 150,
+  width: 150,
   padding: 10,
   margin: '0 calc(var(--ion-margin) - 10px)'
 }
+
+export const wrapperWidthSpan = (
+  2 * wrapperStyle.padding +
+  2 * 6 + // 6 is calc(var(--ion-margin) - 10px)
+  wrapperStyle.width
+)
 
 const iconStyle = {
   height: '100%',

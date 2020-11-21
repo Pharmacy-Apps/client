@@ -7,6 +7,8 @@ import { LazyLoad } from 'components'
 import { ItemSearchResult } from 'types'
 import { imageServerUrl } from 'utils'
 
+import { wrapperWidthSpan as imageWrapperWidthSpan } from 'components/LazyLoad'
+
 export type Props = {
   selected: boolean,
   onSelect: (a1: any) => void,
@@ -31,7 +33,9 @@ const Component: React.FC<Props> = ({
       className="search-result ion-no-padding"
     >
       <LazyLoad onClick={onImageClick} item={item.name} src={`${imageServerUrl}${item['icon-url']}`} />
-      <IonGrid>
+      <IonGrid style={{
+        width: `calc(100% - ${imageWrapperWidthSpan}px)` // Compute what's left after image fills space
+      }}>
         <IonRow>
           <IonCol className="ion-no-padding">
             <IonLabel><h2 className="ion-label-primary">{item.name}</h2></IonLabel>
