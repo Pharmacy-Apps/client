@@ -32,8 +32,14 @@ const routeValues = Object.values(Routes)
 const appIsWebDeployed = window.location.hostname !== 'localhost'
 
 const splashTimeout = Number(
-  process.env.REACT_APP_SPLASH_TIMEOUT || 2500
+  process.env.REACT_APP_SPLASH_TIMEOUT || 2000
 )
+
+const pageTransitionStyle: any = (splashScreenRendered: Boolean) => ({
+  visibility: splashScreenRendered ? 'hidden' : 'visible',
+  opacity: splashScreenRendered ? 0 : 1,
+  transition: 'opacity .8s'
+})
 
 export default class App extends React.Component {
 
@@ -57,11 +63,12 @@ export default class App extends React.Component {
   }
 
   render() {
+    const { renderSplashScreen } = this.state
     return (
       <IonApp>{
-        this.state.renderSplashScreen
-          ? <WebSplashScreen />
-          : <>
+        <>
+          <WebSplashScreen rendered={renderSplashScreen} />
+          <div style={pageTransitionStyle(renderSplashScreen)}>
             <IonReactRouter>
               <IonRouterOutlet>{
                 routeValues.map(({ path, component: Component, isPublic, preventRedirect }, i) => (
@@ -73,7 +80,8 @@ export default class App extends React.Component {
             </IonReactRouter>
             <Progress />
             <Toast />
-          </>
+          </div>
+        </>
       }</IonApp>
     )
   }
