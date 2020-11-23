@@ -35,7 +35,7 @@ const subHeader = 'Enter the verification code you received, a password you use 
 
 class Component extends React.Component<Props> {
 
-  state = { code: null, password: null, name: null, inputFocussed: null }
+  state = { code: 210992, password: null, name: null, inputFocussed: null }
 
   onChange = (e: any) => {
     const { name, value } = e.target
