@@ -44,7 +44,7 @@ const contacts = [{
   description: null
 }]
 
-const defaultFAQAnswer = 'Loren Ipsum, Answer not available yet'
+const defaultFAQAnswer = 'Answer not available yet'
 
 const faqs = [{
   header: 'Request items'
@@ -82,6 +82,10 @@ const faqs = [{
   qn: 'When do you open and close?',
   ans: defaultFAQAnswer
 }]
+
+const faqAnswerStyle = (show: boolean) => ({
+  height: show ? undefined : 0
+})
 
 const ionItemStyle = {
   '--min-height': 0
@@ -144,27 +148,32 @@ class Component extends React.Component {
             </IonCardHeader>
             <IonCardContent>
               <IonList lines="full">{
-                faqs.map(({ header, qn, ans }, i, a) => (
-                  header ? <IonListHeader key={i} lines="full">{
+                faqs.map(({ header, qn, ans }, i, a) => {
+
+                  if (header) return <IonListHeader key={i} lines="full">{
                     header
-                  }</IonListHeader> : <IonItem
+                  }</IonListHeader>
+
+                  return <IonItem
                     key={i}
                     lines={(
                       i === a.length - 1 || (
                         a[i + 1] && a[i + 1].header
                       )
                     ) ? 'none' : undefined}
-                    button
                     onClick={() => this.onFAQSelected(i)}
+                    button
+                    className="no-ripple"
                   >
-                      <IonLabel>
-                        <h3 className="ion-label-primary ion-text-wrap">{qn}</h3>
-                        <h3 className="ion-text-wrap ion-text-wrap">{
-                          openFAQs.includes(i) ? ans : null
-                        }</h3>
-                      </IonLabel>
-                    </IonItem>
-                ))
+                    <IonLabel>
+                      <h3 className="ion-label-primary ion-text-wrap">{qn}</h3>
+                      <h3
+                        className="ion-text-wrap"
+                        style={faqAnswerStyle(openFAQs.includes(i))}
+                      >{ans}</h3>
+                    </IonLabel>
+                  </IonItem>
+                })
               }</IonList>
             </IonCardContent>
           </IonCard>
