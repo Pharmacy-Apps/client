@@ -128,7 +128,7 @@ class Component extends React.Component<Props> {
                       key={value}
                       className="ion-no-padding"
                       sizeXs="12"
-                      sizeSm="12"
+                      sizeSm="6"
                       sizeMd="6"
                       sizeLg="4"
                     >
