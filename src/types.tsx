@@ -78,5 +78,6 @@ export interface PaymentChannel {
   name: string,
   description: string | any,
   icon?: string,
-  requiresNumber?: true
+  requiresNumber?: true,
+  unavailable?: true
 }

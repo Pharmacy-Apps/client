@@ -14,13 +14,13 @@ import { MSISDNModify as MSISDNModifyPopover } from 'containers'
 
 import Requests, { endPoints } from 'requests'
 
-import decrypt from 'utils/jwt'
+// import decrypt from 'utils/jwt'
 
-import { formatUGMSISDN } from 'utils/msisdn'
-import { getSessionToken, setSessionToken, getSessionPhone, setActiveRequestsPresence } from 'session'
+// import { formatUGMSISDN } from 'utils/msisdn'
+import { setSessionToken, setActiveRequestsPresence } from 'session'
 import { getDeliveryLocationForNextOrder as getDeliveryLocationForOrder } from 'location'
 
-import { ItemSearchResult as ItemSearchResultInterface } from 'types'
+import { ItemSearchResult as ItemSearchResultInterface, PaymentChannel as Channel } from 'types'
 import { formatMoney } from 'utils/currency'
 
 type Props = {
@@ -42,7 +42,7 @@ type State = {
   msisdnPopoverShown: boolean
 }
 
-const message = 'Lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum payment lorem ipsum'
+// const message = null
 
 class Component extends React.Component<Props> {
 
@@ -123,23 +123,24 @@ class Component extends React.Component<Props> {
   }
 
   getChannels = () => {
-    const mtnMSISDNKey = 'mtn-msisdn'
-    const {
-      [mtnMSISDNKey]: msisdn
-    } = decrypt(getSessionToken())
+    // const mtnMSISDNKey = 'mtn-msisdn'
+    // const {
+    //   [mtnMSISDNKey]: msisdn
+    // } = decrypt(getSessionToken())
     return [{
-      _id: 'mtn',
-      name: 'MTN Mobile Money',
-      description: <span className="ion-label-primary">{
-        formatUGMSISDN(msisdn || getSessionPhone())
-      }</span>,
-      icon: '/assets/icons/mobile-pay.svg',
-      requiresNumber: true
-    }, {
       _id: 'cash',
       name: 'Pay Cash on delivery',
       description: '',
       icon: '/assets/icons/wallet.svg',
+    }, {
+      _id: 'mtn',
+      name: 'MTN Mobile Money',
+      // description: <span className="ion-label-primary">{
+      //   formatUGMSISDN(msisdn || getSessionPhone())
+      // }</span>,
+      // requiresNumber: true,
+      icon: '/assets/icons/mobile-pay.svg',
+      unavailable: true
     }] as Array<Channel>
   }
 
@@ -150,21 +151,28 @@ class Component extends React.Component<Props> {
         <Header title="Select payment channel" />
         <IonContent>
           <IonList lines="full" className="ion-no-padding">
-            <IonItem lines="none">
+            {/* <IonItem lines="none">
               <IonLabel style={{ whiteSpace: 'inherit' }}>
                 <p>{message}</p>
               </IonLabel>
-            </IonItem>{this.getChannels().map((channel, i, a) => (
+            </IonItem> */}
+            {this.getChannels().map((channel, i, a) => (
               <IonItem
                 key={channel._id}
-                onClick={this.onPaymentChannelSelect}
+                onClick={
+                  channel.unavailable ? undefined : this.onPaymentChannelSelect
+                }
                 button
                 lines={i === a.length - 1 ? 'none' : undefined}
               >
                 <IonIcon className="ion-icon-primary" icon={channel.icon} slot="start" />
                 <IonLabel>
                   <h3>{channel.name}</h3>
-                  <p>{channel.description}</p>
+                  <p>{
+                    channel.description || (
+                      channel.unavailable ? 'Coming soon' : null
+                    )
+                  }</p>
                 </IonLabel>
                 {channel.requiresNumber ? <IonButton fill="clear" onClick={e => {
                   e.stopPropagation()
@@ -192,14 +200,6 @@ class Component extends React.Component<Props> {
     )
   }
 
-}
-
-type Channel = {
-  _id: string,
-  name: string,
-  description: string,
-  icon: string,
-  requiresNumber?: boolean
 }
 
 type AlertState = {
