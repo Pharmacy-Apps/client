@@ -18,10 +18,8 @@ const Component: React.FC<Props> = ({ rendered }) => {
     backgroundImage: `url(${imageSrc})`,
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
-    backgroundSize: 'contain',
-    opacity: rendered ? 1 : 0,
-    transition: 'opacity 1s'
-  }} />
+    backgroundSize: 'contain'
+  }} className="fade-in" />
 
 }
 

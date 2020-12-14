@@ -14,7 +14,7 @@
 
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-  <link rel="shortcut icon" type="image/png" href="%PUBLIC_URL%/assets/icons/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="%PUBLIC_URL%/assets/logo/favicon.png" />
 
   <!-- add to homescreen for ios -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -266,6 +266,24 @@
     .ion-head h1 {
       font-size: 20px;
       margin-bottom: 5px;
+    }
+
+    .fade-in {
+      opacity: 1;
+      animation-name: fadeInOpacity;
+      animation-iteration-count: 1;
+      animation-timing-function: ease-in;
+      animation-duration: .5s
+    }
+
+    @keyframes fadeInOpacity {
+      0% {
+        opacity: 0
+      }
+
+      100% {
+        opacity: 1
+      }
     }
 
     * {

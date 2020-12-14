@@ -3,12 +3,12 @@
   "name": "App",
   "icons": [
     {
-      "src": "assets/icons/favicon.png",
+      "src": "assets/logo/favicon.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "assets/icons/icon.png",
+      "src": "assets/logo/icon.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
