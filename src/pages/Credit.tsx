@@ -303,13 +303,13 @@ const AlertText: ({
     header: 'Payment failed',
     message: `<ion-label>
       <p>Please try again</p>
-      <p>Ensure your account is eligible to deduct the desired amount</p>
+      <p>Ensure your account is eligible to be deducted the desired amount</p>
     </ion-label>`
   }),
   'mtn': (account: string) => ({
     header: 'MTN Mobile Money',
     message: `<ion-label>
-      <p>We will charge this account; <b class="ion-label-secondary">${account}</b></p>
+      <p>We will charge the account: <span class="ion-label-secondary">${account}</span></p>
       <p>When prompted, approve the transaction with your MTN Mobile Money PIN</p>
       <p>If you do not receive the prompt, dial MTN Mobile Money, *165# -> My Account -> My Approvals</p>
     </ion-label>`
