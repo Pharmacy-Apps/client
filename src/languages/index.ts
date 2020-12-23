@@ -1,6 +1,6 @@
 export const languages = [
   { label: 'English', value: 'en' },
-  { label: 'Luganda', value: 'lu' }
+  { label: 'Luganda', value: 'lu', disabled: true, description: 'Coming soon' }
 ]
 
 const storageKey = 'lang'

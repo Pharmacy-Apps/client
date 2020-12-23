@@ -86,7 +86,7 @@ class Component extends React.Component<Props> {
         handler: () => history.push(Routes.location.path),
         icon: location
       } : null,
-      userIsClient ? {
+      userIsClient && false ? {
         name: 'MTN account to debit',
         value: formatUGMSISDN(msisdn || getSessionPhone()),
         handler: this.showMSISDNPopover,
@@ -208,12 +208,17 @@ const LanguagesComponent: React.FC<{
 }) => (
       <IonList className="ion-no-padding">
         {
-          languages.map(({ label, value }) =>
-            <IonItem key={value} onClick={() => onSelect(value)} button>
+          languages.map(({ label, value, disabled = false, description = null }) =>
+            <IonItem key={value} onClick={
+              () => disabled ? null : onSelect(value)
+            } button={!disabled}>
               <IonIcon icon={
                 language === label ? star : 'no-icon'
               } size="small" className="ion-icon-primary" slot="start" />
-              {label}
+              <IonLabel>
+                {label}
+                <p className="ion-label-primary">{description}</p>
+              </IonLabel>
             </IonItem>)
         }
       </IonList>
