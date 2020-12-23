@@ -14,19 +14,32 @@ const headers = sessionAvailable() ? {
   'Authorization': `Bearer ${getSessionToken()}`
 } : defaultHeaders
 
-const instance = Axios.create({ baseURL, headers })
+const instance1 = Axios.create({ baseURL, headers }) // API instance
+
+const instance2 = Axios.create({
+  baseURL: process.env.REACT_APP_FILE_SERVER_URL
+}) // File server instance
 
 const NETWORK_ERROR = 'Please check that you have an active internet connection'
 
-instance.interceptors.response.use(function (response) {
-  // Runs for status codes within 2**
-  return response.data
-}, function (error) {
-  // Runs for status codes outside 2**
-  return Promise.reject(error.response ? error.response.data : NETWORK_ERROR)
+const instances = [
+  instance1,
+  instance2
+]
+
+instances.forEach(function (instance) {
+  instance.interceptors.response.use(function (response) {
+    // Runs for status codes within 2**
+    return response.data
+  }, function (error) {
+    // Runs for status codes outside 2**
+    return Promise.reject(error.response ? error.response.data : NETWORK_ERROR)
+  })
 })
 
-export default instance
+export default instance1
+
+export const FileServer = instance2
 
 export const endPoints = {
   'login': '/user/login',
@@ -39,5 +52,6 @@ export const endPoints = {
   'mtn-msisdn': '/user/mtn-msisdn',
   'couriers': '/courier',
   'push-notification-token': '/push-notification-token',
-  'tcs': '/tcs'
+  'faqs': '/docs/faqs.json',
+  'tcs': '/docs/tcs.txt'
 }

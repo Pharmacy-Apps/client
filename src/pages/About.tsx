@@ -1,5 +1,10 @@
 import React from 'react'
 
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
+import * as constants from 'reducers/constants'
+
 import {
   IonContent, IonPage,
   IonCard, IonCardHeader, IonCardSubtitle, IonCardContent,
@@ -8,12 +13,14 @@ import {
 
 import { Header } from 'components'
 
+import { FileServer, endPoints } from 'requests'
 import { sessionAvailable as isSessionAvailable } from 'session'
 
 // import { userIsClientUser } from 'utils/role'
 
 import { APP_NAME, APP_VERSION } from 'utils'
 
+import { FAQ } from 'types'
 import getPageText from 'text'
 
 /* 
@@ -44,45 +51,6 @@ const contacts = [{
   description: null
 }]
 
-const defaultFAQAnswer = 'Answer not available yet'
-
-const faqs = [{
-  header: 'Request items'
-}, {
-  qn: 'Where do the medical items come from?',
-  ans: defaultFAQAnswer
-}, {
-  qn: 'Are the medical items approved by the Ministry of Health?',
-  ans: defaultFAQAnswer
-}, {
-  qn: 'How do I verify integrity of the items from the courier?',
-  ans: defaultFAQAnswer
-}, {
-  header: 'Request'
-}, {
-  qn: 'How long does it take to deliver my request?',
-  ans: defaultFAQAnswer
-}, {
-  qn: 'How do I pay?',
-  ans: defaultFAQAnswer
-}, {
-  qn: 'How do I contact the courier regarding my request?',
-  ans: defaultFAQAnswer
-}, {
-  header: 'Account'
-}, {
-  qn: 'How do I create an account?',
-  ans: defaultFAQAnswer
-}, {
-  qn: 'I forgot my password, how do I login?',
-  ans: defaultFAQAnswer
-}, {
-  header: 'Others'
-}, {
-  qn: 'When do you open and close?',
-  ans: defaultFAQAnswer
-}]
-
 const faqAnswerStyle = (show: boolean) => ({
   height: show ? undefined : 0
 })
@@ -91,9 +59,30 @@ const ionItemStyle = {
   '--min-height': 0
 }
 
-class Component extends React.Component {
+export type Props = {
+  showLoading: () => {},
+  hideLoading: () => {}
+}
 
-  state = { openFAQs: [] as Array<number> }
+type State = {
+  faqs?: Array<FAQ>,
+  openFAQs: Array<number>
+}
+
+class Component extends React.Component<Props> {
+
+  state: State = { openFAQs: [] }
+
+  componentDidMount() {
+    this.fetchFAQs()
+  }
+
+  fetchFAQs = async () => {
+    const { showLoading, hideLoading } = this.props
+    showLoading()
+    const faqs = await FileServer.get(endPoints.faqs)
+    this.setState({ faqs }, hideLoading)
+  }
 
   onFAQSelected = (i: number) => {
     const { openFAQs } = this.state
@@ -108,7 +97,7 @@ class Component extends React.Component {
 
   render() {
 
-    const { openFAQs } = this.state
+    const { faqs = [], openFAQs } = this.state
 
     return (
       <IonPage>
@@ -222,4 +211,13 @@ class Component extends React.Component {
 
 }
 
-export default Component
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+  showLoading: () => ({
+    type: constants.SHOW_LOADING
+  }),
+  hideLoading: () => ({
+    type: constants.HIDE_LOADING
+  })
+}, dispatch)
+
+export default connect(null, mapDispatchToProps)(Component)
