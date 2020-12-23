@@ -11,7 +11,7 @@ import { State as ReducerState } from 'reducers'
 
 import {
   IonPage, IonContent, IonSearchbar, IonList, IonItem, IonLabel, IonSelect, IonSelectOption,
-  IonFabButton, IonFab, IonIcon
+  IonFabButton, IonFab, IonIcon, IonButton
 } from '@ionic/react'
 import { send, closeOutline as close } from 'ionicons/icons'
 
@@ -22,6 +22,7 @@ import { getDeliveryLocationForNextOrder } from 'location'
 
 import { ItemSearchResult as ItemSearchResultInterface, ToolbarAction } from 'types'
 
+import { platformIsWebBrowser } from 'utils'
 import ItemCategoryMap from 'utils/item-category-map'
 
 export type Props = {
@@ -124,7 +125,7 @@ class Component extends React.Component<Props> {
     const { selectedCategory } = this.state
     const toolbarActions: Array<ToolbarAction> = [{
       component: () => (
-        <>
+        <IonButton className="ion-text-capitalize">
           <IonSelect
             interfaceOptions={{ showBackdrop: false }}
             interface="popover"
@@ -139,7 +140,7 @@ class Component extends React.Component<Props> {
               ))
             }
           </IonSelect>
-        </>
+        </IonButton>
       ),
       handler: () => { }
     }]
@@ -149,6 +150,7 @@ class Component extends React.Component<Props> {
   title = () => (
     <IonSearchbar
       style={{
+        paddingInlineStart: platformIsWebBrowser ? 'var(--ion-padding)' : 0,
         '--icon-color': 'var(--ion-color-primary)',
         '--color': 'var(--ion-color-primary)'
       }}

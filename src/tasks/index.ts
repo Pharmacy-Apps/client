@@ -3,7 +3,7 @@ import {
   PushNotificationToken
 } from '@capacitor/core'
 
-import { platformIsMobile, platformIsAndroid } from 'utils'
+import { platformIsMobile, platformIsAndroid, platformIsWebBrowser } from 'utils'
 
 import Routes from 'routes'
 import Requests, { endPoints } from 'requests'
@@ -17,6 +17,8 @@ platformIsMobile && (function () {
   setNetworkListener()
   setBackButtonListener()
 })()
+
+platformIsWebBrowser && forbidBackNavsFromRequests()
 
 async function sendPushNotificationTokenToServer(token: string) {
   return await Requests.put(endPoints['push-notification-token'], {
@@ -81,4 +83,28 @@ function setBackButtonListener() {
         App.exitApp()
     })
   })
+}
+
+function forbidBackNavsFromRequests() {
+  const key = 'path',
+    path = window.location.pathname
+
+  const navForbidden = (
+    window.localStorage.getItem(key) === Routes.requests.path &&
+    window.location.pathname === Routes.order.path
+  )
+
+  window.localStorage.setItem(key, path)
+
+  if (navForbidden) {
+    window.location.replace(Routes.requests.path)
+    return
+  }
+
+  window.onpopstate = (e: any) => {
+    window.localStorage.setItem(
+      key,
+      e.target.location.pathname
+    )
+  }
 }

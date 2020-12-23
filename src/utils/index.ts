@@ -6,6 +6,9 @@ export const platformIsMobile = isPlatform('mobile')
 export const platformIsiOS = isPlatform('ios')
 export const platformIsAndroid = isPlatform('android')
 
+export const platformIsWebBrowser =
+  window.location.host !== 'localhost' // window.location.host == localhost on mobile apps only
+
 export const archivedRequestStates: Array<String> = ['cancelled', 'received']
 
 export const getActiveRequests = (requests: Array<ItemRequestInterface>) => (

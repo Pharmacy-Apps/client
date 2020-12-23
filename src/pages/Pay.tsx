@@ -24,7 +24,7 @@ import { ItemSearchResult as ItemSearchResultInterface, PaymentChannel as Channe
 import { formatMoney } from 'utils/currency'
 
 type Props = {
-  history: History,
+  history: History | any,
   location: { state?: { selectedItems: Array<ItemSearchResultInterface> } },
   showLoading: () => {},
   hideLoading: () => {},

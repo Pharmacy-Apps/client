@@ -3,7 +3,7 @@ import { IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonButton, 
 
 import { ToolbarAction } from 'types'
 
-import { APP_NAME } from 'utils'
+import { APP_NAME, platformIsWebBrowser } from 'utils'
 
 export type Props = {
   omitsBack?: boolean
@@ -16,7 +16,8 @@ const buttonStyle = {
   textTransform: 'unset'
 }
 
-const Component: React.FC<Props> = ({ omitsBack, title, size, actions = [] }) => {
+const Component: React.FC<Props> = ({ omitsBack: ob, title, size, actions = [] }) => {
+  const omitsBack = ob || platformIsWebBrowser
   return (
     <IonHeader>
       <IonToolbar /* color="primary" */>
