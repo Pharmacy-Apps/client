@@ -13,14 +13,13 @@ import { Header, Popover } from 'components'
 import { MSISDNModify as MSISDNModifyPopover } from 'containers'
 
 import Requests, { endPoints } from 'requests'
-import { getDeliveryLocationForNextOrder } from 'location'
+import { getDeliveryAddressForNextOrder } from 'location'
 
 import decrypt from 'utils/jwt'
 import { formatUGMSISDN } from 'utils/msisdn'
 import { getSessionToken, setSessionToken, getSessionPhone } from 'session'
 
 import { userIsClientUser } from 'utils/role'
-import { getAddress } from 'utils'
 import { formatMoney } from 'utils/currency'
 
 import { languages, setLanguage, getLanguage } from 'languages'
@@ -42,7 +41,7 @@ type Item = {
   handler?: () => void
 } | null
 
-const { lat, lon } = getDeliveryLocationForNextOrder()
+const address = getDeliveryAddressForNextOrder()
 
 /* 
  * To get address from coordinates,
@@ -81,8 +80,8 @@ class Component extends React.Component<Props> {
       } : null,
       userIsClient ? {
         name: 'Delivery location',
-        value: getAddress(lat, lon),
-        actionText: lat && lon ? null : 'Set',
+        value: address,
+        actionText: address ? null : 'Set',
         handler: () => history.push(Routes.location.path),
         icon: location
       } : null,

@@ -48,7 +48,7 @@ export default class App extends React.Component {
   componentDidMount() {
     if (this.routeNotFound()) window.location.replace(Routes.home.path)
     if (appIsWebDeployed) setTimeout(this.hideSpashScreen, splashTimeout)
-    watchUserLocation()
+    if (sessionAvailable()) watchUserLocation()
   }
 
   componentWillUnmount() { /* clear location watch */ }

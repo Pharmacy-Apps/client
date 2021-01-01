@@ -23,9 +23,7 @@ import { Header, Menu } from 'components'
 import { userIsClientUser, userIsNotClientUser } from 'utils/role'
 
 import { getActiveRequestsPresence } from 'session'
-import { getDeliveryLocationForNextOrder } from 'location'
-
-import { getAddress } from 'utils'
+import { getDeliveryAddressForNextOrder } from 'location'
 
 import ItemCategories from 'utils/item-category-map'
 import getPageText from 'text'
@@ -100,9 +98,9 @@ class Component extends React.Component<Props> {
   ]
 
   render() {
-    const { lat, lon } = getDeliveryLocationForNextOrder()
+    const { renderContent } = this.state
     return (
-      this.state.renderContent ? <IonPage>
+      renderContent ? <IonPage>
         <Header omitsBack actions={this.toolbarActions()} />
         <Menu
           setRef={(node: any) => this.menuRef = node}
@@ -114,7 +112,7 @@ class Component extends React.Component<Props> {
               <IonIcon slot="start" icon={locationIcon} className="ion-icon-primary" size="large" />
               <IonLabel>
                 <p>{Text['delivery-to']}</p>
-                <h3 className="ion-label-primary">{getAddress(lat, lon)}</h3>
+                <h3 className="ion-label-primary">{getDeliveryAddressForNextOrder('Not known yet')}</h3>
               </IonLabel>
             </IonItem>
             <IonListHeader lines="full">

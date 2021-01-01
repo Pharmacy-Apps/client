@@ -25,12 +25,6 @@ export const imageServerUrl = (
     : process.env.REACT_APP_FILE_SERVER_URL
 ) + '/images'
 
-export const getAddress = (lat: number, lon: number, placeholder: string = 'Not known yet') => {
-  return (
-    lat && lon ? `${lat}, ${lon}` : placeholder
-  )
-}
-
 export const requestStatesMappedToBadgeBackground: {
   [key: string]: string
 } = {

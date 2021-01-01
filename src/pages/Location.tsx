@@ -7,7 +7,7 @@ import { Header } from 'components'
 import { MapContainer } from 'containers'
 
 import { setDeliveryLocation } from 'session'
-import { findPlace } from 'location'
+import { findPlace, queryAddress } from 'location'
 
 import { closeSharp, search } from 'ionicons/icons'
 
@@ -43,9 +43,13 @@ class Component extends React.Component<{ history: History }> {
       results: []
     }
 
-  onPrimaryAction = () => {
+  onPrimaryAction = async () => {
     const { location } = this.state
-    if (location) setDeliveryLocation(location)
+    if (location) {
+      const { lat, lon } = location
+      const address = await queryAddress(lat, lon)
+      setDeliveryLocation({ lat, lon, address })
+    }
     this.props.history.goBack()
   }
 

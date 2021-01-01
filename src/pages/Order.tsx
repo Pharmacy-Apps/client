@@ -16,10 +16,9 @@ import {
 import { addCircleOutline, removeCircleOutline, pencilOutline, close } from 'ionicons/icons';
 
 import { Header, Popover } from 'components'
-import { updateCurrentPosition, getDeliveryLocationForNextOrder } from 'location'
+import { getDeliveryLocationForNextOrder, getDeliveryAddressForNextOrder } from 'location'
 
 import { ItemSearchResult as ItemSearchResultInterface } from 'types'
-import { getAddress } from 'utils'
 import { deliveryCost, computeOrderCostAndDistance } from 'utils/charges'
 
 type Props = {
@@ -106,23 +105,8 @@ class Component extends React.Component<Props> {
     )
   }
 
-  updateLocation = async () => {
-    const { showToast, hideToast } = this.props
-    hideToast()
-    try {
-      const result = await updateCurrentPosition()
-      this.forceUpdate()
-      return result
-    } catch (error) {
-      console.error(error)
-      showToast(this.locationInfo().locationInfo3)
-    }
-  }
-
   locationInfo = () => {
-    const { lat, lon } = getDeliveryLocationForNextOrder()
-
-    const locationInfo1 = getAddress(lat, lon, 'Not known')
+    const locationInfo1 = getDeliveryAddressForNextOrder() || 'Not known'
     const locationInfo2 = 'Select Destination'
     const locationInfo3 =
       `We could not find your location\nPlease ensure the following then click the "Tap to update location" button\n- You are connected to internet\n- When asked, you allow access your location`

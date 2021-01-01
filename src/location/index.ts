@@ -7,16 +7,18 @@ import { platformIsWeb } from 'utils'
 export const updateCurrentPosition = async () => {
   const res = await Geolocation.getCurrentPosition()
   const { latitude: lat, longitude: lon, accuracy: acc } = res.coords
-  const location = { lat, lon, acc }
+  const address = await queryAddress(lat, lon)
+  const location = { lat, lon, acc, address }
   setSessionLocation(location)
   return location
 }
 
 export const watchPosition = () => {
-  Geolocation.watchPosition().subscribe((res: any) => {
+  Geolocation.watchPosition().subscribe(async (res: any) => {
     try {
       const { latitude: lat, longitude: lon, accuracy: acc } = res.coords
-      setSessionLocation({ lat, lon, acc })
+      const address = await queryAddress(lat, lon)
+      setSessionLocation({ lat, lon, acc, address })
     } catch (e) { }
   }, console.error)
 }
@@ -40,6 +42,31 @@ export const getDeliveryLocationForNextOrder = () => (
   getLastAttemptedDeliveryLocation() || getSessionLocation() || {}
 )
 
+export const getDeliveryAddressForNextOrder =
+  (placeholder?: string) => getDeliveryLocationForNextOrder().address || placeholder
+
+export const queryAddress = async (lat: number, lng: number) => {
+
+  if (google === undefined) return null
+
+  const geocoder: google.maps.Geocoder = new google.maps.Geocoder()
+
+  const location = { lat, lng }
+
+  return await new Promise(resolve => {
+    geocoder.geocode({ location }, (results, status) => {
+      console.debug('Geocoder query status', status, results)
+      if (status !== 'OK') {
+        resolve(null)
+      } else if (results.length) {
+        resolve(results[0].formatted_address)
+      } else
+        resolve(null)
+    })
+  })
+
+}
+
 export const findPlace = async (search: string) => {
 
   if (search === null) return []
@@ -55,7 +82,7 @@ export const findPlace = async (search: string) => {
   // const headers = {
   //   'Content-Type': 'application/json'
   // }
-  
+
   // return await Axios.get(url, {
   //   headers
   // })
