@@ -21,7 +21,7 @@
     "@types/react-router-dom": "^5.1.0",
     "@types/react-router-redux": "^5.0.18",
     "@types/sharedworker": "0.0.29",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "call-number": "^1.0.1",
     "events": "^3.1.0",
     "google-map-react": "^2.0.8",
