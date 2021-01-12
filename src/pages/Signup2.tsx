@@ -35,7 +35,7 @@ const subHeader = 'Enter the verification code you received, a password you use 
 
 class Component extends React.Component<Props> {
 
-  state = { code: 210992, password: null, name: null, inputFocussed: null }
+  state = { code: null, password: null, name: null, inputFocussed: null }
 
   onChange = (e: any) => {
     const { name, value } = e.target
@@ -43,12 +43,17 @@ class Component extends React.Component<Props> {
   }
 
   onSubmit = (e: any) => {
+    
     e.preventDefault()
+    if (this.props.history.location.state === undefined) return
+
     const {
       showLoading, hideLoading, showToast, hideToast,
       history: { location: { state: { token, phone } } }
     } = this.props
+
     const { code, password, name } = this.state
+
     if (code && password && name) {
       hideToast()
       showLoading()
@@ -62,14 +67,20 @@ class Component extends React.Component<Props> {
         showToast(err.error || err.toString())
       }).finally(() => hideLoading())
     }
+
   }
 
   onInputFocus = (e: any) => {
-    if (e)
-      this.setState({ inputFocussed: e.target.name })
+    if (e) {
+      const { name, value } = e.target
+      this.setState({ inputFocussed: name, [name]: value })
+    }
   }
 
   onInputBlur = () => this.setState({ inputFocussed: null })
+
+  onKeyUp = (e: any) =>
+    e.keyCode === 13 && this.onSubmit({ preventDefault: () => null })
 
   getIonLabelStyle = (name: string) => {
     return this.state.inputFocussed === name
@@ -78,7 +89,7 @@ class Component extends React.Component<Props> {
   }
 
   getIonItemDividerStyle = (name: string) => {
-    const o = { minHeight: 1 }
+    const o = { minHeight: .1 }
     return this.state.inputFocussed === name
       ? { ...o, '--background': 'var(--ion-color-primary)' }
       : o
@@ -91,30 +102,33 @@ class Component extends React.Component<Props> {
         <Header />
         <IonContent>
           <HeadComponent header={header} subHeader={subHeader} />
-          <form onSubmit={this.onSubmit}>
-            <IonList className="ion-no-margin ion-no-padding" lines="none">
-              <IonItem>
+          <form onSubmit={this.onSubmit} autoComplete="off">
+            <IonList className="ion-no-margin ion-no-padding">
+              <IonItem lines="none">
                 <IonLabel position="floating" style={this.getIonLabelStyle('code')}>Verification code</IonLabel>
                 <IonInput
                   onIonChange={this.onChange}
                   onIonFocus={this.onInputFocus}
-                  onIonBlur={this.onInputBlur} value={code} type="text" name="code" autocomplete="off" />
+                  onIonBlur={this.onInputBlur}
+                  onKeyUp={this.onKeyUp} value={code} type="text" name="code" />
               </IonItem>
               <IonItemDivider style={this.getIonItemDividerStyle('code')} />
-              <IonItem>
+              <IonItem lines="none">
                 <IonLabel position="floating" style={this.getIonLabelStyle('password')}>Password you will use</IonLabel>
                 <IonInput
                   onIonChange={this.onChange}
                   onIonFocus={this.onInputFocus}
-                  onIonBlur={this.onInputBlur} value={password} type="text" name="password" autocomplete="off" />
+                  onIonBlur={this.onInputBlur}
+                  onKeyUp={this.onKeyUp} value={password} type="text" name="password" />
               </IonItem>
               <IonItemDivider style={this.getIonItemDividerStyle('password')} />
-              <IonItem>
+              <IonItem lines="none">
                 <IonLabel position="floating" style={this.getIonLabelStyle('name')}>Your name</IonLabel>
                 <IonInput
                   onIonChange={this.onChange}
                   onIonFocus={this.onInputFocus}
-                  onIonBlur={this.onInputBlur} value={name} type="text" name="name" autocomplete="off" />
+                  onIonBlur={this.onInputBlur}
+                  onKeyUp={this.onKeyUp} value={name} type="text" name="name" />
               </IonItem>
               <IonItemDivider style={this.getIonItemDividerStyle('name')} />
 

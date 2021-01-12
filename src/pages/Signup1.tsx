@@ -37,8 +37,10 @@ class Component extends React.Component<Props> {
 
   onSubmit = (e: any) => {
     e.preventDefault()
+
     const { showLoading, hideLoading, showToast, hideToast, history } = this.props
     const { phone: partPhone } = this.state
+
     if (partPhone) {
       hideToast()
       showLoading()
@@ -54,6 +56,7 @@ class Component extends React.Component<Props> {
         showToast(err.error || err.toString())
       }).finally(() => hideLoading())
     }
+
   }
 
   onInputFocus = (e: any) => {
@@ -63,6 +66,9 @@ class Component extends React.Component<Props> {
   
   onInputBlur = () => this.setState({ inputFocussed: null })
 
+  onKeyUp = (e: any) =>
+    e.keyCode === 13 && this.onSubmit({ preventDefault: () => null })
+
   getIonLabelStyle = (name: string) => {
     return this.state.inputFocussed === name
       ? { color: 'var(--ion-color-action-primary)' }
@@ -70,7 +76,7 @@ class Component extends React.Component<Props> {
   }
 
   getIonItemDividerStyle = (name: string) => {
-    const o = { minHeight: 1 }
+    const o = { minHeight: .1 }
     return this.state.inputFocussed === name
       ? { ...o, '--background': 'var(--ion-color-primary)' }
       : o
@@ -93,7 +99,8 @@ class Component extends React.Component<Props> {
                   value={phone || ''}
                   onChange={this.onChange}
                   onFocus={this.onInputFocus}
-                  onBlur={this.onInputBlur} />
+                  onBlur={this.onInputBlur}
+                  onKeyUp={this.onKeyUp} />
               </IonItem>
               <IonItemDivider style={this.getIonItemDividerStyle('phone')} />
             </IonList>

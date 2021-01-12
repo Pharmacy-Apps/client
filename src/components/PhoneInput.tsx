@@ -18,7 +18,7 @@ const Component: React.FC<Props> = props => (
   <div className="msisdn-section">
     <span>{cc}</span>
     {/* Couldn't use IonInput because it did not work controlled */}
-    <input className="phone-input" type="tel" maxLength={9} placeholder={placeholder} {...props} />
+    <input className="phone-input" type="tel" maxLength={9} placeholder={placeholder} autoComplete="off" {...props} />
   </div>
 )
 
