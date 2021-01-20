@@ -7,7 +7,7 @@ import { Header } from 'components'
 import { MapContainer } from 'containers'
 
 import { setDeliveryLocation } from 'session'
-import { findPlace, queryAddress } from 'location'
+import { queryPlace, queryAddress } from 'location'
 
 import { closeSharp, search } from 'ionicons/icons'
 
@@ -23,6 +23,8 @@ const actionButtonStyle = {
 
 const searchResultsDivStyle: Object = {
   minWidth: 200,
+  maxHeight: 'calc(100% - 20px)', // 100% - 2 * top
+  overflowY: 'auto',
   position: 'absolute',
   top: 10,
   right: 10,
@@ -56,14 +58,24 @@ class Component extends React.Component<{ history: History }> {
   setLocation = (location: LocationInterface) => this.setState({ location })
   setSearchShown = (v: Boolean) => this.setState({ searchShown: v })
 
+  map: google.maps.Map | undefined
+
+  onMapApiLoaded = ({ map }: any) => {
+    console.info(map)
+    this.map = map
+  }
+
   onSearch = async ({ detail: { value } }: any) => {
-    const results = await findPlace(value)
+    const results = await queryPlace(this.map, value)
     this.setState({ searchText: value, results })
   }
 
-  onIonCancel = () => this.setState({ searchShown: false, searchText: '', results: [] })
+  onPlacesResultClick = (result: any) => {
+    this.map && this.map.setCenter(result.geometry.location)
+    this.setState({ results: [] })
+  }
 
-  onIonBlur = () => this.setState({ results: [] })
+  onIonCancel = () => this.setState({ searchShown: false, searchText: '', results: [] })
 
   toolbarActions = (searchShown: Boolean) => searchShown ? [{
     component: this.searchComponent,
@@ -90,8 +102,7 @@ class Component extends React.Component<{ history: History }> {
       showCancelButton="always"
       cancelButtonIcon={closeSharp}
       onIonChange={this.onSearch}
-      onIonCancel={this.onIonCancel}
-      onIonBlur={this.onIonBlur} />
+      onIonCancel={this.onIonCancel} />
   )
 
   render() {
@@ -102,7 +113,7 @@ class Component extends React.Component<{ history: History }> {
       <IonPage>
         <Header title={title} actions={this.toolbarActions(searchShown)} />
         <IonContent>
-          <MapContainer setLocation={this.setLocation} />
+          <MapContainer setLocation={this.setLocation} onMapApiLoaded={this.onMapApiLoaded} />
           <IonButton
             onClick={this.onPrimaryAction}
             className="ion-margin ion-action-primary"
@@ -113,8 +124,10 @@ class Component extends React.Component<{ history: History }> {
             visibility: results.length ? 'visible' : 'hidden'
           }}>
             <IonList lines="none" className="ion-no-padding">{
-              results.map((result, i) => <IonItem key={i} button>
-                {result}
+              results.map((result, i) => <IonItem key={i} onClick={
+                () => this.onPlacesResultClick(result)
+              } button>
+                {result.name}
               </IonItem>)
             }</IonList>
           </div>
