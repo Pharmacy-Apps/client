@@ -22,6 +22,8 @@ import { deliveryCost, computeOrderCostAndDistance } from 'utils/charges'
 
 import Requests, { endPoints } from 'requests'
 
+import { computeDistance } from 'location'
+
 type Props = {
   location: { state?: { request: ItemRequestInterface } },
   setItemRequest: (a: ItemRequestInterface) => {},
@@ -35,14 +37,15 @@ const callCourierButtonStyle = {
 
 class Component extends React.Component<Props> {
 
-  state = {
-    distance: (
-      this.props.location.state !== undefined &&
-      this.props.location.state.request !== undefined
-    )
-      ? this.props.location.state.request.aDistance
-      : null
-  }
+  state = (
+    this.props.location.state !== undefined &&
+    this.props.location.state.request !== undefined
+  ) ? {
+      distance: this.props.location.state.request.aDistance,
+      address: this.props.location.state.request.address
+    } : {
+      distance: null, address: null
+    }
 
   saveComputedDistance(distance: number) {
     const { location: { state }, setItemRequest } = this.props
@@ -63,41 +66,14 @@ class Component extends React.Component<Props> {
 
   }
 
-  onMapApiLoaded = ({ map, maps }: any) => {
+  onMapApiLoaded = async (map: google.maps.Map) => {
 
     const { distance = null } = this.state
 
-    if (distance !== null) return // Directions Service already computed distance
-
-    let directionsService = new maps.DirectionsService()
-    let directionsRenderer = new maps.DirectionsRenderer()
-    directionsRenderer.setMap(map)
-
-    const origin = { lat: 40.7767644, lng: -73.9761399 }
-    const destination = { lat: 40.771209, lng: -73.9673991 }
-
-    const route = {
-      origin,
-      destination,
-      travelMode: 'DRIVING'
+    if (distance === null) { // else Directions Service already computed distance
+      const distanceInMetres: number | null = await computeDistance(map)
+      distanceInMetres && this.saveComputedDistance(distanceInMetres)
     }
-
-    directionsService.route(route, (response: any, status: any) => {
-      if (status !== 'OK') {
-        console.error('Directions request, status', status)
-        return
-      }
-
-      // directionsRenderer.setDirections(response) // Render route on map
-
-      const data = response.routes[0].legs[0] // Get first of possible routes
-
-      if (data) {
-        const { value: distanceInMetres, /* text */ } = data.distance
-        this.saveComputedDistance(distanceInMetres)
-      } else
-        console.error('Directions data not returned', data)
-    })
 
   }
 
@@ -153,7 +129,9 @@ class Component extends React.Component<Props> {
       state.request === undefined
     ) return null
 
-    const { pharmacyItems, state: requestState, createdAt, courier, lat, lon, user } = state.request
+    const {
+      pharmacyItems, state: requestState, createdAt, courier, lat, lon, address, user
+    } = state.request
     const { distance = null } = this.state
 
     const title = <p className="ion-text-wrap">{
@@ -226,7 +204,7 @@ class Component extends React.Component<Props> {
           <IonList lines="none" className="fill-height ion-no-padding">
             <IonItem>
               <IonLabel>
-                <p className="ion-label-primary">Delivery at <b>{`${lat}, ${lon}`}</b></p>
+                <p className="ion-label-primary">Delivery at <b>{address}</b></p>
                 {distance !== null
                   ? <p className="ion-label-primary">~ <b>{distance}m</b></p>
                   : null

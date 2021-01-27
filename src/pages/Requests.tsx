@@ -173,10 +173,11 @@ class Component extends React.Component<Props> {
    * 
    * */
   updateRequests = (response: any, prependRequests?: true) => {
-    let {
-      requests = [],
+    const {
+      requests: r,
       showToast, hideToast, setItemRequests
     } = this.props
+    let requests = r ? [...r] : []
     if (prependRequests) {
       requests = response.concat(requests)
     } else {
@@ -192,8 +193,7 @@ class Component extends React.Component<Props> {
     this.setState({ requestsSelected: [] }, () => {
       const archivedRequests = getArchivedRequests(response)
       if (archivedRequests.length) setTimeout(() => {
-        showToast(`${archivedRequests.length} ${
-          archivedRequests.length > 1 ? 'requests' : 'request'
+        showToast(`${archivedRequests.length} ${archivedRequests.length > 1 ? 'requests' : 'request'
           } archived`)
       }, 400)
       setActiveRequestsPresence(
@@ -379,8 +379,8 @@ class Component extends React.Component<Props> {
               </IonItem> : null}
               {archivedRequestsShown ? archivedRequests.map(requestComponent) : null}
             </IonList> : <div className="ion-padding">
-              <IonLabel><p>{placeholderText}</p></IonLabel>
-            </div>
+                <IonLabel><p>{placeholderText}</p></IonLabel>
+              </div>
           }
           {userIsClientUser() && requestsReturned ? <div className="ion-padding">
             <IonButton onClick={this.onPrimaryAction} className="ion-no-margin ion-action-primary">{primaryAction}</IonButton>

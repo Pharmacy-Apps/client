@@ -69,7 +69,8 @@ class Component extends React.Component<Props> {
 
   onConfirmPaymentChannel = () => {
     const { showLoading, hideLoading, showToast, location } = this.props
-    const { lat, lon } = getDeliveryLocationForOrder()
+    const { lat, lon, address } = getDeliveryLocationForOrder()
+
     if (location.state && location.state.selectedItems) {
       const payload = {
         'pharmacy-items': location.state.selectedItems.map(o => ({
@@ -77,7 +78,8 @@ class Component extends React.Component<Props> {
         })),
         'notes': '',
         lat,
-        lon
+        lon,
+        address
       }
       showLoading()
       Requests.post(endPoints['item-requests'], payload).then((response: any) => {

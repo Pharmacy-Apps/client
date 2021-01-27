@@ -1,31 +1,25 @@
 import React from 'react'
-import Map from 'google-map-react'
 
 import { IonIcon } from '@ionic/react'
 import { locationSharp as locationIcon } from 'ionicons/icons'
 
-import { getMapKey, CentralLocation } from 'location'
+import { CentralLocation } from 'location'
 import { getSessionLocation, getLastAttemptedDeliveryLocation } from 'session'
 
 import { Location as LocationInterface } from 'types'
 
-const mapKey = getMapKey()
-
 type Props = {
   setLocation?: (location: LocationInterface) => void,
   mapCenter?: { lat: number, lon: number },
-  onMapApiLoaded?: (a1: { map: any, maps: any }) => void
+  onMapApiLoaded?: (a1: google.maps.Map) => void
 }
 
 const markerStyle = {
   width: '30px',
-  height: '30px'
-}
-
-const floatedMarkerStyle = {
+  height: '30px',
   position: 'absolute',
-  top: '50%',
-  left: '50%'
+  top: 'calc(50% - 15px)',
+  left: 'calc(50% - 15px)'
 }
 
 class Component extends React.Component<Props> {
@@ -38,54 +32,51 @@ class Component extends React.Component<Props> {
       lat: this.mapCenter.lat,
       lng: this.mapCenter.lon
     },
-    zoom: 15
+    zoom: 12
   }
 
-  onChange = ({ center: { lat, lng }, zoom }: any) => {
+  onChange = ({ lat, lon }: any) => {
     const { setLocation } = this.props
-    setLocation && setLocation({ lat, lon: lng })
+    setLocation && setLocation({ lat, lon })
   }
 
-  onDragEnd = ({ center: { lat, lng } }: any) => {
-    const { setLocation } = this.props
-    setLocation && setLocation({ lat: lat(), lon: lng() })
+  componentDidMount() {
+    if (window.google) {
+      const { onMapApiLoaded, mapCenter } = this.props
+      const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
+        center: this.mapDefaults.center,
+        zoom: this.mapDefaults.zoom,
+        zoomControl: false,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        draggable: Boolean(mapCenter) === false
+      })
+      map.addListener('center_changed', () => {
+        const { lat, lng } = map.getCenter()
+        this.onChange({ lat: lat(), lon: lng() })
+      })
+      onMapApiLoaded && onMapApiLoaded(map)
+    }
   }
 
   render() {
-    const { mapCenter, onMapApiLoaded } = this.props
-    return (<>
-      <div style={{ height: '100%', width: '100%' }}>
-        <Map
-          bootstrapURLKeys={{ key: mapKey }}
-          center={this.mapDefaults.center}
-          zoom={this.mapDefaults.zoom}
-          onDragEnd={this.onDragEnd}
-          options={{
-            zoomControl: false,
-            fullscreenControl: false
-          }}
-          onGoogleApiLoaded={onMapApiLoaded}
-        >
-          {
-            mapCenter ? <Marker lat={mapCenter.lat} lng={mapCenter.lon} /> : null
-          }
-        </Map>
-      </div>{
-        mapCenter
-          ? null
-          : <IonIcon
-            className="ion-icon-secondary"
-            style={{ ...markerStyle, ...floatedMarkerStyle }}
-            icon={locationIcon}
-          />
+    return window.google ? (<>
+      <div id="map" style={{ height: '100%', width: '100%' }} />
+      {
+        <IonIcon
+          className="ion-icon-secondary"
+          style={markerStyle}
+          icon={locationIcon}
+        />
       }
-    </>)
+    </>) : null
   }
 
 }
 
-const Marker: React.FC<{ lat: number, lng: number }> = ({ lat, lng }) => (
-  <IonIcon className="ion-icon-secondary" icon={locationIcon} style={markerStyle} />
-)
+// const Marker: React.FC<{ lat: number, lng: number }> = ({ lat, lng }) => (
+//   <IonIcon className="ion-icon-secondary" icon={locationIcon} style={markerStyle} />
+// )
 
 export default Component

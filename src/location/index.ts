@@ -44,27 +44,28 @@ export const getDeliveryLocationForNextOrder = () => (
 export const getDeliveryAddressForNextOrder =
   (placeholder?: string) => getDeliveryLocationForNextOrder().address || placeholder
 
-export const queryAddress = async (lat: number, lng: number) => {
+export const queryAddress: (a1: number, a2: number) => Promise<string | null>
+  = async (lat: number, lng: number) => {
 
-  if (google === undefined) return null
+    if (google === undefined) return null
 
-  const geocoder: google.maps.Geocoder = new google.maps.Geocoder()
+    const geocoder: google.maps.Geocoder = new google.maps.Geocoder()
 
-  const location = { lat, lng }
+    const location = { lat, lng }
 
-  return await new Promise(resolve => {
-    geocoder.geocode({ location }, (results, status) => {
-      console.debug('Geocoder query status', status, results)
-      if (status !== 'OK') {
-        resolve(null)
-      } else if (results.length) {
-        resolve(results[0].formatted_address)
-      } else
-        resolve(null)
+    return await new Promise(resolve => {
+      geocoder.geocode({ location }, (results, status) => {
+        console.debug('Geocoder query status', status, results)
+        if (status !== 'OK') {
+          resolve(null)
+        } else if (results.length) {
+          resolve(results[0].formatted_address)
+        } else
+          resolve(null)
+      })
     })
-  })
 
-}
+  }
 
 export const queryPlace = async (map: google.maps.Map | undefined, query: string) => {
 
@@ -88,3 +89,42 @@ export const queryPlace = async (map: google.maps.Map | undefined, query: string
   })
 
 }
+
+export const computeDistance: (a1: google.maps.Map | undefined) => Promise<number | null>
+  = async (map: google.maps.Map | undefined) => {
+
+    if (map === undefined) return null
+
+    let directionsService = new google.maps.DirectionsService()
+    let directionsRenderer = new google.maps.DirectionsRenderer()
+    directionsRenderer.setMap(map)
+
+    const origin = { lat: 40.7767644, lng: -73.9761399 }
+    const destination = { lat: 40.771209, lng: -73.9673991 }
+
+    const route = {
+      origin,
+      destination,
+      travelMode: google.maps.TravelMode.DRIVING
+    }
+
+    return new Promise(resolve => {
+      directionsService.route(route, (response: any, status: any) => {
+        if (status !== 'OK') {
+          console.error('Directions request, status', status)
+          resolve(null)
+          return
+        }
+        // directionsRenderer.setDirections(response) // Render route on map
+        const data = response.routes[0].legs[0] // Get first of possible routes
+        if (data) {
+          const { value: distanceInMetres, /* text */ } = data.distance
+          resolve(distanceInMetres)
+        } else {
+          console.error('Directions data not returned', data)
+          resolve(null)
+        }
+      })
+    })
+
+  }
