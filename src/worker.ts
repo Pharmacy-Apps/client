@@ -3,6 +3,8 @@ import decrypt from './utils/jwt'
 
 import { getSessionToken } from './session'
 
+import { TEST_ENV } from './utils'
+
 // Use window.SharedWorker
 
 (function () {
@@ -25,7 +27,7 @@ import { getSessionToken } from './session'
 
   } catch (error) {
     console.error('Worker script failed', error)
-  } else {
+  } else if (process.env.NODE_ENV !== TEST_ENV) {
     console.error('Worker not supported')
   }
 

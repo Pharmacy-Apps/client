@@ -36,6 +36,8 @@ export const requestStatesMappedToBadgeBackground: {
   'received': 'var(--ion-color-primary)'
 }
 
+export const TEST_ENV = 'test'
+
 export const APP_NAME = 'MediMall'
 
 export const APP_VERSION = require('../../package.json').version
