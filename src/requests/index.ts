@@ -1,10 +1,6 @@
 import Axios from 'axios'
 import { sessionAvailable, getSessionToken } from 'session'
 
-const baseURL = window.location.host === 'localhost' // deployment on mobile
-  ? process.env.REACT_APP_BACKEND_URL_REMOTE
-  : process.env.REACT_APP_BACKEND_URL
-
 const defaultHeaders = {
   'Response-Language': 'en'
 }
@@ -14,11 +10,17 @@ const headers = sessionAvailable() ? {
   'Authorization': `Bearer ${getSessionToken()}`
 } : defaultHeaders
 
+let baseURL = window.location.host === 'localhost' // deployment on mobile
+  ? process.env.REACT_APP_BACKEND_URL_REMOTE
+  : process.env.REACT_APP_BACKEND_URL
+
 const instance1 = Axios.create({ baseURL, headers }) // API instance
 
-const instance2 = Axios.create({
-  baseURL: process.env.REACT_APP_FILE_SERVER_URL
-}) // File server instance
+baseURL = window.location.host === 'localhost' // deployment on mobile
+  ? process.env.REACT_APP_FILE_SERVER_URL_REMOTE
+  : process.env.REACT_APP_FILE_SERVER_URL
+
+const instance2 = Axios.create({ baseURL }) // File server instance
 
 const NETWORK_ERROR = 'Please check that you have an active internet connection'
 
