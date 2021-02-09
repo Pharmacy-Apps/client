@@ -38,6 +38,6 @@ export const requestStatesMappedToBadgeBackground: {
 
 export const TEST_ENV = 'test'
 
-export const APP_NAME = 'MediMall'
+export const APP_NAME = 'Medibers'
 
 export const APP_VERSION = require('../../package.json').version

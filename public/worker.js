@@ -3,11 +3,11 @@ importScripts('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.
 let event = null
 
 const url = location.host == 'localhost'
-  ? 'https://medimall-server.herokuapp.com'
+  ? 'https://medibers-server.herokuapp.com'
   : (
     location.port == '3000'
       ? 'http://localhost:3015'
-      : 'https://medimall-server.herokuapp.com'
+      : 'https://medibers-server.herokuapp.com'
   )
 
 const onSocketEvent = message => {

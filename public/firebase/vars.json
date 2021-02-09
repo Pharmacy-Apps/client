@@ -11,7 +11,7 @@
   },
   "fcm-vapid-key": "BLsJ1vi0Sq6mwzNX_Rn9hF81W1sL96umm0NiIjvErwcimWoJbnzo_N7OucPEXwxM9mXSdaQxzwfFm2v87GnWLCQ",
   "local-server-url": "http://localhost:3015/api",
-  "remote-server-url": "https://medimall-server.herokuapp.com/api",
+  "remote-server-url": "https://medibers-server.herokuapp.com/api",
   "server-auth-token-key": "auth-token",
   "push-notification-token-send-state-key": "push-notification-token-sent-web"
 }

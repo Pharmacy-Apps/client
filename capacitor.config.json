@@ -1,6 +1,6 @@
 {
-  "appId": "io.medimall",
-  "appName": "MediMall",
+  "appId": "io.medibers",
+  "appName": "Medibers",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "build",
