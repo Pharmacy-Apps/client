@@ -139,7 +139,7 @@
       "node_modules/(?!@ionic-native|@ionic)"
     ],
     "modulePaths": [
-      "/home/ede/Apps/Pharmacy/client/src"
+      "<rootDir>/src"
     ],
     "moduleNameMapper": {
       "^react-native$": "react-native-web",
