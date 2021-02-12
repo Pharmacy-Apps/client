@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import Routes from 'routes'
 import { History } from 'history'
 
@@ -13,7 +13,7 @@ import {
   IonList, IonItem, IonLabel, IonButton, IonIcon, IonInput
 } from '@ionic/react'
 
-import { addCircleOutline, removeCircleOutline, pencilOutline, close } from 'ionicons/icons';
+import { addCircleOutline, removeCircleOutline, pencilOutline, close, send } from 'ionicons/icons';
 
 import { Header, Popover } from 'components'
 import { getDeliveryLocationForNextOrder, getDeliveryAddressForNextOrder } from 'location'
@@ -129,11 +129,7 @@ class Component extends React.Component<Props> {
     e && e.setFocus()
   }
 
-  onQtyPopoverDismissed = () => {
-    this.setState({ quantityModifyItem: { searchResultId: null } })
-  }
-
-  onQtyInputChange = (quantity: string) => {
+  onQtyChangeSubmitted = (quantity: string) => {
     if (Number(quantity) > Number.MAX_SAFE_INTEGER) return
     const { quantityModifyItem, selectedItems } = this.state
     const newSelectedItems = selectedItems.map(e => {
@@ -143,7 +139,8 @@ class Component extends React.Component<Props> {
     })
     this.setState({
       selectedItems: newSelectedItems,
-      ...computeOrderCostAndDistance(newSelectedItems)
+      ...computeOrderCostAndDistance(newSelectedItems),
+      quantityModifyItem: null // dismiss quantity popover
     }, () => {
       this.props.history.location.state = { selectedItems: newSelectedItems }
     })
@@ -234,10 +231,12 @@ class Component extends React.Component<Props> {
         <Popover
           open={Boolean(quantityModifyItem)}
           onPresent={this.onQtyPopoverPresented}
-          onDismiss={this.onQtyPopoverDismissed}
           cssClass="popover-wide"
         >
-          <ItemQuantity item={item} quantity={quantity} onChange={this.onQtyInputChange} />
+          <ItemQuantity
+            item={item}
+            onSubmit={this.onQtyChangeSubmitted}
+          />
         </Popover>
       </IonPage>
     )
@@ -246,15 +245,19 @@ class Component extends React.Component<Props> {
 
 type ItemQuantityProps = {
   item: string | null,
-  quantity: number | null,
-  onChange: (e: any) => void
+  onSubmit: (e: string) => void
 }
 
 const ItemQuantity: React.FC<ItemQuantityProps> = ({
   item,
-  quantity,
-  onChange
+  onSubmit
 }) => {
+
+  const [value, setValue]: [
+    string,
+    Dispatch<SetStateAction<string>>
+  ] = useState('')
+
   return (
     <IonList className="ion-no-padding">
       <IonItem lines="none">
@@ -265,13 +268,13 @@ const ItemQuantity: React.FC<ItemQuantityProps> = ({
       <IonItem>
         <IonInput
           placeholder="for example 2"
-          onIonChange={e => onChange(e.detail.value)}
-          value={quantity} type="number" name="quantity" min="1"
+          onIonChange={e => setValue(`${e.detail.value}`)}
+          type="number" name="quantity" min="1"
         />
       </IonItem>
-      {/* <IonItem button onClick={() => { }} className="ion-text-center">
-        <IonIcon className="ion-icon-primary" icon={submit}></IonIcon>
-      </IonItem> */}
+      <IonItem button onClick={() => onSubmit(value)}>
+        <IonIcon className="ion-icon-primary" icon={send}></IonIcon>
+      </IonItem>
     </IonList>
   )
 }
