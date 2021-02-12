@@ -6,6 +6,7 @@ import { LazyLoad } from 'components'
 
 import { ItemSearchResult } from 'types'
 import { imageServerUrl } from 'utils'
+import { formatMoney } from 'utils/currency'
 
 import { wrapperWidthSpan as imageWrapperWidthSpan } from 'components/LazyLoad'
 
@@ -51,7 +52,7 @@ const Component: React.FC<Props> = ({
         </IonRow>
         <IonRow>
           <IonCol className="ion-no-padding">
-            <IonLabel><h4>{`UGX ${price}`}</h4></IonLabel>
+            <IonLabel><h4>{formatMoney(price)}</h4></IonLabel>
           </IonCol>
           {/* <IonCol className="ion-no-padding">
             <IonLabel className="ion-text-right"><p>{distance}</p></IonLabel>

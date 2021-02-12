@@ -7,7 +7,6 @@ import { bindActionCreators } from 'redux'
 import * as constants from 'reducers/constants'
 
 import { CallNumber } from '@ionic-native/call-number'
-import { platformIsMobile } from 'utils'
 
 import { IonContent, IonPage, IonLabel, IonBadge, IonList, IonItem, IonButton, IonIcon, IonText } from '@ionic/react'
 import { close } from 'ionicons/icons';
@@ -16,9 +15,10 @@ import { Header, Divider } from 'components'
 import { MapContainer } from 'containers'
 
 import { ItemRequest as ItemRequestInterface } from 'types'
-import { requestStatesMappedToBadgeBackground } from 'utils'
+import { platformIsMobile, requestStatesMappedToBadgeBackground } from 'utils'
 import { userIsNotClientUser, userIsCourier } from 'utils/role'
 import { deliveryCost, computeOrderCostAndDistance } from 'utils/charges'
+import { formatMoney } from 'utils/currency'
 
 import Requests, { endPoints } from 'requests'
 
@@ -178,7 +178,7 @@ class Component extends React.Component<Props> {
                   <h4 slot="end">
                     {quantity}&nbsp;
                     <IonIcon style={{ fontSize: 12 }} icon={close} />&nbsp;
-                    UGX {price}
+                    {formatMoney(price)}
                   </h4>
                 </IonItem>))
             }
@@ -188,7 +188,7 @@ class Component extends React.Component<Props> {
               >
                 <h4 className="ion-text-uppercase ion-label-primary">Total</h4>
                 <h4 slot="end" className="flex ion-align-items-center ion-label-primary">
-                  <b>UGX {this.requestCost}</b>
+                  <b>{formatMoney(this.requestCost)}</b>
                 </h4>
               </IonItem>
               <IonItem
@@ -196,7 +196,7 @@ class Component extends React.Component<Props> {
                 className="ion-no-padding mini-list-item"
               >
                 <IonText><IonLabel><p>Delivery fee</p></IonLabel></IonText>
-                <h4 slot="end" className="flex ion-align-items-center">UGX {deliveryCost}</h4>
+                <h4 slot="end" className="flex ion-align-items-center">{formatMoney(deliveryCost)}</h4>
               </IonItem>
             </IonList>
           </IonLabel>

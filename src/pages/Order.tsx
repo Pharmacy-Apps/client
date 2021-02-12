@@ -20,6 +20,7 @@ import { getDeliveryLocationForNextOrder, getDeliveryAddressForNextOrder } from 
 
 import { ItemSearchResult as ItemSearchResultInterface } from 'types'
 import { deliveryCost, computeOrderCostAndDistance } from 'utils/charges'
+import { formatMoney } from 'utils/currency'
 
 type Props = {
   history: History | any,
@@ -181,7 +182,7 @@ class Component extends React.Component<Props> {
                       <h4 slot="end" style={costTextStyle} className="flex ion-align-items-center">
                         {quantity}&nbsp;
                         <IonIcon style={{ fontSize: 12 }} icon={close} />&nbsp;
-                        UGX {price}
+                        {formatMoney(price)}
                       </h4>
                       <IonButton onClick={() => this.onQtyModify(_id)} slot="end" fill="clear" style={ionButtonStyle}>
                         <IonIcon className="ion-icon-secondary" icon={pencilOutline} />
@@ -203,14 +204,14 @@ class Component extends React.Component<Props> {
                     <IonLabel className="ion-no-margin ion-text-uppercase ion-label-primary">
                       <h4>Total</h4>
                     </IonLabel>
-                    <h4 className="ion-label-primary" slot="end">UGX {cost}</h4>
+                    <h4 className="ion-label-primary" slot="end">{formatMoney(cost)}</h4>
                   </IonItem>
                   <IonItem lines="none" className="ion-no-margin ion-no-padding mini-list-item"
                     style={{ '--min-height': '15px' }}>
                     <IonLabel className="ion-no-margin" slot="start">
                       <p>Delivery fee</p>
                     </IonLabel>
-                    <h4 slot="end">UGX {deliveryCost}</h4>
+                    <h4 slot="end">{formatMoney(deliveryCost)}</h4>
                   </IonItem></IonList>
               </IonLabel>
             </IonItem>
