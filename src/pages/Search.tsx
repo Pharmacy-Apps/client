@@ -147,8 +147,15 @@ class Component extends React.Component<Props> {
     return toolbarActions
   }
 
+  searchbar: HTMLIonSearchbarElement | null = null
+
+  focusOnSearchbar = () => {
+    if (this.searchbar) this.searchbar.setFocus()
+  }
+
   title = () => (
     <IonSearchbar
+      ref={e => this.searchbar = e}
       style={{
         paddingInlineStart: platformIsWebBrowser ? 'var(--ion-padding)' : 0,
         '--icon-color': 'var(--ion-color-primary)',
@@ -221,6 +228,10 @@ class Component extends React.Component<Props> {
         </Popover>
       </IonPage>
     )
+  }
+
+  componentDidUpdate() {
+    setTimeout(this.focusOnSearchbar, 500)
   }
 }
 
