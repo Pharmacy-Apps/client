@@ -10,6 +10,7 @@ import Alert from './Alert'
 import Divider from './Divider'
 import Menu from './Menu'
 import Item from './Item'
+import ImageSlider from './ImageSlider'
 
 export {
   Header,
@@ -23,5 +24,6 @@ export {
   Alert,
   Divider,
   Menu,
-  Item
+  Item,
+  ImageSlider
 }

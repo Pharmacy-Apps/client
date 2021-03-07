@@ -108,6 +108,10 @@ class Component extends React.Component<Props> {
     this.setState({ selectedItems })
   }
 
+  onMore = (result: ItemSearchResultInterface) => {
+    this.props.history.push(Routes.item.path, result )
+  }
+
   isSelected = (result: ItemSearchResultInterface) => (
     this.state.selectedItems.findIndex(item => item._id === result._id) > -1
   )
@@ -125,9 +129,12 @@ class Component extends React.Component<Props> {
     const { selectedCategory } = this.state
     const toolbarActions: Array<ToolbarAction> = [{
       component: () => (
-        <IonButton className="ion-text-capitalize">
+        <IonButton style={{ textTransform: 'unset' }}>
           <IonSelect
-            interfaceOptions={{ showBackdrop: false }}
+            interfaceOptions={{
+              showBackdrop: false,
+              cssClass: 'search-category-select-popover'
+            }}
             interface="popover"
             onIonChange={({ detail: { value } }: any) => this.onCategorySelected(value)}
             value={selectedCategory}
@@ -202,7 +209,8 @@ class Component extends React.Component<Props> {
                 lines={i !== a.length - 1}
                 selected={this.isSelected(result)}
                 onSelect={this.onSelect}
-                onImageClick={() => this.onImageClick(result)} />
+                onImageClick={() => this.onImageClick(result)}
+                onMore={this.onMore} />
             )) : (
                 itemsReturned && items.length === 0
                   ? <IonItem lines="none">

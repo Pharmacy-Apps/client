@@ -120,7 +120,7 @@ class Component extends React.Component<Props> {
               </IonLabel>
             </IonItem>
             <IonListHeader lines="full">
-              <IonLabel><h3>{Text['category-header']}</h3></IonLabel>
+              <IonLabel><h3 style={{ fontSize: '105%' }}>{Text['category-header']}</h3></IonLabel>
             </IonListHeader>
             <IonGrid>
               <IonRow>
@@ -185,7 +185,7 @@ const CategoryComponent: React.FC<{
     }} src={imageUrl} onLoad={onLoad} onError={onError} alt="" />
     <div className="ion-padding">
       <IonLabel>
-        <h3 className="ion-label-primary">{label}</h3>
+        <h3 className="ion-label-primary" style={{ fontSize: '105%' }}>{label}</h3>
         {/* <p>{description}</p> */}
       </IonLabel>
     </div>

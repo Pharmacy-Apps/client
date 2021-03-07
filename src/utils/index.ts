@@ -36,6 +36,8 @@ export const requestStatesMappedToBadgeBackground: {
   'received': 'var(--ion-color-primary)'
 }
 
+export const itemState = (available: boolean) => available ? 'Available' : 'Out of stock'
+
 export const TEST_ENV = 'test'
 
 export const APP_NAME = 'Medibers'

@@ -52,7 +52,7 @@ class Component extends React.Component<Props> {
     if (partPhone && password) {
       hideToast()
       showLoading()
-      const phone = `${CCs.ug.value}${partPhone}`
+      const phone = `${CCs.ug.value}${(partPhone || '').trim()}`
       Requests.post(endPoints.login, { phone, secret: password }).then(({ token }: any) => {
         setSessionToken(token)
         setSessionPhone(phone)
@@ -124,7 +124,9 @@ class Component extends React.Component<Props> {
           <form onSubmit={this.onSubmit}>
             <IonList className="ion-no-margin ion-no-padding">
               <IonItem lines="none">
-                <IonLabel style={this.getIonLabelStyle('phone')} position="stacked">Phone</IonLabel>
+                <IonLabel style={this.getIonLabelStyle('phone')} position="stacked">
+                  Phone <span className="ion-label-secondary">*</span>
+                </IonLabel>
                 <PhoneInput
                   name="phone"
                   value={phone || ''}
@@ -135,7 +137,9 @@ class Component extends React.Component<Props> {
               </IonItem>
               <IonItemDivider style={this.getIonItemDividerStyle('phone')} />
               <IonItem lines="none">
-                <IonLabel style={this.getIonLabelStyle('password')} position="stacked">Password</IonLabel>
+                <IonLabel style={this.getIonLabelStyle('password')} position="stacked">
+                  Password <span className="ion-label-secondary">*</span>
+                </IonLabel>
                 <IonInput
                   onIonChange={this.onChange}
                   onIonFocus={this.onInputFocus}

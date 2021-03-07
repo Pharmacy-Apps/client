@@ -44,7 +44,7 @@ class Component extends React.Component<Props> {
     if (partPhone) {
       hideToast()
       showLoading()
-      const phone = `${CCs.ug.value}${partPhone}`
+      const phone = `${CCs.ug.value}${(partPhone || '').trim()}`
       Requests.post(endPoints.signup1, { phone }).then((response: any) => {
         console.info(response)
         history.push({
@@ -92,7 +92,9 @@ class Component extends React.Component<Props> {
           <form onSubmit={this.onSubmit}>
             <IonList className="ion-no-margin ion-no-padding">
               <IonItem lines="none">
-                <IonLabel position="stacked" style={this.getIonLabelStyle('phone')}>Phone</IonLabel>
+                <IonLabel position="stacked" style={this.getIonLabelStyle('phone')}>
+                  Phone <span className="ion-label-secondary">*</span>
+                </IonLabel>
                 {/* <IonInput onIonChange={this.onChange} value={phone} type="tel" name="phone" autocomplete="off" /> */}
                 <PhoneInput
                   name="phone"

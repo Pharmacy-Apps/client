@@ -28,8 +28,8 @@ const map: {
   },
   'lab-equipment': {
     icon: imageServerUrl + '/lab-equipment.jpeg',
-    label: Text['category-lab-equipment'],
-    description: Text['category-lab-equipment-description']
+    label: Text['category-maintenance-tools'],
+    description: Text['category-maintenance-tools-description']
   },
   'medical-supplies': {
     icon: imageServerUrl + '/medical-supplies.jpeg',

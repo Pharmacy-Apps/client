@@ -3,7 +3,7 @@ import { getSessionToken, clearSession } from 'session'
 
 import {
   Signup1, Signup2, Login, Home,
-  Search, Order, Pay, Location,
+  Search, Item, Order, Pay, Location,
   Requests, Request, Credit, Account,
   About, TCs
 } from 'pages'
@@ -49,6 +49,10 @@ const Routes: Routes = {
   search: {
     path: '/search',
     component: Search
+  },
+  item: {
+    path: '/item',
+    component: Item
   },
   order: {
     path: '/order',

@@ -11,25 +11,31 @@ const text: Type = {
     "en": "All items"
   },
   "category-pharmacy": {
-    "en": "Pharmacy"
+    "en": "ePharmacy"
   },
   "category-pharmacy-description": {
     "en": "Lorem tabs, medicine loren ipsum"
   },
   "category-medical-devices": {
-    "en": "Medical Devices"
+    "en": "Medical Devices and Accessories"
   },
   "category-medical-devices-description": {
     "en": "Lorem labs loren ipsum"
   },
-  "category-lab-equipment": {
-    "en": "Lab Equipment"
+  // "category-lab-equipment": {
+  //   "en": "Lab Equipment"
+  // },
+  // "category-lab-equipment-description": {
+  //   "en": "Lorem labs loren"
+  // },
+  "category-maintenance-tools": {
+    "en": "Maintenance Tools and Resources"
   },
-  "category-lab-equipment-description": {
+  "category-maintenance-tools-description": {
     "en": "Lorem labs loren"
   },
   "category-medical-supplies": {
-    "en": "Other Medical Supplies"
+    "en": "Other Supplies and Consumables"
   },
   "category-medical-supplies-description": {
     "en": "Lorem labs loren"
